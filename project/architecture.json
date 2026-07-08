@@ -1,0 +1,67 @@
+{
+  "name": "astro-assistant",
+  "version": "0.1.0",
+  "principle": "Keep astrology capability portable, keep stateful product operations in services.",
+  "components": [
+    {
+      "id": "astro_skill",
+      "path": "astro",
+      "kind": "portable_skill",
+      "owns": [
+        "skill instructions",
+        "calculator scripts",
+        "report and PDF generation workflows",
+        "domain safety boundaries"
+      ]
+    },
+    {
+      "id": "astro_mcp",
+      "path": "services/astro_mcp",
+      "kind": "mcp_service",
+      "owns": [
+        "tool API surface",
+        "client profile storage",
+        "report job orchestration",
+        "generic profile, report, and tool helper operations"
+      ]
+    },
+    {
+      "id": "pandit_web",
+      "path": "apps/pandit_web",
+      "kind": "future_web_app",
+      "owns": [
+        "optional browser panel",
+        "client search UI",
+        "report history review",
+        "manual admin controls"
+      ]
+    },
+    {
+      "id": "deployment",
+      "path": "docs/deploy.md",
+      "kind": "deployment_notes",
+      "owns": [
+        "Docker image build and run",
+        "MCP server smoke test",
+        "generic MCP client wiring"
+      ]
+    }
+  ],
+  "initial_tools": [
+    "parse_birth_details",
+    "calculate_kundali",
+    "calculate_dasha",
+    "calculate_panchang",
+    "generate_report_json",
+    "generate_pdf_report",
+    "save_client_profile",
+    "find_client_profile",
+    "list_client_reports"
+  ],
+  "non_goals": [
+    "client-facing public bot",
+    "automatic final predictions",
+    "medical, death, accident, or unavoidable-harm predictions",
+    "moving existing calculator scripts before the MCP boundary is stable"
+  ]
+}

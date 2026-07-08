@@ -1,0 +1,51 @@
+# astro-skill — self-contained image: Python + deps + Chromium + the skill code.
+# Build once, run anywhere — no per-host manual installs.
+
+# 1. Base: a small official Python image (Debian slim). Pinned for reproducibility.
+FROM python:3.12-slim
+
+# 2. Sensible runtime defaults.
+ENV PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# 3. All app files live under /app inside the container.
+WORKDIR /app
+
+# 4. Python dependencies. pyswisseph is a C extension, so install a compiler +
+#    Python headers to build it, then purge them so the image stays small.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential python3-dev \
+    && pip install --no-cache-dir \
+        "mcp>=1.27.0" \
+        "playwright>=1.40" \
+        "pyswisseph>=2.10.3.2" \
+        "python-dateutil>=2.9.0" \
+        "reportlab>=4.5.1" \
+        "tzdata>=2025.2" \
+    && apt-get purge -y build-essential python3-dev \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# 5. Chromium + its system libraries for the HTML (Devanagari) PDF renderer.
+#    --with-deps installs the OS packages Chromium needs. This is the heavy,
+#    one-time step that the manual setup used to require on every machine.
+RUN python -m playwright install --with-deps chromium
+
+# 6. The skill code. The bundled Noto Devanagari font travels inside
+#    astro/scripts/fonts and the Swiss Ephemeris .se1 data travels inside
+#    astro/ephe, so both Hindi rendering and high-precision positions need
+#    nothing from the host.
+COPY astro ./astro
+COPY services ./services
+COPY pyproject.toml README.md ./
+
+# 6b. Point Swiss Ephemeris at the bundled .se1 data so calc uses the precise
+#     SWIEPH ephemeris instead of the lower-precision Moshier fallback. The
+#     calculators also fall back to this same path automatically, but setting it
+#     explicitly keeps the tier correct regardless of working directory.
+ENV SE_EPHE_PATH=/app/astro/ephe
+
+# 7. Default process: the astro MCP server (stdio). Override the command to run
+#    one-off scripts (e.g. generate a PDF) — see README/compose.
+CMD ["python", "-m", "services.astro_mcp"]

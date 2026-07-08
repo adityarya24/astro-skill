@@ -1,0 +1,92 @@
+{
+  "_comment": "Classical Avakahada Chakra lookup tables. Nakshatra order: Ashwini(1)..Revati(27). Sources: standard Jataka tables as printed in traditional janma patrikas.",
+  "gan": {
+    "Ashwini": "देव", "Bharani": "मनुष्य", "Krittika": "राक्षस", "Rohini": "मनुष्य",
+    "Mrigashira": "देव", "Ardra": "मनुष्य", "Punarvasu": "देव", "Pushya": "देव",
+    "Ashlesha": "राक्षस", "Magha": "राक्षस", "Purva Phalguni": "मनुष्य",
+    "Uttara Phalguni": "मनुष्य", "Hasta": "देव", "Chitra": "राक्षस", "Swati": "देव",
+    "Vishakha": "राक्षस", "Anuradha": "देव", "Jyeshtha": "राक्षस", "Mula": "राक्षस",
+    "Purva Ashadha": "मनुष्य", "Uttara Ashadha": "मनुष्य", "Shravana": "देव",
+    "Dhanishta": "राक्षस", "Shatabhisha": "राक्षस", "Purva Bhadrapada": "मनुष्य",
+    "Uttara Bhadrapada": "मनुष्य", "Revati": "देव"
+  },
+  "yoni": {
+    "Ashwini": "अश्व", "Bharani": "गज", "Krittika": "मेष", "Rohini": "सर्प",
+    "Mrigashira": "सर्प", "Ardra": "श्वान", "Punarvasu": "मार्जार", "Pushya": "मेष",
+    "Ashlesha": "मार्जार", "Magha": "मूषक", "Purva Phalguni": "मूषक",
+    "Uttara Phalguni": "गौ", "Hasta": "महिष", "Chitra": "व्याघ्र", "Swati": "महिष",
+    "Vishakha": "व्याघ्र", "Anuradha": "मृग", "Jyeshtha": "मृग", "Mula": "श्वान",
+    "Purva Ashadha": "वानर", "Uttara Ashadha": "नकुल", "Shravana": "वानर",
+    "Dhanishta": "सिंह", "Shatabhisha": "अश्व", "Purva Bhadrapada": "सिंह",
+    "Uttara Bhadrapada": "गौ", "Revati": "गज"
+  },
+  "nadi": {
+    "Ashwini": "आदि", "Ardra": "आदि", "Punarvasu": "आदि", "Uttara Phalguni": "आदि",
+    "Hasta": "आदि", "Jyeshtha": "आदि", "Mula": "आदि", "Shatabhisha": "आदि",
+    "Purva Bhadrapada": "आदि",
+    "Bharani": "मध्य", "Mrigashira": "मध्य", "Pushya": "मध्य", "Purva Phalguni": "मध्य",
+    "Chitra": "मध्य", "Anuradha": "मध्य", "Purva Ashadha": "मध्य", "Dhanishta": "मध्य",
+    "Uttara Bhadrapada": "मध्य",
+    "Krittika": "अंत्य", "Rohini": "अंत्य", "Ashlesha": "अंत्य", "Magha": "अंत्य",
+    "Swati": "अंत्य", "Vishakha": "अंत्य", "Uttara Ashadha": "अंत्य",
+    "Shravana": "अंत्य", "Revati": "अंत्य"
+  },
+  "namakshar": {
+    "Ashwini": ["चू", "चे", "चो", "ला"],
+    "Bharani": ["ली", "लू", "ले", "लो"],
+    "Krittika": ["अ", "ई", "उ", "ए"],
+    "Rohini": ["ओ", "वा", "वी", "वू"],
+    "Mrigashira": ["वे", "वो", "का", "की"],
+    "Ardra": ["कू", "घ", "ङ", "छ"],
+    "Punarvasu": ["के", "को", "हा", "ही"],
+    "Pushya": ["हू", "हे", "हो", "डा"],
+    "Ashlesha": ["डी", "डू", "डे", "डो"],
+    "Magha": ["मा", "मी", "मू", "मे"],
+    "Purva Phalguni": ["मो", "टा", "टी", "टू"],
+    "Uttara Phalguni": ["टे", "टो", "पा", "पी"],
+    "Hasta": ["पू", "ष", "ण", "ठ"],
+    "Chitra": ["पे", "पो", "रा", "री"],
+    "Swati": ["रू", "रे", "रो", "ता"],
+    "Vishakha": ["ती", "तू", "ते", "तो"],
+    "Anuradha": ["ना", "नी", "नू", "ने"],
+    "Jyeshtha": ["नो", "या", "यी", "यू"],
+    "Mula": ["ये", "यो", "भा", "भी"],
+    "Purva Ashadha": ["भू", "धा", "फा", "ढा"],
+    "Uttara Ashadha": ["भे", "भो", "जा", "जी"],
+    "Shravana": ["खी", "खू", "खे", "खो"],
+    "Dhanishta": ["गा", "गी", "गू", "गे"],
+    "Shatabhisha": ["गो", "सा", "सी", "सू"],
+    "Purva Bhadrapada": ["से", "सो", "दा", "दी"],
+    "Uttara Bhadrapada": ["दू", "थ", "झ", "ञ"],
+    "Revati": ["दे", "दो", "चा", "ची"]
+  },
+  "varna": {
+    "Mesha": "क्षत्रिय", "Simha": "क्षत्रिय", "Dhanu": "क्षत्रिय",
+    "Vrishabha": "वैश्य", "Kanya": "वैश्य", "Makara": "वैश्य",
+    "Mithuna": "शूद्र", "Tula": "शूद्र", "Kumbha": "शूद्र",
+    "Karka": "ब्राह्मण", "Vrischika": "ब्राह्मण", "Meena": "ब्राह्मण"
+  },
+  "vashya": {
+    "Mesha": "चतुष्पाद", "Vrishabha": "चतुष्पाद", "Mithuna": "मानव",
+    "Karka": "जलचर", "Simha": "वनचर", "Kanya": "मानव",
+    "Tula": "मानव", "Vrischika": "कीट", "Dhanu": "चतुष्पाद",
+    "Makara": "जलचर", "Kumbha": "मानव", "Meena": "जलचर"
+  },
+  "tatva": {
+    "Mesha": "अग्नि", "Simha": "अग्नि", "Dhanu": "अग्नि",
+    "Vrishabha": "पृथ्वी", "Kanya": "पृथ्वी", "Makara": "पृथ्वी",
+    "Mithuna": "वायु", "Tula": "वायु", "Kumbha": "वायु",
+    "Karka": "जल", "Vrischika": "जल", "Meena": "जल"
+  },
+  "sign_lords": {
+    "Mesha": "Mangal", "Vrishabha": "Shukra", "Mithuna": "Budh", "Karka": "Chandra",
+    "Simha": "Surya", "Kanya": "Budh", "Tula": "Shukra", "Vrischika": "Mangal",
+    "Dhanu": "Guru", "Makara": "Shani", "Kumbha": "Shani", "Meena": "Guru"
+  },
+  "paya_by_moon_house": {
+    "1": "स्वर्ण", "6": "स्वर्ण", "11": "स्वर्ण",
+    "2": "रजत", "5": "रजत", "9": "रजत",
+    "3": "ताम्र", "7": "ताम्र", "10": "ताम्र",
+    "4": "लौह", "8": "लौह", "12": "लौह"
+  }
+}

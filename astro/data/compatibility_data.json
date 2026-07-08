@@ -1,0 +1,56 @@
+{
+  "_note": "Standard Ashtakoot (Guna Milan) reference tables. Auditable and adjustable here. Yoni uses a same/enemy/neutral tier (4/0/2); gana is symmetric. Nakshatra gana/yoni come from nakshatra_db.json; nadi is defined below by nakshatra index (0-26).",
+  "element_varna": {"Water": 4, "Fire": 3, "Earth": 2, "Air": 1},
+  "nadi_by_index": {
+    "Aadi":  [0, 5, 6, 11, 12, 17, 18, 23, 24],
+    "Madhya":[1, 4, 7, 10, 13, 16, 19, 22, 25],
+    "Antya": [2, 3, 8, 9, 14, 15, 20, 21, 26]
+  },
+  "yoni_enemies": [
+    ["Cow", "Tiger"],
+    ["Elephant", "Lion"],
+    ["Horse", "Buffalo"],
+    ["Sheep", "Monkey"],
+    ["Serpent", "Mongoose"],
+    ["Dog", "Deer"],
+    ["Cat", "Rat"]
+  ],
+  "gana_points": {"same": 6, "Deva|Manushya": 5, "Deva|Rakshasa": 1, "Manushya|Rakshasa": 0},
+  "vashya_controls": {
+    "Mesha": ["Simha", "Vrischika"],
+    "Vrishabha": ["Karka", "Tula"],
+    "Mithuna": ["Kanya"],
+    "Karka": ["Vrischika", "Dhanu"],
+    "Simha": ["Tula"],
+    "Kanya": ["Mithuna", "Meena"],
+    "Tula": ["Makara", "Kanya"],
+    "Vrischika": ["Karka"],
+    "Dhanu": ["Meena"],
+    "Makara": ["Kumbha", "Mesha"],
+    "Kumbha": ["Mesha"],
+    "Meena": ["Makara"]
+  },
+  "planet_friends": {
+    "Surya":   {"friends": ["Chandra", "Mangal", "Guru"], "enemies": ["Shukra", "Shani"]},
+    "Chandra": {"friends": ["Surya", "Budh"], "enemies": []},
+    "Mangal":  {"friends": ["Surya", "Chandra", "Guru"], "enemies": ["Budh"]},
+    "Budh":    {"friends": ["Surya", "Shukra"], "enemies": ["Chandra"]},
+    "Guru":    {"friends": ["Surya", "Chandra", "Mangal"], "enemies": ["Budh", "Shukra"]},
+    "Shukra":  {"friends": ["Budh", "Shani"], "enemies": ["Surya", "Chandra"]},
+    "Shani":   {"friends": ["Budh", "Shukra"], "enemies": ["Surya", "Chandra", "Mangal"]}
+  },
+  "graha_maitri_points": {
+    "friend|friend": 5,
+    "friend|neutral": 4,
+    "neutral|neutral": 3,
+    "enemy|friend": 1,
+    "enemy|neutral": 0.5,
+    "enemy|enemy": 0
+  },
+  "verdict_bands": [
+    {"min": 33, "label": "excellent"},
+    {"min": 25, "label": "good"},
+    {"min": 18, "label": "average"},
+    {"min": 0, "label": "not recommended"}
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "_note": "Parashari (BPHS) Ashtakavarga benefic places. For planet P and reference R, P gains a bindu in the house(s) listed (counted from R's sign). Each planet's houses sum to its fixed bhinna total; the 8-fold Sarva total is always 337 (checksum-validated in tests). Auditable here.",
+  "references": ["Surya", "Chandra", "Mangal", "Budh", "Guru", "Shukra", "Shani", "Lagna"],
+  "bhinna_totals": {"Surya": 48, "Chandra": 49, "Mangal": 39, "Budh": 54, "Guru": 56, "Shukra": 52, "Shani": 39},
+  "benefic_houses": {
+    "Surya": {
+      "Surya": [1, 2, 4, 7, 8, 9, 10, 11],
+      "Chandra": [3, 6, 10, 11],
+      "Mangal": [1, 2, 4, 7, 8, 9, 10, 11],
+      "Budh": [3, 5, 6, 9, 10, 11, 12],
+      "Guru": [5, 6, 9, 11],
+      "Shukra": [6, 7, 12],
+      "Shani": [1, 2, 4, 7, 8, 9, 10, 11],
+      "Lagna": [3, 4, 6, 10, 11, 12]
+    },
+    "Chandra": {
+      "Surya": [3, 6, 7, 8, 10, 11],
+      "Chandra": [1, 3, 6, 7, 10, 11],
+      "Mangal": [2, 3, 5, 6, 9, 10, 11],
+      "Budh": [1, 3, 4, 5, 7, 8, 10, 11],
+      "Guru": [1, 4, 7, 8, 10, 11, 12],
+      "Shukra": [3, 4, 5, 7, 9, 10, 11],
+      "Shani": [3, 5, 6, 11],
+      "Lagna": [3, 6, 10, 11]
+    },
+    "Mangal": {
+      "Surya": [3, 5, 6, 10, 11],
+      "Chandra": [3, 6, 11],
+      "Mangal": [1, 2, 4, 7, 8, 10, 11],
+      "Budh": [3, 5, 6, 11],
+      "Guru": [6, 10, 11, 12],
+      "Shukra": [6, 8, 11, 12],
+      "Shani": [1, 4, 7, 8, 9, 10, 11],
+      "Lagna": [1, 3, 6, 10, 11]
+    },
+    "Budh": {
+      "Surya": [5, 6, 9, 11, 12],
+      "Chandra": [2, 4, 6, 8, 10, 11],
+      "Mangal": [1, 2, 4, 7, 8, 9, 10, 11],
+      "Budh": [1, 3, 5, 6, 9, 10, 11, 12],
+      "Guru": [6, 8, 11, 12],
+      "Shukra": [1, 2, 3, 4, 5, 8, 9, 11],
+      "Shani": [1, 2, 4, 7, 8, 9, 10, 11],
+      "Lagna": [1, 2, 4, 6, 8, 10, 11]
+    },
+    "Guru": {
+      "Surya": [1, 2, 3, 4, 7, 8, 9, 10, 11],
+      "Chandra": [2, 5, 7, 9, 11],
+      "Mangal": [1, 2, 4, 7, 8, 10, 11],
+      "Budh": [1, 2, 4, 5, 6, 9, 10, 11],
+      "Guru": [1, 2, 3, 4, 7, 8, 10, 11],
+      "Shukra": [2, 5, 6, 9, 10, 11],
+      "Shani": [3, 5, 6, 12],
+      "Lagna": [1, 2, 4, 5, 6, 7, 9, 10, 11]
+    },
+    "Shukra": {
+      "Surya": [8, 11, 12],
+      "Chandra": [1, 2, 3, 4, 5, 8, 9, 11, 12],
+      "Mangal": [3, 5, 6, 9, 11, 12],
+      "Budh": [3, 5, 6, 9, 11],
+      "Guru": [5, 8, 9, 10, 11],
+      "Shukra": [1, 2, 3, 4, 5, 8, 9, 10, 11],
+      "Shani": [3, 4, 5, 8, 9, 10, 11],
+      "Lagna": [1, 2, 3, 4, 5, 8, 9, 11]
+    },
+    "Shani": {
+      "Surya": [1, 2, 4, 7, 8, 10, 11],
+      "Chandra": [3, 6, 11],
+      "Mangal": [3, 5, 6, 10, 11, 12],
+      "Budh": [6, 8, 9, 10, 11, 12],
+      "Guru": [5, 6, 11, 12],
+      "Shukra": [6, 11, 12],
+      "Shani": [3, 5, 6, 11],
+      "Lagna": [1, 3, 4, 6, 10, 11]
+    }
+  }
+}

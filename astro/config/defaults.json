@@ -1,0 +1,12 @@
+{
+  "ayanamsa": "lahiri",
+  "house_system": "whole_sign",
+  "default_timezone": "Asia/Kolkata",
+  "default_location": "Delhi",
+  "default_lat": 28.6139,
+  "default_lon": 77.209,
+  "default_geoname_id": "1273294",
+  "language": "hin",
+  "report_format": "markdown",
+  "dasha_system": "vimshottari"
+}

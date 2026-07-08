@@ -1,0 +1,100 @@
+{
+  "signs": [
+    {"index": 0, "name": "Mesha", "english": "Aries", "lord": "Mangal", "element": "Fire"},
+    {"index": 1, "name": "Vrishabha", "english": "Taurus", "lord": "Shukra", "element": "Earth"},
+    {"index": 2, "name": "Mithuna", "english": "Gemini", "lord": "Budh", "element": "Air"},
+    {"index": 3, "name": "Karka", "english": "Cancer", "lord": "Chandra", "element": "Water"},
+    {"index": 4, "name": "Simha", "english": "Leo", "lord": "Surya", "element": "Fire"},
+    {"index": 5, "name": "Kanya", "english": "Virgo", "lord": "Budh", "element": "Earth"},
+    {"index": 6, "name": "Tula", "english": "Libra", "lord": "Shukra", "element": "Air"},
+    {"index": 7, "name": "Vrischika", "english": "Scorpio", "lord": "Mangal", "element": "Water"},
+    {"index": 8, "name": "Dhanu", "english": "Sagittarius", "lord": "Guru", "element": "Fire"},
+    {"index": 9, "name": "Makara", "english": "Capricorn", "lord": "Shani", "element": "Earth"},
+    {"index": 10, "name": "Kumbha", "english": "Aquarius", "lord": "Shani", "element": "Air"},
+    {"index": 11, "name": "Meena", "english": "Pisces", "lord": "Guru", "element": "Water"}
+  ],
+  "planets": {
+    "Surya": {
+      "english": "Sun",
+      "vimshottari_years": 6,
+      "own_signs": ["Simha"],
+      "exaltation_sign": "Mesha",
+      "debilitation_sign": "Tula",
+      "gemstone": "Ruby",
+      "day": "Sunday"
+    },
+    "Chandra": {
+      "english": "Moon",
+      "vimshottari_years": 10,
+      "own_signs": ["Karka"],
+      "exaltation_sign": "Vrishabha",
+      "debilitation_sign": "Vrischika",
+      "gemstone": "Pearl",
+      "day": "Monday"
+    },
+    "Mangal": {
+      "english": "Mars",
+      "vimshottari_years": 7,
+      "own_signs": ["Mesha", "Vrischika"],
+      "exaltation_sign": "Makara",
+      "debilitation_sign": "Karka",
+      "gemstone": "Red Coral",
+      "day": "Tuesday"
+    },
+    "Budh": {
+      "english": "Mercury",
+      "vimshottari_years": 17,
+      "own_signs": ["Mithuna", "Kanya"],
+      "exaltation_sign": "Kanya",
+      "debilitation_sign": "Meena",
+      "gemstone": "Emerald",
+      "day": "Wednesday"
+    },
+    "Guru": {
+      "english": "Jupiter",
+      "vimshottari_years": 16,
+      "own_signs": ["Dhanu", "Meena"],
+      "exaltation_sign": "Karka",
+      "debilitation_sign": "Makara",
+      "gemstone": "Yellow Sapphire",
+      "day": "Thursday"
+    },
+    "Shukra": {
+      "english": "Venus",
+      "vimshottari_years": 20,
+      "own_signs": ["Vrishabha", "Tula"],
+      "exaltation_sign": "Meena",
+      "debilitation_sign": "Kanya",
+      "gemstone": "Diamond",
+      "day": "Friday"
+    },
+    "Shani": {
+      "english": "Saturn",
+      "vimshottari_years": 19,
+      "own_signs": ["Makara", "Kumbha"],
+      "exaltation_sign": "Tula",
+      "debilitation_sign": "Mesha",
+      "gemstone": "Blue Sapphire",
+      "day": "Saturday"
+    },
+    "Rahu": {
+      "english": "North Node",
+      "vimshottari_years": 18,
+      "own_signs": [],
+      "exaltation_sign": "Vrishabha",
+      "debilitation_sign": "Vrischika",
+      "gemstone": "Hessonite",
+      "day": "Saturday"
+    },
+    "Ketu": {
+      "english": "South Node",
+      "vimshottari_years": 7,
+      "own_signs": [],
+      "exaltation_sign": "Vrischika",
+      "debilitation_sign": "Vrishabha",
+      "gemstone": "Cat's Eye",
+      "day": "Tuesday"
+    }
+  },
+  "vimshottari_order": ["Ketu", "Shukra", "Surya", "Chandra", "Mangal", "Rahu", "Guru", "Shani", "Budh"]
+}

@@ -1,0 +1,15 @@
+# Keep the build context (and image) lean — don't ship these into the image.
+.git
+.github
+**/__pycache__
+**/*.pyc
+**/*.bak
+**/*.bak.*
+output
+docs
+apps
+infra
+project
+*.md.bak
+.pytest_cache
+.ruff_cache

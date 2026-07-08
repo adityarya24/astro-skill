@@ -1,0 +1,4 @@
+interface:
+  display_name: "Astro"
+  short_description: "Calculate Vedic kundali and Vimshottari dasha."
+  default_prompt: "Calculate a Vedic astrology chart from birth details."

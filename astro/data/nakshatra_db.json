@@ -1,0 +1,31 @@
+{
+  "nakshatras": [
+    {"index": 0, "name": "Ashwini", "lord": "Ketu", "sign_span": "Mesha 0:00-13:20", "gana": "Deva", "yoni": "Horse"},
+    {"index": 1, "name": "Bharani", "lord": "Shukra", "sign_span": "Mesha 13:20-26:40", "gana": "Manushya", "yoni": "Elephant"},
+    {"index": 2, "name": "Krittika", "lord": "Surya", "sign_span": "Mesha 26:40-Vrishabha 10:00", "gana": "Rakshasa", "yoni": "Sheep"},
+    {"index": 3, "name": "Rohini", "lord": "Chandra", "sign_span": "Vrishabha 10:00-23:20", "gana": "Manushya", "yoni": "Serpent"},
+    {"index": 4, "name": "Mrigashira", "lord": "Mangal", "sign_span": "Vrishabha 23:20-Mithuna 6:40", "gana": "Deva", "yoni": "Serpent"},
+    {"index": 5, "name": "Ardra", "lord": "Rahu", "sign_span": "Mithuna 6:40-20:00", "gana": "Manushya", "yoni": "Dog"},
+    {"index": 6, "name": "Punarvasu", "lord": "Guru", "sign_span": "Mithuna 20:00-Karka 3:20", "gana": "Deva", "yoni": "Cat"},
+    {"index": 7, "name": "Pushya", "lord": "Shani", "sign_span": "Karka 3:20-16:40", "gana": "Deva", "yoni": "Sheep"},
+    {"index": 8, "name": "Ashlesha", "lord": "Budh", "sign_span": "Karka 16:40-30:00", "gana": "Rakshasa", "yoni": "Cat"},
+    {"index": 9, "name": "Magha", "lord": "Ketu", "sign_span": "Simha 0:00-13:20", "gana": "Rakshasa", "yoni": "Rat"},
+    {"index": 10, "name": "Purva Phalguni", "lord": "Shukra", "sign_span": "Simha 13:20-26:40", "gana": "Manushya", "yoni": "Rat"},
+    {"index": 11, "name": "Uttara Phalguni", "lord": "Surya", "sign_span": "Simha 26:40-Kanya 10:00", "gana": "Manushya", "yoni": "Cow"},
+    {"index": 12, "name": "Hasta", "lord": "Chandra", "sign_span": "Kanya 10:00-23:20", "gana": "Deva", "yoni": "Buffalo"},
+    {"index": 13, "name": "Chitra", "lord": "Mangal", "sign_span": "Kanya 23:20-Tula 6:40", "gana": "Rakshasa", "yoni": "Tiger"},
+    {"index": 14, "name": "Swati", "lord": "Rahu", "sign_span": "Tula 6:40-20:00", "gana": "Deva", "yoni": "Buffalo"},
+    {"index": 15, "name": "Vishakha", "lord": "Guru", "sign_span": "Tula 20:00-Vrischika 3:20", "gana": "Rakshasa", "yoni": "Tiger"},
+    {"index": 16, "name": "Anuradha", "lord": "Shani", "sign_span": "Vrischika 3:20-16:40", "gana": "Deva", "yoni": "Deer"},
+    {"index": 17, "name": "Jyeshtha", "lord": "Budh", "sign_span": "Vrischika 16:40-30:00", "gana": "Rakshasa", "yoni": "Deer"},
+    {"index": 18, "name": "Mula", "lord": "Ketu", "sign_span": "Dhanu 0:00-13:20", "gana": "Rakshasa", "yoni": "Dog"},
+    {"index": 19, "name": "Purva Ashadha", "lord": "Shukra", "sign_span": "Dhanu 13:20-26:40", "gana": "Manushya", "yoni": "Monkey"},
+    {"index": 20, "name": "Uttara Ashadha", "lord": "Surya", "sign_span": "Dhanu 26:40-Makara 10:00", "gana": "Manushya", "yoni": "Mongoose"},
+    {"index": 21, "name": "Shravana", "lord": "Chandra", "sign_span": "Makara 10:00-23:20", "gana": "Deva", "yoni": "Monkey"},
+    {"index": 22, "name": "Dhanishta", "lord": "Mangal", "sign_span": "Makara 23:20-Kumbha 6:40", "gana": "Rakshasa", "yoni": "Lion"},
+    {"index": 23, "name": "Shatabhisha", "lord": "Rahu", "sign_span": "Kumbha 6:40-20:00", "gana": "Rakshasa", "yoni": "Horse"},
+    {"index": 24, "name": "Purva Bhadrapada", "lord": "Guru", "sign_span": "Kumbha 20:00-Meena 3:20", "gana": "Manushya", "yoni": "Lion"},
+    {"index": 25, "name": "Uttara Bhadrapada", "lord": "Shani", "sign_span": "Meena 3:20-16:40", "gana": "Manushya", "yoni": "Cow"},
+    {"index": 26, "name": "Revati", "lord": "Budh", "sign_span": "Meena 16:40-30:00", "gana": "Deva", "yoni": "Elephant"}
+  ]
+}
