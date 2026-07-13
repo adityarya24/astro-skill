@@ -1,6 +1,7 @@
 # Astro Skill
 
 [![CI](https://github.com/adityarya24/astro-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/adityarya24/astro-skill/actions/workflows/ci.yml)
+[![Astro Skill MCP server score](https://glama.ai/mcp/servers/adityarya24/astro-skill/badges/score.svg)](https://glama.ai/mcp/servers/adityarya24/astro-skill)
 
 Portable Vedic astrology engine, agent skill, and MCP server. Deterministic
 kundali, dasha, panchang, and yoga calculations with JSON and Hindi/English PDF
