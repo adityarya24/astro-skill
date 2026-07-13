@@ -7,12 +7,18 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Changed
+- Richer MCP tool definitions: every parameter now carries a description
+  (formats, units, defaults), `ayanamsa` and `language` are proper enums,
+  and tools declare titles plus read-only/idempotency annotations.
 - The default `Dockerfile` is now slim — no Playwright/Chromium, so it builds
   fast and small; call `generate_pdf_report` with `renderer="reportlab"` there.
   The original full image (Chromium HTML renderer for polished Devanagari)
   moved to `Dockerfile.full`: `docker build -f Dockerfile.full -t astro-skill .`
 
 ### Fixed
+- `generate_pdf_report`'s input schema now accepts `gochar` and `client_name`
+  — the tool already supported both, but the schema's
+  `additionalProperties: false` rejected them over MCP.
 - `.python-version` pins uv to Python 3.11 so `uv sync` installs pyswisseph
   from a prebuilt wheel — source builds fail in compiler-less environments
   such as registry build infra (this unblocked the Glama build test).

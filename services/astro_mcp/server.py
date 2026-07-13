@@ -41,222 +41,430 @@ def get_tool(name: str) -> Callable:
 
 # --- JSON Schemas for each tool ---------------------------------------------
 
+# Shared property blocks so every tool documents the same field the same way.
+_BIRTH_PROPERTIES = {
+    "dob": {"type": "string", "description": "Date of birth, DD/MM/YYYY or YYYY-MM-DD."},
+    "tob": {
+        "type": "string",
+        "description": "Time of birth, HH:MM (24-hour clock), local time at the birth place.",
+    },
+    "place": {
+        "type": "string",
+        "description": "Birth place name; a label for output, not geocoded.",
+    },
+    "lat": {
+        "type": "number",
+        "description": "Latitude of the birth place in decimal degrees (north positive).",
+    },
+    "lon": {
+        "type": "number",
+        "description": "Longitude of the birth place in decimal degrees (east positive).",
+    },
+    "timezone_name": {
+        "type": "string",
+        "description": "IANA timezone of the birth place, e.g. Asia/Kolkata.",
+    },
+}
+
 _BIRTH_DETAILS_SCHEMA = {
     "type": "object",
-    "properties": {
-        "dob": {"type": "string", "description": "DD/MM/YYYY or YYYY-MM-DD"},
-        "tob": {"type": "string", "description": "HH:MM (24h) local time"},
-        "place": {"type": "string"},
-        "lat": {"type": "number"},
-        "lon": {"type": "number"},
-        "timezone_name": {"type": "string", "description": "IANA name, eg Asia/Kolkata"},
-    },
+    "properties": _BIRTH_PROPERTIES,
     "required": ["dob", "tob", "place", "lat", "lon", "timezone_name"],
     "additionalProperties": False,
 }
 
+_AYANAMSA_PROPERTY = {
+    "type": "string",
+    "enum": [
+        "lahiri",
+        "chitrapaksha",
+        "raman",
+        "krishnamurti",
+        "kp",
+        "fagan_bradley",
+        "true_chitra",
+        "yukteshwar",
+    ],
+    "default": "lahiri",
+    "description": "Sidereal ayanamsa to calculate with. Default is Lahiri (Chitrapaksha).",
+}
+
+_KUNDALI_PROPERTY = {
+    "type": "object",
+    "description": "Kundali JSON exactly as returned by the calculate_kundali tool.",
+}
+
+_DASHA_PROPERTY = {
+    "type": ["object", "null"],
+    "description": "Optional dasha JSON from calculate_dasha; adds the dasha timeline section.",
+}
+
+_PANCHANG_PROPERTY = {
+    "type": ["object", "null"],
+    "description": "Optional panchang JSON from calculate_panchang; adds the panchang section.",
+}
+
+_GOCHAR_PROPERTY = {
+    "type": ["object", "null"],
+    "description": "Optional gochar JSON from calculate_gochar; adds the transit section.",
+}
+
+_LANGUAGE_PROPERTY = {
+    "type": "string",
+    "enum": ["hin", "hi", "en"],
+    "default": "hin",
+    "description": "Report language: 'hin' or 'hi' for Hindi (Devanagari), 'en' for English.",
+}
+
+_CLIENT_ID_PROPERTY = {
+    "type": "string",
+    "default": "anonymous",
+    "description": "Client identifier the report is filed under.",
+}
+
+_CLIENT_NAME_PROPERTY = {
+    "type": ["string", "null"],
+    "description": "Client/native name shown on the PDF cover page",
+}
+
+_OUTPUT_DIR_PROPERTY = {
+    "type": ["string", "null"],
+    "description": "Directory the report file is written into (default: data/reports).",
+}
+
+_REPORT_DB_PATH_PROPERTY = {
+    "type": ["string", "null"],
+    "description": (
+        "SQLite store to record the report in; when omitted the report is only written to disk."
+    ),
+}
+
+_PROFILE_DB_PATH_PROPERTY = {
+    "type": ["string", "null"],
+    "description": "Path of the SQLite client store (default: data/astro_mcp.sqlite3).",
+}
+
+# Every tool computes locally (Swiss Ephemeris + SQLite) — nothing calls out
+# to the network, hence openWorldHint=False across the board.
+_READ_ONLY = types.ToolAnnotations(readOnlyHint=True, openWorldHint=False)
+_WRITES_REPORT_FILES = types.ToolAnnotations(
+    readOnlyHint=False, destructiveHint=False, idempotentHint=False, openWorldHint=False
+)
+_UPSERTS_PROFILE = types.ToolAnnotations(
+    readOnlyHint=False, destructiveHint=True, idempotentHint=True, openWorldHint=False
+)
+
 TOOL_DEFINITIONS: list[types.Tool] = [
     types.Tool(
         name="parse_birth_details",
+        title="Parse Birth Details",
         description=(
             "Conservatively extract dob, tob, place, lat, lon, and timezone "
-            "from a short operator note. Missing fields are returned in the "
-            "'missing' list so the agent can ask the operator for clarification."
+            "from a short operator note. Returns the recognised fields plus a "
+            "'missing' list naming everything that could not be parsed, so the "
+            "agent can ask the operator for clarification instead of guessing."
         ),
         inputSchema={
             "type": "object",
-            "properties": {"text": {"type": "string"}},
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": (
+                        "Free-form note with birth details, "
+                        "e.g. 'born 26 Dec 2019, 9:15 am, Delhi'."
+                    ),
+                }
+            },
             "required": ["text"],
             "additionalProperties": False,
         },
+        annotations=_READ_ONLY,
     ),
     types.Tool(
         name="calculate_kundali",
-        description="Compute Lahiri/whole-sign kundali (lagna, rashi, nakshatra, planets, houses, dasha seed).",
+        title="Calculate Kundali (Birth Chart)",
+        description=(
+            "Compute a sidereal Vedic kundali (birth chart) from birth details: "
+            "lagna, Moon rashi, nakshatra with pada, planet positions with sign "
+            "and whole-sign house placements, navamsa (D9) and further divisional "
+            "charts, ashtakavarga tables, and the Vimshottari dasha seed. Returns "
+            "the kundali JSON that the dasha, gochar, compatibility, and report "
+            "tools consume."
+        ),
         inputSchema={
             "type": "object",
             "properties": {
-                "dob": {"type": "string"},
-                "tob": {"type": "string"},
-                "place": {"type": "string"},
-                "lat": {"type": "number"},
-                "lon": {"type": "number"},
-                "timezone_name": {"type": "string"},
-                "ayanamsa": {"type": "string", "default": "lahiri"},
+                **_BIRTH_PROPERTIES,
+                "ayanamsa": _AYANAMSA_PROPERTY,
             },
             "required": ["dob", "tob", "place", "lat", "lon", "timezone_name"],
             "additionalProperties": False,
         },
+        annotations=_READ_ONLY,
     ),
     types.Tool(
         name="calculate_dasha",
-        description="Compute Vimshottari mahadasha and antardasha timeline from a kundali JSON.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "kundali": {"type": "object"},
-                "on_date": {"type": "string", "description": "YYYY-MM-DD"},
-            },
-            "required": ["kundali"],
-            "additionalProperties": False,
-        },
-    ),
-    types.Tool(
-        name="calculate_gochar",
-        description="Compute gochar (planetary transits from natal Moon and Lagna) and the Saturn Sade Sati / Dhaiya cycle for a date.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "kundali": {"type": "object"},
-                "on_date": {"type": "string", "description": "YYYY-MM-DD (default: today)"},
-            },
-            "required": ["kundali"],
-            "additionalProperties": False,
-        },
-    ),
-    types.Tool(
-        name="calculate_compatibility",
+        title="Calculate Vimshottari Dasha",
         description=(
-            "Guna Milan (Ashtakoot, 36-point) marriage compatibility between two "
-            "kundali JSONs (kundali_a = bride, kundali_b = groom), including Nadi, "
-            "Bhakoot, and Manglik doshas."
+            "Compute the Vimshottari dasha timeline from a kundali: mahadasha "
+            "and antardasha periods with start/end dates, plus the running "
+            "mahadasha/antardasha/pratyantardasha for on_date. Returns dasha "
+            "JSON accepted by the report tools."
         ),
         inputSchema={
             "type": "object",
             "properties": {
-                "kundali_a": {"type": "object"},
-                "kundali_b": {"type": "object"},
+                "kundali": _KUNDALI_PROPERTY,
+                "on_date": {
+                    "type": "string",
+                    "description": (
+                        "YYYY-MM-DD date to report the running period for (default: today)."
+                    ),
+                },
+            },
+            "required": ["kundali"],
+            "additionalProperties": False,
+        },
+        annotations=_READ_ONLY,
+    ),
+    types.Tool(
+        name="calculate_gochar",
+        title="Calculate Gochar (Transits)",
+        description=(
+            "Compute gochar — planetary transits relative to the natal Moon and "
+            "Lagna — plus the Saturn Sade Sati / Dhaiya phase for a date. "
+            "Returns gochar JSON accepted by the report tools."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "kundali": _KUNDALI_PROPERTY,
+                "on_date": {
+                    "type": "string",
+                    "description": "YYYY-MM-DD date to compute transits for (default: today).",
+                },
+            },
+            "required": ["kundali"],
+            "additionalProperties": False,
+        },
+        annotations=_READ_ONLY,
+    ),
+    types.Tool(
+        name="calculate_compatibility",
+        title="Guna Milan Compatibility",
+        description=(
+            "Guna Milan (Ashtakoot, 36-point) marriage compatibility between two "
+            "kundali JSONs (kundali_a = bride, kundali_b = groom). Returns the "
+            "koota-wise point breakdown, the total out of 36, and Nadi, Bhakoot, "
+            "and Manglik dosha findings."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "kundali_a": {
+                    "type": "object",
+                    "description": "Bride's kundali JSON from calculate_kundali.",
+                },
+                "kundali_b": {
+                    "type": "object",
+                    "description": "Groom's kundali JSON from calculate_kundali.",
+                },
             },
             "required": ["kundali_a", "kundali_b"],
             "additionalProperties": False,
         },
+        annotations=_READ_ONLY,
     ),
     types.Tool(
         name="calculate_panchang",
-        description="Compute daily Panchang (vara, tithi, nakshatra, yoga, karana, sunrise/sunset) for a place and date.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "date": {"type": "string", "description": "YYYY-MM-DD"},
-                "place": {"type": "string"},
-                "lat": {"type": "number"},
-                "lon": {"type": "number"},
-                "timezone_name": {"type": "string"},
-                "ayanamsa": {"type": "string", "default": "lahiri"},
-            },
-            "required": ["date", "place", "lat", "lon", "timezone_name"],
-            "additionalProperties": False,
-        },
-    ),
-    types.Tool(
-        name="generate_report_json",
-        description="Build a structured astrology draft from kundali (+ optional dasha and panchang) and write JSON to disk.",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "kundali": {"type": "object"},
-                "dasha": {"type": ["object", "null"]},
-                "panchang": {"type": ["object", "null"]},
-                "gochar": {"type": ["object", "null"]},
-                "language": {"type": "string", "default": "hin"},
-                "client_id": {"type": "string", "default": "anonymous"},
-                "client_name": {
-                    "type": ["string", "null"],
-                    "description": "Client/native name shown on the PDF cover page",
-                },
-                "output_dir": {"type": ["string", "null"]},
-                "db_path": {"type": ["string", "null"]},
-            },
-            "required": ["kundali"],
-            "additionalProperties": False,
-        },
-    ),
-    types.Tool(
-        name="generate_pdf_report",
+        title="Calculate Panchang",
         description=(
-            "Render the astrology draft as a PDF with charts. Returns the path "
-            "and metadata. renderer='html' (default) uses Chromium via "
-            "Playwright for polished Devanagari shaping; renderer='reportlab' "
-            "keeps the legacy in-process backend for environments without "
-            "Chromium installed."
+            "Compute the daily Panchang for a place and date: vara, tithi, "
+            "nakshatra, yoga, karana, and sunrise/sunset times. Returns "
+            "panchang JSON accepted by the report tools."
         ),
         inputSchema={
             "type": "object",
             "properties": {
-                "kundali": {"type": "object"},
-                "dasha": {"type": ["object", "null"]},
-                "panchang": {"type": ["object", "null"]},
-                "language": {"type": "string", "default": "hin"},
-                "client_id": {"type": "string", "default": "anonymous"},
-                "output_dir": {"type": ["string", "null"]},
-                "db_path": {"type": ["string", "null"]},
+                "date": {"type": "string", "description": "YYYY-MM-DD date for the Panchang."},
+                "place": {
+                    "type": "string",
+                    "description": "Place name; a label for output, not geocoded.",
+                },
+                "lat": {"type": "number", "description": "Latitude in decimal degrees."},
+                "lon": {"type": "number", "description": "Longitude in decimal degrees."},
+                "timezone_name": {
+                    "type": "string",
+                    "description": "IANA timezone of the place, e.g. Asia/Kolkata.",
+                },
+                "ayanamsa": _AYANAMSA_PROPERTY,
+            },
+            "required": ["date", "place", "lat", "lon", "timezone_name"],
+            "additionalProperties": False,
+        },
+        annotations=_READ_ONLY,
+    ),
+    types.Tool(
+        name="generate_report_json",
+        title="Generate JSON Report",
+        description=(
+            "Assemble a structured astrology report draft (birth chart summary "
+            "plus optional dasha/panchang/gochar sections) and write it to disk "
+            "as JSON. Returns the report record: report_id, path of the written "
+            "file, client_id, and created_at."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "kundali": _KUNDALI_PROPERTY,
+                "dasha": _DASHA_PROPERTY,
+                "panchang": _PANCHANG_PROPERTY,
+                "gochar": _GOCHAR_PROPERTY,
+                "language": _LANGUAGE_PROPERTY,
+                "client_id": _CLIENT_ID_PROPERTY,
+                "client_name": _CLIENT_NAME_PROPERTY,
+                "output_dir": _OUTPUT_DIR_PROPERTY,
+                "db_path": _REPORT_DB_PATH_PROPERTY,
+            },
+            "required": ["kundali"],
+            "additionalProperties": False,
+        },
+        annotations=_WRITES_REPORT_FILES,
+    ),
+    types.Tool(
+        name="generate_pdf_report",
+        title="Generate PDF Report",
+        description=(
+            "Render a client-facing PDF report (cover, Lagna/Chandra/Navamsa "
+            "charts, planet table, dasha timeline) from a kundali plus optional "
+            "sections. renderer='html' (default) uses Chromium via Playwright "
+            "for polished Devanagari shaping; renderer='reportlab' is a "
+            "pure-Python backend for environments without Chromium (such as "
+            "the default Docker image). Returns the report record with the "
+            "path of the written PDF."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "kundali": _KUNDALI_PROPERTY,
+                "dasha": _DASHA_PROPERTY,
+                "panchang": _PANCHANG_PROPERTY,
+                "gochar": _GOCHAR_PROPERTY,
+                "language": _LANGUAGE_PROPERTY,
+                "client_id": _CLIENT_ID_PROPERTY,
+                "client_name": _CLIENT_NAME_PROPERTY,
+                "output_dir": _OUTPUT_DIR_PROPERTY,
+                "db_path": _REPORT_DB_PATH_PROPERTY,
                 "renderer": {
                     "type": "string",
                     "enum": ["html", "reportlab"],
                     "default": "html",
+                    "description": (
+                        "'html' renders via Chromium/Playwright (best Devanagari "
+                        "shaping); 'reportlab' needs no browser."
+                    ),
                 },
                 "template": {
                     "type": "string",
                     "enum": ["standard", "pandit_v1"],
                     "default": "standard",
+                    "description": (
+                        "'standard' report, or 'pandit_v1' — the premium Hindi "
+                        "janma-patrika layout (requires renderer='html')."
+                    ),
                 },
             },
             "required": ["kundali"],
             "additionalProperties": False,
         },
+        annotations=_WRITES_REPORT_FILES,
     ),
     types.Tool(
         name="save_client_profile",
-        description="Upsert a client profile (with optional birth details) into the SQLite store.",
+        title="Save Client Profile",
+        description=(
+            "Create or update (upsert by client_id) a client profile in the "
+            "SQLite store, optionally with birth details. Returns the saved "
+            "profile."
+        ),
         inputSchema={
             "type": "object",
             "properties": {
                 "profile": {
                     "type": "object",
                     "properties": {
-                        "client_id": {"type": "string"},
-                        "display_name": {"type": "string"},
+                        "client_id": {
+                            "type": "string",
+                            "description": "Stable unique identifier for the client.",
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "description": "Human-readable client name.",
+                        },
                         "birth": {
+                            "description": "Birth details to store with the profile.",
                             "anyOf": [
                                 _BIRTH_DETAILS_SCHEMA,
                                 {"type": "null"},
-                            ]
+                            ],
                         },
-                        "notes": {"type": "string"},
+                        "notes": {
+                            "type": "string",
+                            "description": "Free-form notes about the client.",
+                        },
                     },
                     "required": ["client_id", "display_name"],
                 },
-                "db_path": {"type": ["string", "null"]},
+                "db_path": _PROFILE_DB_PATH_PROPERTY,
             },
             "required": ["profile"],
             "additionalProperties": False,
         },
+        annotations=_UPSERTS_PROFILE,
     ),
     types.Tool(
         name="find_client_profile",
-        description="Look up a client by exact client_id, otherwise by case-insensitive display_name substring.",
+        title="Find Client Profile",
+        description=(
+            "Look up a client profile by exact client_id, otherwise by "
+            "case-insensitive display_name substring. Returns the profile, or "
+            "null when nothing matches."
+        ),
         inputSchema={
             "type": "object",
             "properties": {
-                "query": {"type": "string"},
-                "db_path": {"type": ["string", "null"]},
+                "query": {
+                    "type": "string",
+                    "description": "client_id, or part of the display name.",
+                },
+                "db_path": _PROFILE_DB_PATH_PROPERTY,
             },
             "required": ["query"],
             "additionalProperties": False,
         },
+        annotations=_READ_ONLY,
     ),
     types.Tool(
         name="list_client_reports",
-        description="List previously generated reports for a client, newest first.",
+        title="List Client Reports",
+        description=(
+            "List report records previously generated for a client, newest "
+            "first. Each record carries report_id, report_type, path, and "
+            "created_at."
+        ),
         inputSchema={
             "type": "object",
             "properties": {
-                "client_id": {"type": "string"},
-                "db_path": {"type": ["string", "null"]},
+                "client_id": {
+                    "type": "string",
+                    "description": "Client identifier whose reports to list.",
+                },
+                "db_path": _PROFILE_DB_PATH_PROPERTY,
             },
             "required": ["client_id"],
             "additionalProperties": False,
         },
+        annotations=_READ_ONLY,
     ),
 ]
 
