@@ -6,6 +6,18 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- The default `Dockerfile` is now slim — no Playwright/Chromium, so it builds
+  fast and small; call `generate_pdf_report` with `renderer="reportlab"` there.
+  The original full image (Chromium HTML renderer for polished Devanagari)
+  moved to `Dockerfile.full`: `docker build -f Dockerfile.full -t astro-skill .`
+
+### Fixed
+- `.python-version` pins uv to Python 3.11 so `uv sync` installs pyswisseph
+  from a prebuilt wheel — source builds fail in compiler-less environments
+  such as registry build infra (this unblocked the Glama build test).
+- The MCP server now reports version 1.0.0 (was 0.1.0), matching the package.
+
 ## [1.0.0] - 2026-07-02
 
 First public release.
