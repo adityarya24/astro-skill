@@ -115,8 +115,9 @@ python astro/scripts/pdf_report.py --kundali-json chart.json --dasha-json dasha.
 
 ## Deployment
 
-Run it as a Docker MCP server (the image bundles Python, dependencies, Chromium,
-the Devanagari font, and the ephemeris data) or straight from Python. See
+Run it as a Docker MCP server or straight from Python. The default `Dockerfile`
+builds a slim image (Python, dependencies, Devanagari font, ephemeris data);
+`Dockerfile.full` adds Chromium for the HTML PDF renderer. See
 [`docs/deploy.md`](docs/deploy.md) for build, run, smoke-test, and MCP-client
 wiring instructions.
 
