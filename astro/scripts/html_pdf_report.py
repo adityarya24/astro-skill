@@ -818,9 +818,9 @@ def _pandit_css() -> str:
     h1, h2, h3 { color: #b10000; letter-spacing: 0; margin: 0 0 10px; text-align: center; }
     h1 { font-size: 30pt; }
     h2 { font-size: 20pt; }
-    h3 { font-size: 13pt; page-break-after: avoid; break-after: avoid; }
-    p { margin: 7px 0; }
-    table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; }
+    h3 { font-size: 13pt; margin: 0 0 6px; page-break-after: avoid; break-after: avoid; }
+    p { margin: 6px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 6px 0 11px; }
     th { background: #b10000; color: #fff; padding: 7px 9px; text-align: left; }
     td { border-bottom: 1px solid #efcaca; padding: 6px 8px; vertical-align: top; }
     .pandit-page {
@@ -868,7 +868,7 @@ def _pandit_css() -> str:
     .mantra { color: #b10000; font-size: 20pt; font-weight: 700; }
     .notice-text { color: #287133; text-align: justify; font-size: 12pt; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
-    .panel { background: rgba(255,255,255,.74); border: 1px solid #efd4a7; padding: 12px; page-break-inside: avoid; break-inside: avoid; }
+    .panel { background: rgba(255,255,255,.74); border: 1px solid #efd4a7; padding: 9px 11px; margin: 8px 0; page-break-inside: avoid; break-inside: avoid; }
     .red { color: #b10000; font-weight: 700; }
     .green { color: #287133; }
     .big-chart .ni-chart { width: 100%; max-width: 540px; height: auto; margin: 0 auto; }
@@ -1005,13 +1005,13 @@ def _current_period_page(dasha: dict | None, language: str, client: str) -> str 
     return _page(pl("current_analysis", language), body, footer=pl("footer", language), client=client)
 
 
-def _dasha_phala_page(dasha: dict | None, language: str, client: str) -> str | None:
-    """Classical general reading for each Mahadasha lord in the timeline."""
+def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[str]:
+    """Classical reading for each Mahadasha lord, paginated so no page overflows."""
     if not dasha:
-        return None
+        return []
     timeline = dasha.get("timeline", [])
     if not timeline:
-        return None
+        return []
     dp = _phalit_ext().get("dasha_phala", {})
     dk = "hi" if _is_hi(language) else "en"
     panels = []
@@ -1026,9 +1026,20 @@ def _dasha_phala_page(dasha: dict | None, language: str, client: str) -> str | N
             f"<span class='panel-span'> ({_h(span)})</span></h3><p>{_h(text)}</p></div>"
         )
     if not panels:
-        return None
-    body = "".join(panels) + f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
-    return _page(pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client)
+        return []
+    # English readings are wordier, so fewer panels fit a framed page. Spread
+    # the panels evenly across the needed pages instead of leaving a lone one.
+    max_per = 5 if _is_hi(language) else 4
+    n_pages = max(1, -(-len(panels) // max_per))
+    per = -(-len(panels) // n_pages)
+    groups = [panels[i:i + per] for i in range(0, len(panels), per)]
+    pages = []
+    for gi, group in enumerate(groups):
+        body = "".join(group)
+        if gi == len(groups) - 1:
+            body += f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
+        pages.append(_page(pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client))
+    return pages
 
 def _personality_ext() -> dict:
     path = ROOT.parent / "data" / "personality_ext.json"
@@ -1038,18 +1049,17 @@ def _personality_ext() -> dict:
         return {}
 
 
-def _personality_page(kundali: dict, language: str, client: str) -> str | None:
-    """Consolidated personality profile from the chart's elemental and modal balance."""
+def _personality_pages(kundali: dict, language: str, client: str) -> list[str]:
+    """Personality profile split into framed pages (element / modality+essence)."""
     planets = kundali.get("planets") or {}
     if not planets:
-        return None
+        return []
     ext = _personality_ext()
     et = ext.get("element_traits", {})
     mt = ext.get("modality_traits", {})
     essence = ext.get("sign_essence", {})
     hi = _is_hi(language)
     lk = "hi" if hi else "en"
-    join_char = " व " if hi else " & "
 
     lagna_sign = kundali.get("lagna")
     signs = [info.get("sign") for info in planets.values()]
@@ -1064,7 +1074,7 @@ def _personality_page(kundali: dict, language: str, client: str) -> str | None:
             mod_count[SIGN_MODALITY[sign]] += 1
     total = sum(elem_count.values())
     if not total:
-        return None
+        return []
 
     def _disp(dmap, code):
         return dmap[code][0] if hi else dmap[code][1]
@@ -1089,10 +1099,12 @@ def _personality_page(kundali: dict, language: str, client: str) -> str | None:
 
     elem_order = ("Agni", "Prithvi", "Vayu", "Jal")
     mod_order = ("Chara", "Sthira", "Dvisvabhava")
-    body = f"<h3>{_h(pl('element_balance', language))}</h3>" + _pandit_kv(_rows(elem_count, elem_order, ELEMENT_DISP))
-    body += _leaders(elem_count, elem_order, ELEMENT_DISP, et, "dominant_element")
-    body += f"<h3>{_h(pl('modality_balance', language))}</h3>" + _pandit_kv(_rows(mod_count, mod_order, MODALITY_DISP))
-    body += _leaders(mod_count, mod_order, MODALITY_DISP, mt, "dominant_modality")
+
+    page1 = f"<h3>{_h(pl('element_balance', language))}</h3>" + _pandit_kv(_rows(elem_count, elem_order, ELEMENT_DISP))
+    page1 += _leaders(elem_count, elem_order, ELEMENT_DISP, et, "dominant_element")
+
+    page2 = f"<h3>{_h(pl('modality_balance', language))}</h3>" + _pandit_kv(_rows(mod_count, mod_order, MODALITY_DISP))
+    page2 += _leaders(mod_count, mod_order, MODALITY_DISP, mt, "dominant_modality")
 
     moon_sign = (planets.get("Chandra") or {}).get("sign")
     sun_sign = (planets.get("Surya") or {}).get("sign")
@@ -1106,15 +1118,17 @@ def _personality_page(kundali: dict, language: str, client: str) -> str | None:
             (pl("syn_sun", language), f"{display_sign(sun_sign, language)} - {se}"),
         ]
         sentence = pl("syn_template", language).format(le, me, se)
-        body += (
+        page2 += (
             f"<h3>{_h(pl('syn_title', language))}</h3>"
             + _pandit_kv(syn_rows)
             + f"<div class='panel'><p>{_h(sentence)}</p></div>"
         )
+    page2 += f"<p class='green'>{_h(pl('personality_note', language))}</p>"
 
-    body += f"<p class='green'>{_h(pl('personality_note', language))}</p>"
-    return _page(pl("personality", language), body, footer=pl("footer", language), client=client)
-
+    return [
+        _page(pl("personality", language), page1, footer=pl("footer", language), client=client),
+        _page(pl("personality", language), page2, footer=pl("footer", language), client=client),
+    ]
 
 def _pandit_interpretation_pages(
     kundali: dict,
@@ -1386,13 +1400,11 @@ def _pandit_report_html(
             _page(pl("antar_table", language), _antar_grid(timeline, language), footer=pl("footer", language), client=client),
         ]
 
-    interpretation_pages = [
-        p for p in (
-            _personality_page(kundali, language, client),
-            _current_period_page(dasha, language, client),
-            _dasha_phala_page(dasha, language, client),
-        ) if p
-    ]
+    interpretation_pages = list(_personality_pages(kundali, language, client))
+    _cp = _current_period_page(dasha, language, client)
+    if _cp:
+        interpretation_pages.append(_cp)
+    interpretation_pages += _dasha_phala_pages(dasha, language, client)
 
     pages = [
         cover,
