@@ -90,6 +90,13 @@ MODALITY_DISP = {
     "Dvisvabhava": ("द्विस्वभाव", "Dual"),
 }
 
+SIGN_LORD = {
+    "Mesha": "Mangal", "Vrishabha": "Shukra", "Mithuna": "Budh",
+    "Karka": "Chandra", "Simha": "Surya", "Kanya": "Budh",
+    "Tula": "Shukra", "Vrischika": "Mangal", "Dhanu": "Guru",
+    "Makara": "Shani", "Kumbha": "Shani", "Meena": "Guru",
+}
+
 HI_SIGNS = {
     "Mesha": "मेष",
     "Vrishabha": "वृषभ",
@@ -361,6 +368,11 @@ PANDIT_LABELS = {
     "syn_moon": ("आंतरिक मन (चंद्र राशि)", "Inner mind (Moon sign)"),
     "syn_sun": ("मूल प्रेरणा (सूर्य राशि)", "Core drive (Sun sign)"),
     "syn_template": ("बाहर से {0}; भीतर से {1}; और मूल में {2} प्रेरणा रहती है।", "Outwardly {0}; inwardly {1}; with a core drive that is {2}."),
+    "remedies": ("उपाय सुझाव", "Suggested Remedies"),
+    "lagnesh_label": ("लग्नेश", "Ascendant Lord"),
+    "dasha_lord_label": ("वर्तमान दशा-स्वामी", "Current Dasha Lord"),
+    "jaap_day": ("जाप का दिन", "Recite on"),
+    "remedies_note": ("ये सामान्य शास्त्रीय उपाय हैं; व्यक्तिगत एवं विस्तृत उपाय पंडित जी सम्पूर्ण कुंडली देखकर दें।", "These are general classical suggestions; personalised and detailed remedies should be given by the pandit after studying the full chart."),
     "footer": ("जन्म पत्रिका — गणना आधारित प्रारूप", "Janma Patrika — calculation-based format"),
 }
 
@@ -869,6 +881,8 @@ def _pandit_css() -> str:
     .notice-text { color: #287133; text-align: justify; font-size: 12pt; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
     .panel { background: rgba(255,255,255,.74); border: 1px solid #efd4a7; padding: 9px 11px; margin: 8px 0; page-break-inside: avoid; break-inside: avoid; }
+    .mantra-line { text-align: center; font-size: 14pt; font-weight: 700; color: #b10000; margin: 4px 0 2px; }
+    .mantra-iast { text-align: center; font-style: italic; color: #666; margin: 0 0 4px; }
     .red { color: #b10000; font-weight: 700; }
     .green { color: #287133; }
     .big-chart .ni-chart { width: 100%; max-width: 540px; height: auto; margin: 0 auto; }
@@ -1178,7 +1192,8 @@ def _pandit_interpretation_pages(
                 (pl("mukhya_yog", language), _safe_join(yogas, pl("no_yog", language))),
                 (pl("dosha_flag", language), _safe_join(doshas, pl("no_dosha", language))),
             ])
-            + f"<p class='green'>{_h(pl('yog_note', language))}</p>",
+            + f"<p class='green'>{_h(pl('yog_note', language))}</p>"
+            + _remedies_html(kundali, dasha, language),
             footer=pl("footer", language),
             client=client,
         ),
@@ -1251,6 +1266,52 @@ def _antar_grid(timeline: list[dict], language: str) -> str:
             f"<tbody>{antars}</tbody></table></div>"
         )
     return f'<div class="antar-grid">{"".join(cards)}</div>' 
+
+
+def _remedies_ext() -> dict:
+    path = ROOT.parent / "data" / "remedies_ext.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+
+
+def _remedies_html(kundali: dict, dasha: dict | None, language: str) -> str:
+    """Person-specific mantra suggestions for the Lagna lord and running Dasha lord."""
+    rem = _remedies_ext().get("planet_remedy", {})
+    if not rem:
+        return ""
+    hi = _is_hi(language)
+    day_k = "day_hi" if hi else "day_en"
+    ben_k = "benefit_hi" if hi else "benefit_en"
+    lagnesh = SIGN_LORD.get(kundali.get("lagna"))
+    dasha_lord = ((dasha or {}).get("current") or {}).get("mahadasha")
+    cards = []
+    seen = set()
+    for role_label, planet in (
+        (pl("lagnesh_label", language), lagnesh),
+        (pl("dasha_lord_label", language), dasha_lord),
+    ):
+        if not planet or planet in seen:
+            continue
+        r = rem.get(planet)
+        if not r:
+            continue
+        seen.add(planet)
+        cards.append(
+            f"<div class='panel'><h3>{_h(role_label)} — {_h(display_planet(planet, language))}</h3>"
+            f"<p class='mantra-line'>{_h(r.get('mantra_hi', ''))}</p>"
+            f"<p class='mantra-iast'>{_h(r.get('mantra_iast', ''))}</p>"
+            f"<p>{_h(pl('jaap_day', language))}: {_h(r.get(day_k, ''))} · {_h(r.get(ben_k, ''))}</p></div>"
+        )
+    if not cards:
+        return ""
+    return (
+        f"<h3>{_h(pl('remedies', language))}</h3>"
+        + "".join(cards)
+        + f"<p class='green'>{_h(pl('remedies_note', language))}</p>"
+    )
+
 
 
 def _pandit_report_html(

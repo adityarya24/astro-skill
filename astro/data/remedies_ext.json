@@ -1,0 +1,76 @@
+{
+  "planet_remedy": {
+    "Surya": {
+      "mantra_hi": "ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः",
+      "mantra_iast": "Om Hraam Hreem Hraum Sah Suryaya Namah",
+      "day_hi": "रविवार",
+      "day_en": "Sunday",
+      "benefit_hi": "जीवनशक्ति, आत्मविश्वास और मान-सम्मान में वृद्धि",
+      "benefit_en": "Supports vitality, confidence and recognition"
+    },
+    "Chandra": {
+      "mantra_hi": "ॐ श्रां श्रीं श्रौं सः चन्द्राय नमः",
+      "mantra_iast": "Om Shraam Shreem Shraum Sah Chandraya Namah",
+      "day_hi": "सोमवार",
+      "day_en": "Monday",
+      "benefit_hi": "मानसिक शांति, भावनात्मक संतुलन और स्थिरता",
+      "benefit_en": "Supports emotional balance, calmness and peace of mind"
+    },
+    "Mangal": {
+      "mantra_hi": "ॐ क्रां क्रीं क्रौं सः भौमाय नमः",
+      "mantra_iast": "Om Kraam Kreem Kraum Sah Bhaumaya Namah",
+      "day_hi": "मंगलवार",
+      "day_en": "Tuesday",
+      "benefit_hi": "साहस, शक्ति और बाधाओं पर विजय पाने का सामर्थ्य",
+      "benefit_en": "Supports courage, strength and the will to overcome obstacles"
+    },
+    "Budh": {
+      "mantra_hi": "ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः",
+      "mantra_iast": "Om Braam Breem Braum Sah Budhaya Namah",
+      "day_hi": "बुधवार",
+      "day_en": "Wednesday",
+      "benefit_hi": "स्पष्ट संवाद, बुद्धि और विवेकपूर्ण निर्णय क्षमता",
+      "benefit_en": "Supports clear communication, intellect and sound judgment"
+    },
+    "Guru": {
+      "mantra_hi": "ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः",
+      "mantra_iast": "Om Graam Greem Graum Sah Gurave Namah",
+      "day_hi": "गुरुवार",
+      "day_en": "Thursday",
+      "benefit_hi": "ज्ञान, उन्नति और सौभाग्य में वृद्धि",
+      "benefit_en": "Supports wisdom, growth and good fortune"
+    },
+    "Shukra": {
+      "mantra_hi": "ॐ द्रां द्रीं द्रौं सः शुक्राय नमः",
+      "mantra_iast": "Om Draam Dreem Draum Sah Shukraya Namah",
+      "day_hi": "शुक्रवार",
+      "day_en": "Friday",
+      "benefit_hi": "सामंजस्य, सौंदर्य और संबंधों में सृजनात्मक संतोष",
+      "benefit_en": "Supports harmony, grace and creative fulfillment in relationships"
+    },
+    "Shani": {
+      "mantra_hi": "ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः",
+      "mantra_iast": "Om Praam Preem Praum Sah Shanaishcharaya Namah",
+      "day_hi": "शनिवार",
+      "day_en": "Saturday",
+      "benefit_hi": "अनुशासन, धैर्य और स्थिर प्रगति",
+      "benefit_en": "Supports discipline, patience and steady progress"
+    },
+    "Rahu": {
+      "mantra_hi": "ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः",
+      "mantra_iast": "Om Bhraam Bhreem Bhraum Sah Rahave Namah",
+      "day_hi": "शनिवार",
+      "day_en": "Saturday",
+      "benefit_hi": "उद्देश्य में स्पष्टता और भ्रम से सुरक्षा",
+      "benefit_en": "Supports clarity of purpose and protection from confusion"
+    },
+    "Ketu": {
+      "mantra_hi": "ॐ स्रां स्रीं स्रौं सः केतवे नमः",
+      "mantra_iast": "Om Sraam Sreem Sraum Sah Ketave Namah",
+      "day_hi": "मंगलवार",
+      "day_en": "Tuesday",
+      "benefit_hi": "आध्यात्मिक अंतर्दृष्टि और आंतरिक वैराग्य",
+      "benefit_en": "Supports spiritual insight and inner detachment"
+    }
+  }
+}
