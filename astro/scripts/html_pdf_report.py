@@ -55,6 +55,18 @@ HI_PLANETS = {
     "Ketu": "केतु",
 }
 
+EN_PLANETS = {
+    "Surya": "Sun",
+    "Chandra": "Moon",
+    "Mangal": "Mars",
+    "Budh": "Mercury",
+    "Guru": "Jupiter",
+    "Shukra": "Venus",
+    "Shani": "Saturn",
+    "Rahu": "Rahu",
+    "Ketu": "Ketu",
+}
+
 HI_SIGNS = {
     "Mesha": "मेष",
     "Vrishabha": "वृषभ",
@@ -216,6 +228,112 @@ HI_LABELS = {
     "safety": "सुरक्षा नोट्स",
 }
 
+PANDIT_LABELS = {
+    "janma_patrika": ("जन्म पत्रिका", "Janma Patrika"),
+    "badge": ("गणना-आधारित प्रारूप", "Calculation-based format"),
+    "notice_title": ("सूचना", "Notice"),
+    "notice_1": (
+        "ज्योतिष एक पारंपरिक मार्गदर्शन प्रणाली है। यह रिपोर्ट जन्म विवरण, ग्रह गणना, पंचांग और दशा के आधार पर तैयार की गई है। इसे अंतिम निर्णय नहीं माना जाए। विवाह, स्वास्थ्य, निवेश, कानूनी या जीवन बदलने वाले निर्णयों में पंडित जी और संबंधित विशेषज्ञ की सलाह आवश्यक है।",
+        "Astrology is a traditional system of guidance. This report is prepared from birth details, planetary calculations, panchang and dasha. It should not be treated as a final verdict. For decisions about marriage, health, investment, legal or life-changing matters, the guidance of a pandit and the relevant expert is essential.",
+    ),
+    "notice_2": (
+        "यह प्रारूप पंडित जी की समीक्षा, क्लाइंट बातचीत और तेज रिपोर्ट तैयारी के लिए बनाया गया है।",
+        "This format is designed for the astrologer's review, client discussion, and fast report preparation.",
+    ),
+    "birth_details": ("जन्म विवरण", "Birth Details"),
+    "name": ("नाम", "Name"),
+    "birth_place": ("जन्म स्थान", "Birth Place"),
+    "birth_dt": ("जन्म तिथि और समय", "Date & Time of Birth"),
+    "moon_house": ("चंद्र भाव", "Moon House"),
+    "dosha_flag": ("दोष संकेत", "Dosha Indications"),
+    "no_dosha": ("कोई प्रमुख दोष फ्लैग नहीं", "No major dosha flagged"),
+    "avakahada": ("अवकहड़ा चक्र", "Avakahada Chakra"),
+    "ava_lagna": ("लग्न — लग्नाधिपति", "Lagna — Lord"),
+    "ava_rashi": ("राशि — स्वामी", "Rashi — Lord"),
+    "ava_nak": ("नक्षत्र — चरण", "Nakshatra — Pada"),
+    "ava_naklord": ("नक्षत्र स्वामी", "Nakshatra Lord"),
+    "gan": ("गण", "Gana"),
+    "yoni": ("योनि", "Yoni"),
+    "nadi": ("नाड़ी", "Nadi"),
+    "varna": ("वर्ण", "Varna"),
+    "vashya": ("वश्य", "Vashya"),
+    "tatva": ("तत्व", "Tatva (Element)"),
+    "paya": ("पाया (राशि)", "Paya (by Rashi)"),
+    "namakshar": ("जन्म नामाक्षर", "Name Syllable"),
+    "ishta": ("इष्ट (घटी)", "Ishta Kaal (Ghati)"),
+    "dinamaan": ("दिनमान (घंटे)", "Day Length (hrs)"),
+    "janma_panchang": ("जन्म पंचांग", "Birth Panchang"),
+    "date": ("दिनांक", "Date"),
+    "place": ("स्थान", "Place"),
+    "vara": ("वार", "Weekday"),
+    "tithi": ("तिथि", "Tithi"),
+    "nakshatra": ("नक्षत्र", "Nakshatra"),
+    "yoga": ("योग", "Yoga"),
+    "karana": ("करण", "Karana"),
+    "sunrise": ("सूर्योदय", "Sunrise"),
+    "sunset": ("सूर्यास्त", "Sunset"),
+    "lagna_kundali": ("लग्न कुंडली", "Lagna Kundali"),
+    "chandra_kundali": ("चंद्र कुंडली", "Chandra Kundali"),
+    "chandra_note": (
+        "चंद्र कुंडली को मन, अनुभव और भावनात्मक प्रतिक्रिया के संकेत के रूप में पढ़ें।",
+        "Read the Chandra Kundali as an indicator of the mind, experiences and emotional response.",
+    ),
+    "navamsa": ("नवांश कुंडली (D9)", "Navamsa Kundali (D9)"),
+    "graha_sthiti": ("ग्रह स्थिति", "Planet Positions"),
+    "dasha_table": ("दशा तालिका", "Dasha Timeline"),
+    "paddhati": ("पद्धति", "System"),
+    "dasha_beej": ("दशा बीज", "Dasha Seed"),
+    "vartaman_dasha": ("वर्तमान दशा", "Current Period"),
+    "maha_end": ("महादशा समाप्ति", "Mahadasha ends"),
+    "antar_end": ("अंतर्दशा समाप्ति", "Antardasha ends"),
+    "praty_end": ("प्रत्यंतर्दशा समाप्ति", "Pratyantardasha ends"),
+    "mahadasha": ("महादशा", "Mahadasha"),
+    "start": ("आरंभ", "Start"),
+    "end": ("समाप्ति", "End"),
+    "duration": ("अवधि", "Duration"),
+    "antar_table": ("अंतर्दशा तालिका", "Antardasha Timeline"),
+    "antardasha": ("अंतर्दशा", "Antardasha"),
+    "lrn_phal": ("लग्न-राशि-नक्षत्र फल", "Lagna–Rashi–Nakshatra Reading"),
+    "lagna_phal": ("लग्न फल", "Lagna Reading"),
+    "rashi_phal": ("राशि फल", "Rashi Reading"),
+    "nak_phal": ("नक्षत्र फल", "Nakshatra Reading"),
+    "swabhav_note": (
+        "यह स्वभाव-चित्रण शास्त्रीय सामान्य लक्षणों पर आधारित है; विस्तृत फलादेश पंडित जी पूरी कुंडली देखकर दें।",
+        "This character sketch is based on classical general traits; a detailed reading should be given by the pandit after studying the full chart.",
+    ),
+    "yog_dosh": ("योग और दोष सार", "Yoga & Dosha Summary"),
+    "mukhya_yog": ("मुख्य योग", "Key Yogas"),
+    "no_yog": ("विशेष योग सूची उपलब्ध नहीं", "No special yoga listed"),
+    "yog_note": (
+        "योग-दोष का निष्कर्ष अकेले एक नियम से नहीं, पूरी कुंडली मिलाकर दिया जाए।",
+        "Conclusions on yoga and dosha should be drawn from the whole chart, not a single rule.",
+    ),
+    "current_analysis": ("वर्तमान दशा विश्लेषण", "Current Period Analysis"),
+    "running_period": ("वर्तमान अवधि", "Running Period"),
+    "period_theme": ("अवधि का स्वरूप", "Themes of this Period"),
+    "mindset": ("मानसिक स्थिति एवं दृष्टिकोण", "Mindset & Outlook"),
+    "challenges": ("संभावित चुनौतियाँ एवं सीख", "Likely Challenges & Lessons"),
+    "current_note": (
+        "यह विश्लेषण वर्तमान महादशा-अंतर्दशा के शास्त्रीय सामान्य फल पर आधारित है; व्यक्तिगत निष्कर्ष पूरी कुंडली देखकर पंडित जी दें।",
+        "This analysis is based on the classical general effects of the running Mahadasha–Antardasha; personal conclusions should be given by the pandit after studying the full chart.",
+    ),
+    "dasha_phal_title": ("महादशा फल", "Mahadasha Readings"),
+    "dasha_phal_note": (
+        "प्रत्येक महादशा का यह सामान्य फल शास्त्रीय ग्रह-कारकत्व पर आधारित है; ग्रह की भाव-स्थिति के अनुसार फल में अंतर आता है।",
+        "Each Mahadasha reading below reflects classical planetary significations; results vary with the planet's house placement in the chart.",
+    ),
+    "years": ("वर्ष", "yr"),
+    "months": ("माह", "mo"),
+    "days": ("दिन", "d"),
+    "footer": ("जन्म पत्रिका — गणना आधारित प्रारूप", "Janma Patrika — calculation-based format"),
+}
+
+
+def pl(key: str, language: str) -> str:
+    hi, en = PANDIT_LABELS[key]
+    return hi if _is_hi(language) else en
+
+
 PALETTE = [
     "#7A9E7E",
     "#D9A441",
@@ -238,7 +356,7 @@ def label(key: str, language: str) -> str:
 
 
 def display_planet(name: str, language: str) -> str:
-    return HI_PLANETS.get(name, name) if _is_hi(language) else name
+    return HI_PLANETS.get(name, name) if _is_hi(language) else EN_PLANETS.get(name, name)
 
 
 def display_sign(name: str, language: str) -> str:
@@ -778,6 +896,101 @@ def _phalit_data() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _phalit_ext() -> dict:
+    path = ROOT.parent / "data" / "phalit_ext.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+
+
+def _current_period_page(dasha: dict | None, language: str, client: str) -> str | None:
+    """Narrative reading of the running Mahadasha-Antardasha: themes, mindset,
+    and likely challenges, mapped deterministically from classical significations."""
+    if not dasha:
+        return None
+    current = dasha.get("current") or {}
+    maha = current.get("mahadasha")
+    if not maha:
+        return None
+    antar = current.get("antardasha")
+    ext = _phalit_ext()
+    dp = ext.get("dasha_phala", {})
+    gn = ext.get("graha_nature", {})
+    hi = _is_hi(language)
+    dk = "hi" if hi else "en"
+    mind_k = "mindset_hi" if hi else "mindset_en"
+    chal_k = "challenges_hi" if hi else "challenges_en"
+    stop = "।" if hi else "."
+
+    maha_name = display_planet(maha, language)
+    antar_name = display_planet(antar, language) if antar else "-"
+    period_line = (
+        f"{maha_name} {pl('mahadasha', language)} — {antar_name} {pl('antardasha', language)}"
+    )
+    body = _pandit_kv([
+        (pl("running_period", language), period_line),
+        (pl("maha_end", language), current.get("mahadasha_end") or "-"),
+        (pl("antar_end", language), current.get("antardasha_end") or "-"),
+    ])
+
+    theme = dp.get(maha, {}).get(dk, "")
+    mind = gn.get(maha, {}).get(mind_k, "")
+    chal = gn.get(maha, {}).get(chal_k, "")
+    antar_theme = dp.get(antar, {}).get(dk, "") if antar else ""
+
+    panels = []
+    if theme:
+        panels.append(
+            f"<div class='panel'><h3>{_h(pl('period_theme', language))} — {_h(maha_name)}</h3>"
+            f"<p>{_h(theme)}</p></div>"
+        )
+    if mind:
+        panels.append(
+            f"<div class='panel'><h3>{_h(pl('mindset', language))}</h3><p>{_h(mind)}</p></div>"
+        )
+    if chal:
+        panels.append(
+            f"<div class='panel'><h3>{_h(pl('challenges', language))}</h3><p>{_h(chal)}</p></div>"
+        )
+    if antar_theme and antar and antar != maha:
+        first = antar_theme.split(stop)[0].strip()
+        panels.append(
+            f"<div class='panel'><h3>{_h(pl('antardasha', language))} — {_h(antar_name)}</h3>"
+            f"<p>{_h(first)}{stop}</p></div>"
+        )
+
+    body += "".join(panels)
+    body += f"<p class='green'>{_h(pl('current_note', language))}</p>"
+    return _page(pl("current_analysis", language), body, footer=pl("footer", language), client=client)
+
+
+def _dasha_phala_page(dasha: dict | None, language: str, client: str) -> str | None:
+    """Classical general reading for each Mahadasha lord in the timeline."""
+    if not dasha:
+        return None
+    timeline = dasha.get("timeline", [])
+    if not timeline:
+        return None
+    dp = _phalit_ext().get("dasha_phala", {})
+    dk = "hi" if _is_hi(language) else "en"
+    panels = []
+    for row in timeline[:9]:
+        lord = row.get("mahadasha")
+        text = dp.get(lord, {}).get(dk, "")
+        if not text:
+            continue
+        span = f"{row.get('start', '')} — {row.get('end', '')}"
+        panels.append(
+            f"<div class='panel'><h3>{_h(display_planet(lord, language))} {_h(pl('mahadasha', language))}"
+            f"<span class='panel-span'> ({_h(span)})</span></h3><p>{_h(text)}</p></div>"
+        )
+    if not panels:
+        return None
+    body = "".join(panels) + f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
+    return _page(pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client)
+
+
 def _pandit_interpretation_pages(
     kundali: dict,
     dasha: dict | None,
@@ -790,33 +1003,44 @@ def _pandit_interpretation_pages(
     # The detector can flag the same yoga for several house-lord combinations.
     yogas = list(dict.fromkeys(birth.get("yogas") or []))
     phalit = _phalit_data()
+    ext = _phalit_ext()
+    hi = _is_hi(language)
     nak_name = kundali.get("nakshatra", "")
 
+    def _phal_text(category: str, key: str) -> str:
+        if hi:
+            return phalit.get(category, {}).get(key, "")
+        return ext.get(f"{category}_en", {}).get(key, "")
+
     phalit_panels = []
-    for heading, key, text in [
-        (f"लग्न फल — {display_sign(birth['lagna'], language)}", birth["lagna"], phalit["lagna"].get(birth["lagna"], "")),
-        (f"राशि फल — {display_sign(birth['rashi'], language)}", birth["rashi"], phalit["rashi"].get(birth["rashi"], "")),
-        (f"नक्षत्र फल — {display_nakshatra(birth['nakshatra'], language)}", nak_name, phalit["nakshatra"].get(nak_name, "")),
+    for label_key, disp, category, key in [
+        ("lagna_phal", display_sign(birth["lagna"], language), "lagna", birth["lagna"]),
+        ("rashi_phal", display_sign(birth["rashi"], language), "rashi", birth["rashi"]),
+        ("nak_phal", display_nakshatra(birth["nakshatra"], language), "nakshatra", nak_name),
     ]:
+        text = _phal_text(category, key)
         if text:
+            heading = f"{pl(label_key, language)} — {disp}"
             phalit_panels.append(
                 f"<div class='panel'><h3>{_h(heading)}</h3><p>{_h(text)}</p></div>"
             )
 
     pages = [
         _page(
-            "लग्न-राशि-नक्षत्र फल",
+            pl("lrn_phal", language),
             "".join(phalit_panels)
-            + "<p class='green'>यह स्वभाव-चित्रण शास्त्रीय सामान्य लक्षणों पर आधारित है; विस्तृत फलादेश पंडित जी पूरी कुंडली देखकर दें।</p>",
+            + f"<p class='green'>{_h(pl('swabhav_note', language))}</p>",
+            footer=pl("footer", language),
             client=client,
         ),
         _page(
-            "योग और दोष सार",
+            pl("yog_dosh", language),
             _pandit_kv([
-                ("मुख्य योग", _safe_join(yogas, "विशेष योग सूची उपलब्ध नहीं")),
-                ("दोष संकेत", _safe_join(doshas, "कोई प्रमुख दोष फ्लैग नहीं")),
+                (pl("mukhya_yog", language), _safe_join(yogas, pl("no_yog", language))),
+                (pl("dosha_flag", language), _safe_join(doshas, pl("no_dosha", language))),
             ])
-            + "<p class='green'>योग-दोष का निष्कर्ष अकेले एक नियम से नहीं, पूरी कुंडली मिलाकर दिया जाए।</p>",
+            + f"<p class='green'>{_h(pl('yog_note', language))}</p>",
+            footer=pl("footer", language),
             client=client,
         ),
     ]
@@ -837,8 +1061,8 @@ def _chandra_houses(kundali: dict) -> dict:
     return houses
 
 
-def _format_years_hi(years_decimal: object) -> str:
-    """Render a decimal year span as e.g. '16 वर्ष 4 माह 7 दिन'."""
+def _format_years_hi(years_decimal: object, language: str = "hin") -> str:
+    """Render a decimal year span, e.g. '16 yr 4 mo 7 d' / Hindi equivalent."""
     if not isinstance(years_decimal, (int, float)):
         return str(years_decimal)
     from kundali_calculator import duration_to_ymd
@@ -846,12 +1070,12 @@ def _format_years_hi(years_decimal: object) -> str:
     ymd = duration_to_ymd(float(years_decimal))
     parts = []
     if ymd["years"]:
-        parts.append(f"{ymd['years']} वर्ष")
+        parts.append(f"{ymd['years']} {pl('years', language)}")
     if ymd["months"]:
-        parts.append(f"{ymd['months']} माह")
+        parts.append(f"{ymd['months']} {pl('months', language)}")
     if ymd["days"]:
-        parts.append(f"{ymd['days']} दिन")
-    return " ".join(parts) or "0 दिन"
+        parts.append(f"{ymd['days']} {pl('days', language)}")
+    return " ".join(parts) or f"0 {pl('days', language)}"
 
 
 def _birth_panchang(kundali: dict) -> dict | None:
@@ -882,12 +1106,12 @@ def _antar_grid(timeline: list[dict], language: str) -> str:
         )
         cards.append(
             '<div class="antar-card">'
-            f"<h4>{_h(display_planet(row['mahadasha'], language))} महादशा"
-            f"<span> ({_h(row.get('start', ''))} — {_h(row.get('end', ''))})</span></h4>"
-            f"<table><thead><tr><th>अंतर्दशा</th><th>समाप्ति</th></tr></thead>"
+            f"<h4>{_h(display_planet(row['mahadasha'], language))} {_h(pl('mahadasha', language))}"
+            f"<span> ({_h(row.get('start', ''))} - {_h(row.get('end', ''))})</span></h4>"
+            f"<table><thead><tr><th>{_h(pl('antardasha', language))}</th><th>{_h(pl('end', language))}</th></tr></thead>"
             f"<tbody>{antars}</tbody></table></div>"
         )
-    return f'<div class="antar-grid">{"".join(cards)}</div>'
+    return f'<div class="antar-grid">{"".join(cards)}</div>' 
 
 
 def _pandit_report_html(
@@ -926,77 +1150,81 @@ def _pandit_report_html(
         '<div class="cover-center">'
         f"{_cover_art_html()}"
         '<div class="mantra">ॐ गं गणपतये नमः</div>'
-        "<h1>जन्म पत्रिका</h1>"
-        '<div class="badge-row"><span class="badge">गणना-आधारित प्रारूप</span></div>'
+        f"<h1>{_h(pl('janma_patrika', language))}</h1>"
+        f'<div class="badge-row"><span class="badge">{_h(pl("badge", language))}</span></div>'
         f'<div class="name-plate"><strong>{_h(client)}</strong><br/>{_h(inp.get("dob", ""))} | {_h(inp.get("tob", ""))}<br/>{_h(inp.get("place", ""))}</div>'
         "</div>",
+        footer=pl("footer", language),
         client=client,
         show_client=False,
     )
     notice = _page(
-        "सूचना",
-        "<p class='notice-text'>ज्योतिष एक पारंपरिक मार्गदर्शन प्रणाली है। यह रिपोर्ट जन्म विवरण, ग्रह गणना, पंचांग और दशा के आधार पर तैयार की गई है। इसे अंतिम निर्णय नहीं माना जाए। विवाह, स्वास्थ्य, निवेश, कानूनी या जीवन बदलने वाले निर्णयों में पंडित जी और संबंधित विशेषज्ञ की सलाह आवश्यक है।</p>"
-        "<p class='notice-text'>यह प्रारूप पंडित जी की समीक्षा, क्लाइंट बातचीत और तेज रिपोर्ट तैयारी के लिए बनाया गया है।</p>",
+        pl("notice_title", language),
+        f"<p class='notice-text'>{_h(pl('notice_1', language))}</p>"
+        f"<p class='notice-text'>{_h(pl('notice_2', language))}</p>",
+        footer=pl("footer", language),
         client=client,
     )
     ava_rows = [
-        ("लग्न — लग्नाधिपति", f'{display_sign(birth["lagna"], language)} — {ava["lagna_lord_hi"]}'),
-        ("राशि — स्वामी", f'{display_sign(birth["rashi"], language)} — {ava["rashi_lord_hi"]}'),
-        ("नक्षत्र — चरण", display_nakshatra(birth["nakshatra"], language)),
-        ("नक्षत्र स्वामी", ava["nakshatra_lord_hi"]),
-        ("गण", ava["gan"]),
-        ("योनि", ava["yoni"]),
-        ("नाड़ी", ava["nadi"]),
-        ("वर्ण", ava["varna"]),
-        ("वश्य", ava["vashya"]),
-        ("तत्व", ava["tatva"]),
-        ("पाया (राशि)", ava["paya"]),
-        ("जन्म नामाक्षर", ava["namakshar"]),
+        (pl("ava_lagna", language), f'{display_sign(birth["lagna"], language)} - {ava["lagna_lord_hi"] if _is_hi(language) else ava["lagna_lord"]}'),
+        (pl("ava_rashi", language), f'{display_sign(birth["rashi"], language)} - {ava["rashi_lord_hi"] if _is_hi(language) else ava["rashi_lord"]}'),
+        (pl("ava_nak", language), display_nakshatra(birth["nakshatra"], language)),
+        (pl("ava_naklord", language), ava["nakshatra_lord_hi"] if _is_hi(language) else ava["nakshatra_lord"]),
+        (pl("gan", language), ava["gan"]),
+        (pl("yoni", language), ava["yoni"]),
+        (pl("nadi", language), ava["nadi"]),
+        (pl("varna", language), ava["varna"]),
+        (pl("vashya", language), ava["vashya"]),
+        (pl("tatva", language), ava["tatva"]),
+        (pl("paya", language), ava["paya"]),
+        (pl("namakshar", language), ava["namakshar"]),
     ]
     if ava.get("ishta_ghati"):
-        ava_rows.append(("इष्ट (घटी)", ava["ishta_ghati"]))
+        ava_rows.append((pl("ishta", language), ava["ishta_ghati"]))
     if ava.get("dinamaan"):
-        ava_rows.append(("दिनमान (घंटे)", ava["dinamaan"]))
+        ava_rows.append((pl("dinamaan", language), ava["dinamaan"]))
     birth_page = _page(
-        "जन्म विवरण",
+        pl("birth_details", language),
         _pandit_kv([
-            ("नाम", client),
-            ("जन्म स्थान", birth["birth_place"]),
-            ("जन्म तिथि और समय", f'{inp.get("dob", "")} | {inp.get("tob", "")}'),
-            ("चंद्र भाव", birth["moon_house"]),
-            ("दोष संकेत", _safe_join(birth["doshas"], "कोई प्रमुख दोष फ्लैग नहीं")),
+            (pl("name", language), client),
+            (pl("birth_place", language), birth["birth_place"]),
+            (pl("birth_dt", language), f'{inp.get("dob", "")} | {inp.get("tob", "")}'),
+            (pl("moon_house", language), birth["moon_house"]),
+            (pl("dosha_flag", language), _safe_join(birth["doshas"], pl("no_dosha", language))),
         ])
-        + "<h3>अवकहड़ा चक्र</h3>"
+        + f"<h3>{_h(pl('avakahada', language))}</h3>"
         + _pandit_kv(ava_rows),
+        footer=pl("footer", language),
         client=client,
     )
     panchang_page = _page(
-        "जन्म पंचांग",
+        pl("janma_panchang", language),
         _pandit_kv([
-            ("दिनांक", daily["date"] if daily else "-"),
-            ("स्थान", daily["place"] if daily else "-"),
-            ("वार", display_term(daily["vara"], language) if daily else "-"),
-            ("तिथि", display_term(daily["tithi"], language) if daily else "-"),
-            ("नक्षत्र", display_nakshatra(daily["nakshatra"], language) if daily else "-"),
-            ("योग", display_term(daily["yoga"], language) if daily else "-"),
-            ("करण", display_term(daily["karana"], language) if daily else "-"),
-            ("सूर्योदय", format_time(daily["sunrise"]) if daily else "-"),
-            ("सूर्यास्त", format_time(daily["sunset"]) if daily else "-"),
+            (pl("date", language), daily["date"] if daily else "-"),
+            (pl("place", language), daily["place"] if daily else "-"),
+            (pl("vara", language), display_term(daily["vara"], language) if daily else "-"),
+            (pl("tithi", language), display_term(daily["tithi"], language) if daily else "-"),
+            (pl("nakshatra", language), display_nakshatra(daily["nakshatra"], language) if daily else "-"),
+            (pl("yoga", language), display_term(daily["yoga"], language) if daily else "-"),
+            (pl("karana", language), display_term(daily["karana"], language) if daily else "-"),
+            (pl("sunrise", language), format_time(daily["sunrise"]) if daily else "-"),
+            (pl("sunset", language), format_time(daily["sunset"]) if daily else "-"),
         ]),
+        footer=pl("footer", language),
         client=client,
     )
     chart_pages = [
-        _page("लग्न कुंडली", f'<div class="big-chart">{_ni_chart_svg(kundali, language)}</div>', client=client),
-        _page("चंद्र कुंडली", f'<div class="big-chart">{_ni_chart_svg({"houses": _chandra_houses(kundali)}, language)}</div><p class="green">चंद्र कुंडली को मन, अनुभव और भावनात्मक प्रतिक्रिया के संकेत के रूप में पढ़ें।</p>', client=client),
+        _page(pl("lagna_kundali", language), f'<div class="big-chart">{_ni_chart_svg(kundali, language)}</div>', footer=pl("footer", language), client=client),
+        _page(pl("chandra_kundali", language), f'<div class="big-chart">{_ni_chart_svg({"houses": _chandra_houses(kundali)}, language)}</div><p class="green">{_h(pl("chandra_note", language))}</p>', footer=pl("footer", language), client=client),
     ]
     if kundali.get("navamsa"):
         chart_pages.append(
-            _page("नवांश कुंडली (D9)", f'<div class="big-chart">{_ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language)}</div>', client=client)
+            _page(pl("navamsa", language), f'<div class="big-chart">{_ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language)}</div>', footer=pl("footer", language), client=client)
         )
 
     planet_rows = _planet_rows(kundali, language)
     planet_pages = [
-        _page("ग्रह स्थिति", _table([label("planet", language), label("sign", language), label("house", language), label("nakshatra", language), label("degree", language)], planet_rows), client=client),
+        _page(pl("graha_sthiti", language), _table([label("planet", language), label("sign", language), label("house", language), label("nakshatra", language), label("degree", language)], planet_rows), footer=pl("footer", language), client=client),
     ]
     dasha_pages = []
     if current:
@@ -1006,21 +1234,28 @@ def _pandit_report_html(
                 display_planet(row["mahadasha"], language),
                 row.get("start", "-"),
                 row.get("end", "-"),
-                _format_years_hi(row.get("duration_years", "-")),
+                _format_years_hi(row.get("duration_years", "-"), language),
             ]
             for row in timeline[:9]
         ]
         dasha_pages = [
-            _page("दशा तालिका", _dasha_timeline_html(dasha or {}, language) + _pandit_kv([
-                ("पद्धति", current["system"]),
-                ("दशा बीज", display_dasha_value(current["seed"], language)),
-                ("वर्तमान दशा", display_dasha_value(current["period"] or "-", language)),
-                ("महादशा समाप्ति", current["mahadasha_end"] or "-"),
-                ("अंतर्दशा समाप्ति", current["antardasha_end"] or "-"),
-                ("प्रत्यंतर्दशा समाप्ति", current.get("pratyantardasha_end") or "-"),
-            ]) + _table(["महादशा", "आरंभ", "समाप्ति", "अवधि"], maha_rows), client=client),
-            _page("अंतर्दशा तालिका", _antar_grid(timeline, language), client=client),
+            _page(pl("dasha_table", language), _dasha_timeline_html(dasha or {}, language) + _pandit_kv([
+                (pl("paddhati", language), current["system"]),
+                (pl("dasha_beej", language), display_dasha_value(current["seed"], language)),
+                (pl("vartaman_dasha", language), display_dasha_value(current["period"] or "-", language)),
+                (pl("maha_end", language), current["mahadasha_end"] or "-"),
+                (pl("antar_end", language), current["antardasha_end"] or "-"),
+                (pl("praty_end", language), current.get("pratyantardasha_end") or "-"),
+            ]) + _table([pl("mahadasha", language), pl("start", language), pl("end", language), pl("duration", language)], maha_rows), footer=pl("footer", language), client=client),
+            _page(pl("antar_table", language), _antar_grid(timeline, language), footer=pl("footer", language), client=client),
         ]
+
+    interpretation_pages = [
+        p for p in (
+            _current_period_page(dasha, language, client),
+            _dasha_phala_page(dasha, language, client),
+        ) if p
+    ]
 
     pages = [
         cover,
@@ -1030,13 +1265,14 @@ def _pandit_report_html(
         *chart_pages,
         *planet_pages,
         *dasha_pages,
+        *interpretation_pages,
         *_pandit_interpretation_pages(kundali, dasha, gochar, language, client),
     ]
     return (
         "<!DOCTYPE html>"
         f'<html lang="{"hi" if _is_hi(language) else "en"}">'
         "<head><meta charset='utf-8'/>"
-        f"<title>{_h(client)} - जन्म पत्रिका</title><style>{_pandit_css()}</style></head>"
+        f"<title>{_h(client)} - {_h(pl('janma_patrika', language))}</title><style>{_pandit_css()}</style></head>"
         f"<body>{''.join(pages)}</body></html>"
     )
 

@@ -1,0 +1,154 @@
+{
+  "_comment": "Bilingual extension to phalit_basic.json: English translations of lagna/rashi/nakshatra phal, plus dasha_phala (mahadasha general effects) and graha_nature (mindset/challenges) for all 9 planets, in Hindi and English. General character and life-themes only, per repo safety boundaries.",
+  "lagna_en": {
+    "Mesha": "Aries ascendant natives are courageous, take initiative and speak plainly. They decide quickly and possess a natural capacity for leadership.",
+    "Vrishabha": "Taurus ascendant natives are patient, steady in temperament and appreciate beauty. Once a decision is made, they rarely change it.",
+    "Mithuna": "Gemini ascendant natives are intelligent, articulate and richly versatile. They have a natural interest in communication and writing.",
+    "Karka": "Cancer ascendant natives are emotional, family-oriented and blessed with strong memory. Depth of feeling and compassion are their main strength.",
+    "Simha": "Leo ascendant natives are self-respecting, generous and inclined to leadership. Honor and dignity matter greatly to them.",
+    "Kanya": "Virgo ascendant natives are analytical, organized and service-minded. Attention to detail is their natural disposition.",
+    "Tula": "Libra ascendant natives love balance, are sociable and value fairness. An innate sense for beauty and harmony comes naturally to them.",
+    "Vrischika": "Scorpio ascendant natives are intense, resolute and skilled at penetrating mysteries. Their concentration and willpower run strong.",
+    "Dhanu": "Sagittarius ascendant natives are optimistic, drawn to philosophy and dharma, and speak candidly. They have a natural inclination toward knowledge and travel.",
+    "Makara": "Capricorn ascendant natives are disciplined, practical and devoted to their goals. Slow but solid progress is their path.",
+    "Kumbha": "Aquarius ascendant natives are original thinkers, welfare-minded and independent by nature. A unique blend of tradition and innovation shows in them.",
+    "Meena": "Pisces ascendant natives are sensitive, imaginative and inclined toward spirituality. They naturally understand others' pain."
+  },
+  "rashi_en": {
+    "Mesha": "The Aries moon-sign mind is energetic and enthusiastic. Procrastination doesn't suit them; challenge is what inspires them.",
+    "Vrishabha": "The Taurus moon-sign mind is steady and fond of comfort. Loyalty in relationships and sweetness in behavior remain constant.",
+    "Mithuna": "The Gemini moon-sign mind is curious and restless. New information and varied interests keep the mind active.",
+    "Karka": "The Cancer moon-sign mind is tender, nurturing and seeks security. A deep emotional bond with home and family remains strong.",
+    "Simha": "The Leo moon-sign mind is radiant and self-assured. Encouraged by appreciation, they accomplish great things.",
+    "Kanya": "The Virgo moon-sign mind is discerning and practical. A desire for precision and order runs through every task.",
+    "Tula": "The Libra moon-sign mind is gentle and fond of harmony. Staying away from conflict and choosing the middle path appeals to them.",
+    "Vrischika": "The Scorpio moon-sign mind is deep and intense in feeling. Once something is resolved upon, there's no peace until it's completed.",
+    "Dhanu": "The Sagittarius moon-sign mind is generous and optimistic. An insistence on truth and principle is clearly visible.",
+    "Makara": "The Capricorn moon-sign mind is serious and dutiful. Trust in hard work and distance from pretense are their nature.",
+    "Kumbha": "The Aquarius moon-sign mind is contemplative and friendly. A deep sense of concern for collective welfare remains.",
+    "Meena": "The Pisces moon-sign mind is emotional and imaginative. A natural interest in music, art and spirituality remains."
+  },
+  "nakshatra_en": {
+    "Ashwini": "Ashwini nakshatra grants swiftness, vitality and the ability to initiate. Speed in action is their hallmark.",
+    "Bharani": "Bharani nakshatra grants endurance, a sense of responsibility and creative power. They carry the strength to bear difficult circumstances.",
+    "Krittika": "Krittika nakshatra grants sharpness, clarity and a tendency toward purification. A sharp reaction to what is wrong comes naturally.",
+    "Rohini": "Rohini nakshatra grants charm, artistic taste and an inclination toward material prosperity. Sweetness marks their behavior.",
+    "Mrigashira": "Mrigashira nakshatra grants curiosity and a searching nature. The mind stays active seeking new directions.",
+    "Ardra": "Ardra nakshatra grants sharp intellect and the capacity to endure change. Theirs is a nature that refines through struggle.",
+    "Punarvasu": "Punarvasu nakshatra grants the power of renewal and a simple heart. Rising again after hardship is their quality.",
+    "Pushya": "Pushya nakshatra grants nourishment, righteousness and trustworthiness. People naturally place their faith in them.",
+    "Ashlesha": "Ashlesha nakshatra grants keen intellect and deep perception. They quickly grasp the intent behind words.",
+    "Magha": "Magha nakshatra grants family pride, leadership and connection to tradition. Respect for ancestors is part of their values.",
+    "Purva Phalguni": "Purva Phalguni nakshatra grants a tendency toward rest, art and enjoyment of life. Generosity marks their behavior.",
+    "Uttara Phalguni": "Uttara Phalguni nakshatra grants the quality of sustaining friendships and cooperating. They are considered true to their word.",
+    "Hasta": "Hasta nakshatra grants manual skill, cleverness and practical intelligence. Proficiency in handcrafted work remains strong.",
+    "Chitra": "Chitra nakshatra grants an eye for beauty, creative ability and an attractive personality. A natural interest in design and craft is present.",
+    "Swati": "Swati nakshatra grants an independent disposition and the ability to maintain balance. Moving forward on their own strength is what they prefer.",
+    "Vishakha": "Vishakha nakshatra grants goal-focused effort and firm ambition. Effort does not stop until the purpose is achieved.",
+    "Anuradha": "Anuradha nakshatra grants friendship, devotion and organizational ability. They form easy bonds even with people far away.",
+    "Jyeshtha": "Jyeshtha nakshatra grants seniority, a protective instinct and responsibility. They become a shield for others in times of crisis.",
+    "Mula": "Mula nakshatra grants a searching nature that gets to the root. Surface answers do not satisfy them.",
+    "Purva Ashadha": "Purva Ashadha nakshatra grants unconquerable enthusiasm and persuasive speech. A strong refusal to accept defeat remains.",
+    "Uttara Ashadha": "Uttara Ashadha nakshatra grants lasting victory and a tendency toward righteous success. They wish to reach their goal only through the right path.",
+    "Shravana": "Shravana nakshatra grants the power of listening, learning and knowledge of tradition. A special capacity to learn by listening remains.",
+    "Dhanishta": "Dhanishta nakshatra grants rhythm, prosperity and recognition in collective endeavors. A special fondness for music and rhythm is possible.",
+    "Shatabhisha": "Shatabhisha nakshatra grants esoteric knowledge, interest in healing and a love of solitude. Their capacity to understand mysteries is special.",
+    "Purva Bhadrapada": "Purva Bhadrapada nakshatra grants austerity, idealism and deep contemplation. They can work hard for the sake of principles.",
+    "Uttara Bhadrapada": "Uttara Bhadrapada nakshatra grants seriousness, forgiveness and steady wisdom. Restraint over anger is their special quality.",
+    "Revati": "Revati nakshatra grants nurturing, guidance and a sense of an unobstructed journey. Showing others the way comes naturally to them."
+  },
+  "dasha_phala": {
+    "Surya": {
+      "hi": "सूर्य महादशा में जातक के जीवन में अधिकार, आत्मविश्वास और नेतृत्व से जुड़े विषय प्रमुख हो उठते हैं। पिता, सरकार और उच्च पदस्थ व्यक्तियों से संबंधित कार्यों में सक्रियता बढ़ती है। आत्म-सम्मान और स्वतंत्र निर्णय लेने की प्रवृत्ति प्रबल रहती है। यह समय व्यक्तित्व को निखारने और उत्तरदायित्व स्वीकारने का रहता है।",
+      "en": "During the Sun's Mahadasha, themes of authority, self-confidence and leadership come to the forefront of life. Activity connected with father figures, government and people in high positions tends to increase. A strong sense of self-respect and independent decision-making comes forward. This period tends to refine one's personality and calls for accepting greater responsibility."
+    },
+    "Chandra": {
+      "hi": "चंद्र महादशा में मन, भावनाएँ और माता से जुड़े विषय केंद्र में आते हैं। संवेदनशीलता बढ़ती है और सार्वजनिक जीवन तथा जनसामान्य से जुड़ाव प्रबल होता है। घर-परिवार और मानसिक शांति की चाह इस अवधि में विशेष रहती है। मन की स्थिरता और अस्थिरता दोनों की प्रवृत्तियाँ इस समय अनुभव हो सकती हैं।",
+      "en": "During the Moon's Mahadasha, themes of the mind, emotions and mother move to the center of life. Sensitivity increases, and connection with public life and the general populace tends to strengthen. A longing for home, family, and mental peace is especially present in this period. Both stability and fluctuation of mind may be experienced during this time."
+    },
+    "Mangal": {
+      "hi": "मंगल महादशा में ऊर्जा, साहस और पराक्रम से जुड़े विषय सक्रिय होते हैं। भाई-बहनों, भूमि-भवन और प्रतिस्पर्धा से संबंधित कार्यों में गति आती है। निर्णय लेने में शीघ्रता और साहसिक कदम उठाने की प्रवृत्ति बढ़ती है। यह समय शक्ति और धैर्य के संतुलन को सीखने का अवसर देता है।",
+      "en": "During Mars's Mahadasha, themes of energy, courage and valor become active. Matters related to siblings, property and competition gain momentum. There is an increased tendency toward quick decision-making and taking bold steps. This period offers an opportunity to learn the balance between strength and patience."
+    },
+    "Budh": {
+      "hi": "बुध महादशा में बुद्धि, संवाद और वाणिज्य से जुड़े विषय प्रमुख रहते हैं। शिक्षा, लेखन और व्यापार से संबंधित कार्यों में रुचि तथा दक्षता बढ़ती है। तर्कशक्ति तीव्र होती है और नई जानकारी को शीघ्र आत्मसात करने की क्षमता बढ़ती है। मित्रों और छोटे भाई-बहनों से संबंध इस काल में विशेष सक्रिय रहते हैं।",
+      "en": "During Mercury's Mahadasha, themes of intellect, communication and commerce come to the fore. Interest and proficiency grow in matters related to education, writing and business. Reasoning ability sharpens, and the capacity to quickly absorb new information increases. Relationships with friends and younger siblings tend to be especially active during this period."
+    },
+    "Guru": {
+      "hi": "गुरु महादशा में ज्ञान, धर्म और सौभाग्य से जुड़े विषय प्रमुखता पाते हैं। गुरुजनों, शिक्षकों और संतान से संबंध प्रगाढ़ होते हैं तथा जीवन-दृष्टि विस्तृत होती है। उदारता, आस्था और विकास की भावना इस काल में सहज रूप से बलवती होती है। यह समय आध्यात्मिक और बौद्धिक उन्नति के लिए अनुकूल माना जाता है।",
+      "en": "During Jupiter's Mahadasha, themes of wisdom, dharma and good fortune gain prominence. Bonds with elders, teachers and children deepen, and one's outlook on life broadens. Generosity, faith and a spirit of growth naturally strengthen during this period. This time is considered favorable for spiritual and intellectual advancement."
+    },
+    "Shukra": {
+      "hi": "शुक्र महादशा में संबंध, सुख-साधन और कला से जुड़े विषय प्रमुख होते हैं। सौंदर्यबोध, सामाजिकता और आनंद की चाह इस अवधि में बढ़ती है। जीवनसाथी और निकट संबंधों में सामंजस्य बिठाने की आवश्यकता अनुभव होती है। यह समय संबंधों में परिपक्वता और सौंदर्य के प्रति रुचि बढ़ाने वाला रहता है।",
+      "en": "During Venus's Mahadasha, themes of relationships, comfort and art come to the forefront. An appreciation of beauty, sociability and a desire for enjoyment increase during this period. A need to cultivate harmony with a spouse and close relationships is felt. This time tends to foster maturity in relationships and a deepening interest in beauty and the arts."
+    },
+    "Shani": {
+      "hi": "शनि महादशा में अनुशासन, धैर्य और उत्तरदायित्व से जुड़े विषय प्रमुख होते हैं। परिश्रम का महत्व स्पष्ट होता है और फल प्राप्ति में समय लगने की प्रवृत्ति रहती है। सीमाओं को स्वीकार कर स्थिर गति से आगे बढ़ना इस काल की पहचान है। यह समय संयम, यथार्थ-बोध और दीर्घकालिक स्थिरता सिखाने वाला रहता है।",
+      "en": "During Saturn's Mahadasha, themes of discipline, patience and responsibility come to the fore. The value of hard work becomes clear, and there is a tendency for results to take time to arrive. Accepting limitations and moving forward at a steady pace is the hallmark of this period. This time tends to teach restraint, realism and long-term stability."
+    },
+    "Rahu": {
+      "hi": "राहु महादशा में अकस्मात परिवर्तन, विदेश-संबंध और महत्वाकांक्षा से जुड़े विषय सक्रिय होते हैं। पारंपरिक मार्गों से हटकर नए और असाधारण रास्ते अपनाने की प्रवृत्ति बढ़ती है। भौतिक इच्छाओं में तीव्रता आती है और तीव्र गति से आगे बढ़ने की चाह रहती है। यह समय अनिश्चितता के बीच संतुलन साधना सीखने का अवसर देता है।",
+      "en": "During Rahu's Mahadasha, themes of sudden change, foreign connections and ambition become active. A tendency grows to depart from conventional paths and adopt new and unusual approaches. Material desires intensify, along with a wish to move ahead at a rapid pace. This period offers an opportunity to learn how to find balance amid uncertainty."
+    },
+    "Ketu": {
+      "hi": "केतु महादशा में वैराग्य, आत्मचिंतन और आध्यात्मिकता से जुड़े विषय प्रमुख होते हैं। सांसारिक विषयों से मन धीरे-धीरे विरक्त होकर भीतर की ओर उन्मुख होता है। पूर्व-अर्जित ज्ञान और अंतर्ज्ञान इस काल में सहज ही प्रकट होते हैं। यह समय आत्मशोध और मुक्ति की दिशा में बढ़ने का अनुकूल अवसर देता है।",
+      "en": "During Ketu's Mahadasha, themes of detachment, introspection and spirituality come to the forefront. The mind gradually withdraws from worldly matters and turns inward. Previously acquired wisdom and intuition tend to surface naturally during this period. This time offers a favorable opportunity to move toward self-inquiry and liberation."
+    }
+  },
+  "graha_nature": {
+    "Surya": {
+      "mindset_hi": "सूर्य दशा में मन आत्मविश्वास से भरा और स्वाभिमानी रहता है। नेतृत्व करने और अपनी उपस्थिति दर्ज कराने की स्वाभाविक चाह रहती है।",
+      "mindset_en": "During Surya's period, the mind tends to feel confident and self-respecting. There is a natural urge to lead and to make one's presence felt.",
+      "challenges_hi": "अहं और अधिकार-भाव में संतुलन बनाए रखना इस काल की मुख्य सीख है। दूसरों की राय सुनना और विनम्रता बनाए रखना अभ्यास माँगता है।",
+      "challenges_en": "Maintaining balance between ego and the sense of authority is the key lesson of this period. Listening to others' views and preserving humility requires conscious practice."
+    },
+    "Chandra": {
+      "mindset_hi": "चंद्र दशा में मन भावुक, ग्रहणशील और संवेदनशील रहता है। दूसरों की भावनाओं को समझने की क्षमता स्वाभाविक रूप से बढ़ती है।",
+      "mindset_en": "During Chandra's period, the mind tends to be emotional, receptive and sensitive. The capacity to understand others' feelings naturally increases.",
+      "challenges_hi": "मन की चंचलता और भावनात्मक उतार-चढ़ाव को संभालना इस काल की सीख है। स्थिरता बनाए रखने के लिए दिनचर्या और आत्म-अनुशासन सहायक रहते हैं।",
+      "challenges_en": "Managing restlessness of mind and emotional ups and downs is the lesson of this period. A steady routine and self-discipline help in maintaining equilibrium."
+    },
+    "Mangal": {
+      "mindset_hi": "मंगल दशा में मन ऊर्जावान, साहसी और स्पर्धात्मक रहता है। शीघ्रता से कार्य पूर्ण करने की स्वाभाविक चाह बनी रहती है।",
+      "mindset_en": "During Mangal's period, the mind tends to be energetic, courageous and competitive. There is a natural inclination to complete tasks quickly.",
+      "challenges_hi": "क्रोध और अधीरता पर नियंत्रण रखना इस काल की मुख्य सीख है। सोच-समझकर कदम उठाने का अभ्यास दीर्घकाल में लाभकारी सिद्ध होता है।",
+      "challenges_en": "Keeping anger and impatience in check is the key lesson of this period. Practicing thoughtful, considered action proves beneficial over the long run."
+    },
+    "Budh": {
+      "mindset_hi": "बुध दशा में मन जिज्ञासु, विश्लेषणात्मक और चतुर रहता है। सीखने और नई जानकारी ग्रहण करने की स्वाभाविक रुचि बनी रहती है।",
+      "mindset_en": "During Budh's period, the mind tends to be curious, analytical and quick-witted. There is a natural interest in learning and absorbing new information.",
+      "challenges_hi": "अत्यधिक विश्लेषण और निर्णय में हिचकिचाहट इस काल की चुनौती हो सकती है। तर्क के साथ-साथ अंतःकरण पर भी भरोसा रखना सीखना लाभकारी रहता है।",
+      "challenges_en": "Overanalysis and hesitation in decision-making can be a challenge during this period. Learning to trust intuition alongside logic proves helpful."
+    },
+    "Guru": {
+      "mindset_hi": "गुरु दशा में मन उदार, आशावान और ज्ञान-पिपासु रहता है। बड़ी सोच और दूरदृष्टि स्वाभाविक रूप से विकसित होती है।",
+      "mindset_en": "During Guru's period, the mind tends to be generous, hopeful and eager for knowledge. Expansive thinking and long-term vision develop naturally.",
+      "challenges_hi": "अति-आत्मविश्वास और अधिक विस्तार की प्रवृत्ति इस काल की चुनौती हो सकती है। विनम्रता बनाए रखते हुए यथार्थ सीमाओं को स्वीकारना सीख देता है।",
+      "challenges_en": "Overconfidence and a tendency toward excessive expansion can be a challenge during this period. Maintaining humility while accepting realistic limits offers a valuable lesson."
+    },
+    "Shukra": {
+      "mindset_hi": "शुक्र दशा में मन सौंदर्यप्रिय, सामाजिक और सुख-चाहने वाला रहता है। रिश्तों और कला के प्रति स्वाभाविक आकर्षण बना रहता है।",
+      "mindset_en": "During Shukra's period, the mind tends to be beauty-loving, sociable and comfort-seeking. A natural affinity for relationships and the arts remains.",
+      "challenges_hi": "आराम और भोग की अधिकता में संतुलन खोना इस काल की चुनौती हो सकती है। अनुशासन के साथ सुख का सामंजस्य बिठाना सीख देता है।",
+      "challenges_en": "Losing balance through excessive comfort or indulgence can be a challenge during this period. Harmonizing enjoyment with discipline offers a valuable lesson."
+    },
+    "Shani": {
+      "mindset_hi": "शनि दशा में मन गंभीर, यथार्थवादी और उत्तरदायित्व-प्रधान रहता है। धैर्यपूर्वक परिश्रम करने की प्रवृत्ति स्वाभाविक रूप से बढ़ती है।",
+      "mindset_en": "During Shani's period, the mind tends to be serious, realistic and duty-focused. A natural inclination toward patient, sustained effort increases.",
+      "challenges_hi": "निराशा और विलंब से उत्पन्न थकान इस काल की चुनौती हो सकती है। धैर्य बनाए रखते हुए निरंतर प्रयास करना ही सफलता की कुंजी है।",
+      "challenges_en": "Discouragement and fatigue arising from delay can be a challenge during this period. Maintaining patience while persisting steadily is the key to success."
+    },
+    "Rahu": {
+      "mindset_hi": "राहु दशा में मन महत्वाकांक्षी, बेचैन और अपरंपरागत सोच वाला रहता है। कुछ नया और असाधारण पाने की प्रबल चाह बनी रहती है।",
+      "mindset_en": "During Rahu's period, the mind tends to be ambitious, restless and unconventional in thought. A strong desire to achieve something new and extraordinary remains.",
+      "challenges_hi": "अस्थिरता और अतृप्त इच्छाओं के बीच मानसिक शांति बनाए रखना इस काल की चुनौती है। यथार्थ और भ्रम में भेद करने का विवेक विशेष सहायक रहता है।",
+      "challenges_en": "Maintaining mental peace amid restlessness and unfulfilled desires is the challenge of this period. Discernment between reality and illusion proves especially helpful."
+    },
+    "Ketu": {
+      "mindset_hi": "केतु दशा में मन अंतर्मुखी, वैराग्यपूर्ण और चिंतनशील रहता है। सांसारिक विषयों से स्वाभाविक दूरी बनने लगती है।",
+      "mindset_en": "During Ketu's period, the mind tends to be introspective, detached and contemplative. A natural distance from worldly matters begins to form.",
+      "challenges_hi": "उद्देश्यहीनता और भ्रम की अनुभूति इस काल की चुनौती हो सकती है। आत्मशोध और साधना के माध्यम से स्पष्टता प्राप्त करना विशेष सहायक रहता है।",
+      "challenges_en": "A sense of purposelessness and confusion can be a challenge during this period. Gaining clarity through self-inquiry and spiritual practice proves especially helpful."
+    }
+  }
+}

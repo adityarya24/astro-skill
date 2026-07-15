@@ -74,9 +74,13 @@ def compute_avakahada(
             born = datetime.fromisoformat(kundali["calculation"]["datetime_local"])
             rise = datetime.fromisoformat(sunrise)
             setting = datetime.fromisoformat(sunset)
-            out["ishta_ghati"] = _ghati_from_hours(
-                (born - rise).total_seconds() / 3600.0
-            )
+            # Ishta Kaal = time elapsed from sunrise to birth. A pre-sunrise
+            # (pre-dawn) birth belongs to the vaara that began at the previous
+            # day's sunrise, so measure from there instead of a negative span.
+            elapsed_hours = (born - rise).total_seconds() / 3600.0
+            if elapsed_hours < 0:
+                elapsed_hours += 24.0
+            out["ishta_ghati"] = _ghati_from_hours(elapsed_hours)
             day_seconds = int((setting - rise).total_seconds())
             hours, rem = divmod(day_seconds, 3600)
             minutes, seconds = divmod(rem, 60)
