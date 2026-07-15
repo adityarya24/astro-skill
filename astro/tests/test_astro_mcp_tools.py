@@ -238,3 +238,20 @@ def test_report_tool_persistence_auto_creates_missing_client(tmp_path: Path):
     assert fetched["display_name"] == "anonymous"
     assert len(reports) == 1
     assert reports[0]["report_type"] == "json_report"
+
+
+def test_generate_report_json_tool_accepts_schema_advertised_fields(tmp_path: Path):
+    """The MCP schema lists gochar and client_name; the tool must accept them."""
+    kundali = calculate_kundali_tool(
+        dob="26/12/2019", tob="09:15", place="Delhi",
+        lat=28.6139, lon=77.2090, timezone_name="Asia/Kolkata",
+    )
+    record = generate_report_json_tool(
+        kundali,
+        gochar={"note": "demo-gochar"},
+        client_name="Kiran Verma",
+        output_dir=tmp_path,
+    )
+    written = json.loads(Path(record["path"]).read_text(encoding="utf-8"))
+    assert written["sections"]["gochar"] == {"note": "demo-gochar"}
+    assert written["client_name"] == "Kiran Verma"

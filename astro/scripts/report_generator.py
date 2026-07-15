@@ -176,7 +176,7 @@ def main(argv: list[str] | None = None) -> int:
         language=args.language,
     )
     if args.json:
-        print(json.dumps(report, indent=2))
+        print(json.dumps(report, indent=2, ensure_ascii=False))
     else:
         print(build_text_report(report))
     return 0

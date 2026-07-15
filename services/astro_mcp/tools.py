@@ -274,12 +274,20 @@ def generate_report_json_tool(
     kundali: dict,
     dasha: dict | None = None,
     panchang: dict | None = None,
+    gochar: dict | None = None,
     language: str = "hin",
     client_id: str = "anonymous",
+    client_name: str | None = None,
     output_dir: Path | str | None = None,
     db_path: Path | str | None = None,
 ) -> dict:
     report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
+    # The MCP schema advertises these optional fields; carry them into the
+    # written report instead of rejecting the call.
+    if gochar is not None:
+        report["sections"]["gochar"] = gochar
+    if client_name:
+        report["client_name"] = client_name
     out_dir = _resolve_output_dir(output_dir)
     report_id = _new_report_id("rpt")
     path = _resolved_output_path(out_dir, report_id, "json")
