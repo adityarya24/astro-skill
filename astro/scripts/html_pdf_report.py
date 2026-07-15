@@ -67,6 +67,29 @@ EN_PLANETS = {
     "Ketu": "Ketu",
 }
 
+SIGN_ELEMENT = {
+    "Mesha": "Agni", "Simha": "Agni", "Dhanu": "Agni",
+    "Vrishabha": "Prithvi", "Kanya": "Prithvi", "Makara": "Prithvi",
+    "Mithuna": "Vayu", "Tula": "Vayu", "Kumbha": "Vayu",
+    "Karka": "Jal", "Vrischika": "Jal", "Meena": "Jal",
+}
+
+SIGN_MODALITY = {
+    "Mesha": "Chara", "Karka": "Chara", "Tula": "Chara", "Makara": "Chara",
+    "Vrishabha": "Sthira", "Simha": "Sthira", "Vrischika": "Sthira", "Kumbha": "Sthira",
+    "Mithuna": "Dvisvabhava", "Kanya": "Dvisvabhava", "Dhanu": "Dvisvabhava", "Meena": "Dvisvabhava",
+}
+
+ELEMENT_DISP = {
+    "Agni": ("अग्नि", "Fire"), "Prithvi": ("पृथ्वी", "Earth"),
+    "Vayu": ("वायु", "Air"), "Jal": ("जल", "Water"),
+}
+
+MODALITY_DISP = {
+    "Chara": ("चर", "Cardinal"), "Sthira": ("स्थिर", "Fixed"),
+    "Dvisvabhava": ("द्विस्वभाव", "Dual"),
+}
+
 HI_SIGNS = {
     "Mesha": "मेष",
     "Vrishabha": "वृषभ",
@@ -326,6 +349,18 @@ PANDIT_LABELS = {
     "years": ("वर्ष", "yr"),
     "months": ("माह", "mo"),
     "days": ("दिन", "d"),
+    "personality": ("व्यक्तित्व विश्लेषण", "Personality Profile"),
+    "element_balance": ("तत्व संतुलन", "Element Balance"),
+    "dominant_element": ("प्रमुख तत्व", "Dominant Element"),
+    "modality_balance": ("स्वभाव-प्रकार संतुलन", "Modality Balance"),
+    "dominant_modality": ("प्रमुख स्वभाव-प्रकार", "Dominant Modality"),
+    "personality_note": ("यह व्यक्तित्व-चित्रण ग्रहों के तत्व एवं स्वभाव-संतुलन पर आधारित है; पूर्ण निष्कर्ष सम्पूर्ण कुंडली से निकाला जाए।", "This personality sketch is based on the elemental and modal balance of the planets; a complete conclusion should be drawn from the whole chart."),
+    "dominant_tag": ("प्रबल", "Strongly dominant"),
+    "syn_title": ("व्यक्तित्व सार", "Personality Essence"),
+    "syn_lagna": ("बाहरी स्वरूप (लग्न)", "Outer self (Lagna)"),
+    "syn_moon": ("आंतरिक मन (चंद्र राशि)", "Inner mind (Moon sign)"),
+    "syn_sun": ("मूल प्रेरणा (सूर्य राशि)", "Core drive (Sun sign)"),
+    "syn_template": ("बाहर से {0}; भीतर से {1}; और मूल में {2} प्रेरणा रहती है।", "Outwardly {0}; inwardly {1}; with a core drive that is {2}."),
     "footer": ("जन्म पत्रिका — गणना आधारित प्रारूप", "Janma Patrika — calculation-based format"),
 }
 
@@ -995,6 +1030,91 @@ def _dasha_phala_page(dasha: dict | None, language: str, client: str) -> str | N
     body = "".join(panels) + f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
     return _page(pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client)
 
+def _personality_ext() -> dict:
+    path = ROOT.parent / "data" / "personality_ext.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+
+
+def _personality_page(kundali: dict, language: str, client: str) -> str | None:
+    """Consolidated personality profile from the chart's elemental and modal balance."""
+    planets = kundali.get("planets") or {}
+    if not planets:
+        return None
+    ext = _personality_ext()
+    et = ext.get("element_traits", {})
+    mt = ext.get("modality_traits", {})
+    essence = ext.get("sign_essence", {})
+    hi = _is_hi(language)
+    lk = "hi" if hi else "en"
+    join_char = " व " if hi else " & "
+
+    lagna_sign = kundali.get("lagna")
+    signs = [info.get("sign") for info in planets.values()]
+    if lagna_sign:
+        signs.append(lagna_sign)
+    elem_count = {"Agni": 0, "Prithvi": 0, "Vayu": 0, "Jal": 0}
+    mod_count = {"Chara": 0, "Sthira": 0, "Dvisvabhava": 0}
+    for sign in signs:
+        if sign in SIGN_ELEMENT:
+            elem_count[SIGN_ELEMENT[sign]] += 1
+        if sign in SIGN_MODALITY:
+            mod_count[SIGN_MODALITY[sign]] += 1
+    total = sum(elem_count.values())
+    if not total:
+        return None
+
+    def _disp(dmap, code):
+        return dmap[code][0] if hi else dmap[code][1]
+
+    def _rows(count, order, dmap):
+        return [(_disp(dmap, c), f"{count[c]}  ({round(100 * count[c] / total)}%)") for c in order]
+
+    def _leaders(count, order, dmap, traits, label_key):
+        mx = max(count.values())
+        tops = [c for c in order if count[c] == mx]
+        out = ""
+        for c in tops:
+            text = traits.get(c, {}).get(lk, "")
+            if not text:
+                continue
+            tag = f" - {pl('dominant_tag', language)}" if (len(tops) == 1 and mx >= 4) else ""
+            out += (
+                f"<div class='panel'><h3>{_h(pl(label_key, language))} - {_h(_disp(dmap, c))}{_h(tag)}</h3>"
+                f"<p>{_h(text)}</p></div>"
+            )
+        return out
+
+    elem_order = ("Agni", "Prithvi", "Vayu", "Jal")
+    mod_order = ("Chara", "Sthira", "Dvisvabhava")
+    body = f"<h3>{_h(pl('element_balance', language))}</h3>" + _pandit_kv(_rows(elem_count, elem_order, ELEMENT_DISP))
+    body += _leaders(elem_count, elem_order, ELEMENT_DISP, et, "dominant_element")
+    body += f"<h3>{_h(pl('modality_balance', language))}</h3>" + _pandit_kv(_rows(mod_count, mod_order, MODALITY_DISP))
+    body += _leaders(mod_count, mod_order, MODALITY_DISP, mt, "dominant_modality")
+
+    moon_sign = (planets.get("Chandra") or {}).get("sign")
+    sun_sign = (planets.get("Surya") or {}).get("sign")
+    le = essence.get(lagna_sign, {}).get(lk, "") if lagna_sign else ""
+    me = essence.get(moon_sign, {}).get(lk, "") if moon_sign else ""
+    se = essence.get(sun_sign, {}).get(lk, "") if sun_sign else ""
+    if le and me and se:
+        syn_rows = [
+            (pl("syn_lagna", language), f"{display_sign(lagna_sign, language)} - {le}"),
+            (pl("syn_moon", language), f"{display_sign(moon_sign, language)} - {me}"),
+            (pl("syn_sun", language), f"{display_sign(sun_sign, language)} - {se}"),
+        ]
+        sentence = pl("syn_template", language).format(le, me, se)
+        body += (
+            f"<h3>{_h(pl('syn_title', language))}</h3>"
+            + _pandit_kv(syn_rows)
+            + f"<div class='panel'><p>{_h(sentence)}</p></div>"
+        )
+
+    body += f"<p class='green'>{_h(pl('personality_note', language))}</p>"
+    return _page(pl("personality", language), body, footer=pl("footer", language), client=client)
+
 
 def _pandit_interpretation_pages(
     kundali: dict,
@@ -1268,6 +1388,7 @@ def _pandit_report_html(
 
     interpretation_pages = [
         p for p in (
+            _personality_page(kundali, language, client),
             _current_period_page(dasha, language, client),
             _dasha_phala_page(dasha, language, client),
         ) if p

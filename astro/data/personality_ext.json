@@ -1,0 +1,84 @@
+{
+  "element_traits": {
+    "Agni": {
+      "hi": "अग्नि तत्व की प्रधानता वाले जातक ऊर्जावान, आत्मविश्वासी और अग्रणी स्वभाव के होते हैं। नई शुरुआत करने और कार्य में तुरंत जुट जाने की स्वाभाविक प्रवृत्ति रहती है। उत्साह के साथ-साथ धैर्य बनाए रखना इनके लिए विशेष अभ्यास माँगता है।",
+      "en": "Natives with Fire as the dominant element tend to be energetic, confident and inclined toward leadership. There is a natural pull toward initiating new endeavors and diving into action without delay. Alongside this enthusiasm, cultivating patience remains a valuable practice for them."
+    },
+    "Prithvi": {
+      "hi": "पृथ्वी तत्व की प्रधानता वाले जातक व्यावहारिक, धैर्यवान और भरोसेमंद स्वभाव के होते हैं। परिणाम-उन्मुख दृष्टिकोण और स्थिरता के प्रति स्वाभाविक झुकाव इनकी पहचान है। भौतिक जगत में सुदृढ़ नींव बनाने की क्षमता इनमें विशेष रूप से देखी जाती है।",
+      "en": "Natives with Earth as the dominant element tend to be practical, patient and dependable by nature. A results-oriented outlook and a natural inclination toward stability define their approach. The capacity to build solid, lasting foundations in the material world is especially notable in them."
+    },
+    "Vayu": {
+      "hi": "वायु तत्व की प्रधानता वाले जातक बौद्धिक, संवादप्रिय और सामाजिक स्वभाव के होते हैं। नए विचारों और सूचनाओं के प्रति स्वाभाविक जिज्ञासा इनकी विशेषता है। परिस्थिति के अनुसार स्वयं को ढाल लेने की क्षमता इन्हें सहजता से प्राप्त होती है।",
+      "en": "Natives with Air as the dominant element tend to be intellectual, communicative and sociable by nature. A natural curiosity toward new ideas and information is characteristic of them. The ability to adapt readily to changing circumstances comes easily to them."
+    },
+    "Jal": {
+      "hi": "जल तत्व की प्रधानता वाले जातक भावुक, सहज-प्रज्ञ और संवेदनशील स्वभाव के होते हैं। दूसरों की भावनाओं को गहराई से समझने और अनुभव करने की क्षमता इनमें स्वाभाविक रूप से होती है। कल्पनाशीलता और गहरी अनुभूति इनके व्यक्तित्व की मुख्य पहचान है।",
+      "en": "Natives with Water as the dominant element tend to be emotional, intuitive and sensitive by nature. A natural capacity to deeply understand and feel others' emotions is present in them. Imagination and depth of feeling stand out as the core hallmarks of their personality."
+    }
+  },
+  "modality_traits": {
+    "Chara": {
+      "hi": "चर राशियों की प्रधानता वाले जातक पहल करने वाले और गतिशील स्वभाव के होते हैं। नए कार्यों की शुरुआत करने और नेतृत्व संभालने की स्वाभाविक चाह इनमें रहती है। आरंभ की गई योजनाओं को अंत तक निभाने का अभ्यास इनके लिए लाभकारी सिद्ध होता है।",
+      "en": "Natives with a dominance of Cardinal signs tend to be initiating and dynamic by nature. A natural drive to start new undertakings and step into leadership roles remains present in them. Practicing follow-through on plans once begun proves especially beneficial for them."
+    },
+    "Sthira": {
+      "hi": "स्थिर राशियों की प्रधानता वाले जातक दृढ़, धैर्यवान और संकल्पशील स्वभाव के होते हैं। स्थिरता और निरंतरता के प्रति स्वाभाविक झुकाव इनकी पहचान है। एक बार लिए गए निर्णय पर अडिग रहने की क्षमता इनमें विशेष रूप से देखी जाती है।",
+      "en": "Natives with a dominance of Fixed signs tend to be steady, patient and strong-willed by nature. A natural inclination toward stability and persistence defines their character. The capacity to remain firm on a decision once made is especially notable in them."
+    },
+    "Dvisvabhava": {
+      "hi": "द्विस्वभाव राशियों की प्रधानता वाले जातक लचीले, बहुमुखी और अनुकूलनशील स्वभाव के होते हैं। भिन्न-भिन्न परिस्थितियों और विचारधाराओं के बीच सेतु बनाने की स्वाभाविक क्षमता इनमें रहती है। संवाद-कौशल और परिवर्तनशीलता इनके व्यक्तित्व की मुख्य विशेषता है।",
+      "en": "Natives with a dominance of Dual (mutable) signs tend to be flexible, versatile and adaptable by nature. A natural ability to bridge differing situations and viewpoints remains present in them. Communicative skill and adaptability stand out as the defining traits of their personality."
+    }
+  },
+  "sign_essence": {
+    "Mesha": {
+      "hi": "साहसी, ऊर्जावान और अग्रणी",
+      "en": "bold, energetic and pioneering"
+    },
+    "Vrishabha": {
+      "hi": "स्थिर, धैर्यवान और सुख-प्रिय",
+      "en": "steady, patient and comfort-loving"
+    },
+    "Mithuna": {
+      "hi": "वाक्पटु, जिज्ञासु और संचारशील",
+      "en": "witty, curious and communicative"
+    },
+    "Karka": {
+      "hi": "पोषणकारी, भावुक और सुरक्षात्मक",
+      "en": "nurturing, emotional and protective"
+    },
+    "Simha": {
+      "hi": "आत्मविश्वासी, उदार और राजसी",
+      "en": "confident, generous and regal"
+    },
+    "Kanya": {
+      "hi": "विश्लेषणात्मक, सूक्ष्म और सेवाभावी",
+      "en": "analytical, meticulous and service-minded"
+    },
+    "Tula": {
+      "hi": "संतुलित, कूटनीतिक और सामंजस्यप्रिय",
+      "en": "balanced, diplomatic and harmony-seeking"
+    },
+    "Vrischika": {
+      "hi": "गहन, रहस्यमय और परिवर्तनकारी",
+      "en": "intense, secretive and transformative"
+    },
+    "Dhanu": {
+      "hi": "आशावादी, उदार और दार्शनिक",
+      "en": "optimistic, broad-minded and philosophical"
+    },
+    "Makara": {
+      "hi": "अनुशासित, महत्वाकांक्षी और व्यावहारिक",
+      "en": "disciplined, ambitious and pragmatic"
+    },
+    "Kumbha": {
+      "hi": "तार्किक, मानवतावादी और व्यवस्था-प्रिय",
+      "en": "logical, humanitarian and system-oriented"
+    },
+    "Meena": {
+      "hi": "गहन, भावुक और कल्पनाशील",
+      "en": "deep, emotional and imaginative"
+    }
+  }
+}
