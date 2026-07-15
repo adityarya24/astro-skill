@@ -818,7 +818,7 @@ def _pandit_css() -> str:
     h1, h2, h3 { color: #b10000; letter-spacing: 0; margin: 0 0 10px; text-align: center; }
     h1 { font-size: 30pt; }
     h2 { font-size: 20pt; }
-    h3 { font-size: 13pt; }
+    h3 { font-size: 13pt; page-break-after: avoid; break-after: avoid; }
     p { margin: 7px 0; }
     table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; }
     th { background: #b10000; color: #fff; padding: 7px 9px; text-align: left; }
@@ -868,7 +868,7 @@ def _pandit_css() -> str:
     .mantra { color: #b10000; font-size: 20pt; font-weight: 700; }
     .notice-text { color: #287133; text-align: justify; font-size: 12pt; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 28px; }
-    .panel { background: rgba(255,255,255,.74); border: 1px solid #efd4a7; padding: 12px; }
+    .panel { background: rgba(255,255,255,.74); border: 1px solid #efd4a7; padding: 12px; page-break-inside: avoid; break-inside: avoid; }
     .red { color: #b10000; font-weight: 700; }
     .green { color: #287133; }
     .big-chart .ni-chart { width: 100%; max-width: 540px; height: auto; margin: 0 auto; }
