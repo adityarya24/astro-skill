@@ -279,6 +279,7 @@ PANDIT_LABELS = {
         "Read the Chandra Kundali as an indicator of the mind, experiences and emotional response.",
     ),
     "navamsa": ("नवांश कुंडली (D9)", "Navamsa Kundali (D9)"),
+    "kundali_charts": ("जन्म कुंडलियाँ", "Kundali Charts"),
     "graha_sthiti": ("ग्रह स्थिति", "Planet Positions"),
     "dasha_table": ("दशा तालिका", "Dasha Timeline"),
     "paddhati": ("पद्धति", "System"),
@@ -836,6 +837,10 @@ def _pandit_css() -> str:
     .red { color: #b10000; font-weight: 700; }
     .green { color: #287133; }
     .big-chart .ni-chart { width: 100%; max-width: 540px; height: auto; margin: 0 auto; }
+    .chart-grid { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin: 6px 0 4px; }
+    .chart-card { flex: 0 0 47%; max-width: 47%; text-align: center; page-break-inside: avoid; }
+    .chart-card h3 { margin: 0 0 6px; color: #b10000; font-size: 12.5px; }
+    .chart-card .mini-chart .ni-chart { width: 100%; height: auto; }
     .chart-pair { display: grid; grid-template-columns: 1fr; gap: 20px; }
     .dasha-bar { display: flex; flex-wrap: wrap; gap: 3px; margin: 12px 0; }
     .dasha-cell { flex: 1 1 18%; color: #fff; padding: 7px; min-height: 58px; border-radius: 2px; font-size: 9pt; }
@@ -1213,14 +1218,25 @@ def _pandit_report_html(
         footer=pl("footer", language),
         client=client,
     )
-    chart_pages = [
-        _page(pl("lagna_kundali", language), f'<div class="big-chart">{_ni_chart_svg(kundali, language)}</div>', footer=pl("footer", language), client=client),
-        _page(pl("chandra_kundali", language), f'<div class="big-chart">{_ni_chart_svg({"houses": _chandra_houses(kundali)}, language)}</div><p class="green">{_h(pl("chandra_note", language))}</p>', footer=pl("footer", language), client=client),
+    charts = [
+        (pl("lagna_kundali", language), _ni_chart_svg(kundali, language)),
+        (pl("chandra_kundali", language), _ni_chart_svg({"houses": _chandra_houses(kundali)}, language)),
     ]
     if kundali.get("navamsa"):
-        chart_pages.append(
-            _page(pl("navamsa", language), f'<div class="big-chart">{_ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language)}</div>', footer=pl("footer", language), client=client)
+        charts.append((pl("navamsa", language), _ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language)))
+    chart_cards = "".join(
+        f'<div class="chart-card"><h3>{_h(title)}</h3><div class="mini-chart">{svg}</div></div>'
+        for title, svg in charts
+    )
+    chart_pages = [
+        _page(
+            pl("kundali_charts", language),
+            f'<div class="chart-grid">{chart_cards}</div>'
+            f'<p class="green">{_h(pl("chandra_note", language))}</p>',
+            footer=pl("footer", language),
+            client=client,
         )
+    ]
 
     planet_rows = _planet_rows(kundali, language)
     planet_pages = [
