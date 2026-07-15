@@ -221,8 +221,8 @@ def test_pandit_v1_html_has_pitch_ready_sections():
         template="pandit_v1",
     )
 
-    # Lean client-facing janma patrika: ~13 focused pages, no filler.
-    assert 12 <= document.count('class="pandit-page"') <= 15
+    # Client-facing janma patrika: interpretation-rich but paginated, no filler.
+    assert 14 <= document.count('class="pandit-page"') <= 19
     assert "जन्म पत्रिका" in document
     assert "Kiran Verma" in document
     assert "सूचना" in document
@@ -234,6 +234,10 @@ def test_pandit_v1_html_has_pitch_ready_sections():
     assert "दशा तालिका" in document
     assert "अंतर्दशा तालिका" in document
     assert "लग्न-राशि-नक्षत्र फल" in document
+    assert "व्यक्तित्व विश्लेषण" in document  # personality profile section
+    assert "वर्तमान दशा विश्लेषण" in document  # current period analysis
+    assert "महादशा फल" in document  # per-dasha classical readings
+    assert "उपाय सुझाव" in document  # remedies (mantras)
     assert "वर्ष" in document  # mahadasha durations formatted, not raw floats
     assert "black-panel" not in document  # cover uses the gold name-plate now
 

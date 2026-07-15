@@ -1041,9 +1041,9 @@ def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[s
         )
     if not panels:
         return []
-    # English readings are wordier, so fewer panels fit a framed page. Spread
-    # the panels evenly across the needed pages instead of leaving a lone one.
-    max_per = 5 if _is_hi(language) else 4
+    # A framed page fits ~4 reading panels; spread panels evenly across the
+    # pages they need so none overflows and none is left stranded alone.
+    max_per = 4
     n_pages = max(1, -(-len(panels) // max_per))
     per = -(-len(panels) // n_pages)
     groups = [panels[i:i + per] for i in range(0, len(panels), per)]
