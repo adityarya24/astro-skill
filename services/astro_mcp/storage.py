@@ -132,10 +132,12 @@ def find_client_profile(db_path: Path | str, query: str) -> ClientProfile | None
             (needle,),
         ).fetchone()
         if row is None:
+            # INSTR instead of LIKE so %/_ in the query match literally
+            # rather than acting as wildcards.
             row = conn.execute(
-                "SELECT * FROM clients WHERE LOWER(display_name) LIKE ? "
+                "SELECT * FROM clients WHERE INSTR(LOWER(display_name), ?) > 0 "
                 "ORDER BY updated_at DESC LIMIT 1",
-                (f"%{needle.lower()}%",),
+                (needle.lower(),),
             ).fetchone()
     return _row_to_profile(row) if row is not None else None
 

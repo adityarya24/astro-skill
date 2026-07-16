@@ -136,3 +136,29 @@ def test_list_client_reports_returns_empty_for_unknown_client(tmp_path: Path):
     init_db(db_path)
 
     assert list_client_reports(db_path, "ghost") == []
+
+
+def test_find_client_profile_treats_like_wildcards_literally(tmp_path: Path):
+    db = tmp_path / "wild.sqlite3"
+    init_db(db)
+    save_client_profile(
+        db,
+        ClientProfile(
+            client_id="c-wild",
+            display_name="100% Genuine",
+            birth=None,
+            notes="",
+        ),
+    )
+
+    # A bare wildcard must not match a name that doesn't contain it.
+    save_client_profile(
+        db,
+        ClientProfile(client_id="c-plain", display_name="Plain Name", birth=None, notes=""),
+    )
+    assert find_client_profile(db, "%") is not None  # literal % exists in one name
+    assert find_client_profile(db, "%").client_id == "c-wild"
+    assert find_client_profile(db, "_") is None  # no underscore in any name
+
+    # Literal substring still works.
+    assert find_client_profile(db, "100% gen").client_id == "c-wild"
