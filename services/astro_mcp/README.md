@@ -7,6 +7,10 @@ use it as a stable astrology backend.
 
 No environment variables are required to run it. SQLite + filesystem only.
 
+Client-supplied `output_dir`/`db_path` arguments are sandboxed: they must
+resolve inside the server's working directory or the system temp directory.
+Set `ASTRO_MCP_BASE_DIR` to allow one extra base directory explicitly.
+
 ## v0.1 Tool Surface (11 tools)
 
 Implemented, registered with the MCP server, and exercised by tests:
