@@ -129,19 +129,29 @@ _CLIENT_NAME_PROPERTY = {
 
 _OUTPUT_DIR_PROPERTY = {
     "type": ["string", "null"],
-    "description": "Directory the report file is written into (default: data/reports).",
+    "description": (
+        "Directory the report file is written into (default: data/reports). "
+        "Must resolve inside the server working directory, the system temp "
+        "directory, or ASTRO_MCP_BASE_DIR; other paths are rejected."
+    ),
 }
 
 _REPORT_DB_PATH_PROPERTY = {
     "type": ["string", "null"],
     "description": (
-        "SQLite store to record the report in; when omitted the report is only written to disk."
+        "SQLite store to record the report in; when omitted the report is only written to disk. "
+        "Must resolve inside the server working directory, the system temp "
+        "directory, or ASTRO_MCP_BASE_DIR; other paths are rejected."
     ),
 }
 
 _PROFILE_DB_PATH_PROPERTY = {
     "type": ["string", "null"],
-    "description": "Path of the SQLite client store (default: data/astro_mcp.sqlite3).",
+    "description": (
+        "Path of the SQLite client store (default: data/astro_mcp.sqlite3). "
+        "Must resolve inside the server working directory, the system temp "
+        "directory, or ASTRO_MCP_BASE_DIR; other paths are rejected."
+    ),
 }
 
 # Every tool computes locally (Swiss Ephemeris + SQLite) — nothing calls out

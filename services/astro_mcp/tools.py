@@ -7,7 +7,9 @@ the calculators stay stateless and portable.
 from __future__ import annotations
 
 import json
+import os
 import re
+import tempfile
 import uuid
 from dataclasses import asdict
 from datetime import date, datetime, timezone
@@ -54,8 +56,35 @@ def _new_report_id(prefix: str) -> str:
     return f"{prefix}-{uuid.uuid4().hex[:12]}"
 
 
+def _allowed_base_dirs() -> tuple[Path, ...]:
+    """Directories client-supplied paths may live under.
+
+    MCP clients control ``output_dir``/``db_path`` in tool arguments, so
+    without a fence a client could make the server create directories or
+    SQLite files anywhere the process may write. Operators can widen the
+    fence explicitly via the ``ASTRO_MCP_BASE_DIR`` environment variable.
+    """
+    bases = [Path.cwd(), Path(tempfile.gettempdir())]
+    extra = os.environ.get("ASTRO_MCP_BASE_DIR")
+    if extra:
+        bases.append(Path(extra))
+    return tuple(base.resolve() for base in bases)
+
+
+def _ensure_allowed_path(path: Path | str, kind: str) -> Path:
+    resolved = Path(path).expanduser().resolve()
+    for base in _allowed_base_dirs():
+        if resolved == base or base in resolved.parents:
+            return resolved
+    raise ValueError(
+        f"Refusing {kind} outside the allowed base directories "
+        f"(working directory, system temp dir, or ASTRO_MCP_BASE_DIR): {resolved}"
+    )
+
+
 def _resolve_output_dir(output_dir: Path | str | None) -> Path:
-    path = Path(output_dir) if output_dir is not None else DEFAULT_OUTPUT_DIR
+    requested = output_dir if output_dir is not None else DEFAULT_OUTPUT_DIR
+    path = _ensure_allowed_path(requested, "output directory")
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -88,6 +117,7 @@ def _resolved_output_path(out_dir: Path, report_id: str, extension: str) -> Path
 def _persist_report(db_path: Path | str | None, record: ReportRecord) -> None:
     if db_path is None:
         return
+    db_path = _ensure_allowed_path(db_path, "SQLite database path")
     init_db(db_path)
     if find_client_profile(db_path, record.client_id) is None:
         save_client_profile(
@@ -367,7 +397,9 @@ def _profile_from_dict(payload: dict) -> ClientProfile:
 
 
 def _resolve_db_path(db_path: Path | str | None) -> Path:
-    return Path(db_path) if db_path is not None else default_db_path()
+    if db_path is None:
+        return default_db_path()
+    return _ensure_allowed_path(db_path, "SQLite database path")
 
 
 def save_client_profile_tool(profile: dict, db_path: Path | str | None = None) -> dict:

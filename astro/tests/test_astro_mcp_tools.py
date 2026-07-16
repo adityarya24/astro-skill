@@ -255,3 +255,37 @@ def test_generate_report_json_tool_accepts_schema_advertised_fields(tmp_path: Pa
     written = json.loads(Path(record["path"]).read_text(encoding="utf-8"))
     assert written["sections"]["gochar"] == {"note": "demo-gochar"}
     assert written["client_name"] == "Kiran Verma"
+
+
+def test_client_supplied_paths_outside_allowed_bases_are_rejected(tmp_path: Path, monkeypatch):
+    """output_dir/db_path come from MCP clients; paths outside the working
+    directory, the system temp dir, or ASTRO_MCP_BASE_DIR must be refused."""
+    from services.astro_mcp.tools import _resolve_db_path, _resolve_output_dir
+
+    monkeypatch.delenv("ASTRO_MCP_BASE_DIR", raising=False)
+    outside = Path("/etc/astro-skill-forbidden")
+
+    with pytest.raises(ValueError, match="Refusing output directory"):
+        _resolve_output_dir(outside)
+    assert not outside.exists()
+
+    with pytest.raises(ValueError, match="Refusing SQLite database path"):
+        save_client_profile_tool(
+            profile={"client_id": "evil", "display_name": "Evil", "birth": None},
+            db_path=outside / "evil.sqlite3",
+        )
+
+    # ASTRO_MCP_BASE_DIR widens the fence explicitly. Shrink the temp-dir
+    # base first so tmp_path is only allowed once the env var names it.
+    import services.astro_mcp.tools as tools_mod
+
+    monkeypatch.setattr(
+        tools_mod.tempfile, "gettempdir", lambda: str(tmp_path / "elsewhere")
+    )
+    with pytest.raises(ValueError, match="Refusing output directory"):
+        _resolve_output_dir(tmp_path / "reports")
+
+    monkeypatch.setenv("ASTRO_MCP_BASE_DIR", str(tmp_path))
+    resolved = _resolve_output_dir(tmp_path / "reports")
+    assert resolved.is_dir()
+    assert _resolve_db_path(tmp_path / "store.sqlite3") == (tmp_path / "store.sqlite3").resolve()
