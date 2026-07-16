@@ -47,6 +47,14 @@ COPY pyproject.toml README.md ./
 #     explicitly keeps the tier correct regardless of working directory.
 ENV SE_EPHE_PATH=/app/astro/ephe
 
-# 6. Default process: the astro MCP server (stdio). Override the command to run
+# 6. Drop root: the server only needs to write reports/SQLite under
+#    /app/data, so create that dir, hand it to a dedicated user and run as
+#    that user from here on.
+RUN useradd --create-home --uid 10001 astro \
+    && mkdir -p /app/data \
+    && chown -R astro:astro /app/data
+USER astro
+
+# 7. Default process: the astro MCP server (stdio). Override the command to run
 #    one-off scripts (e.g. generate a PDF) — see README/compose.
 CMD ["python", "-m", "services.astro_mcp"]

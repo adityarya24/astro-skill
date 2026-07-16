@@ -36,6 +36,9 @@ RUN apt-get update \
 # 5. Chromium + its system libraries for the HTML (Devanagari) PDF renderer.
 #    --with-deps installs the OS packages Chromium needs. This is the heavy,
 #    one-time step that the manual setup used to require on every machine.
+#    PLAYWRIGHT_BROWSERS_PATH puts the browser in a shared world-readable
+#    location instead of root's home, so the non-root user (step 7) can use it.
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
 RUN python -m playwright install --with-deps chromium
 
 # 6. The skill code. The bundled Noto Devanagari font travels inside
@@ -52,6 +55,15 @@ COPY pyproject.toml README.md ./
 #     explicitly keeps the tier correct regardless of working directory.
 ENV SE_EPHE_PATH=/app/astro/ephe
 
-# 7. Default process: the astro MCP server (stdio). Override the command to run
+# 7. Drop root: the server only needs to write reports/SQLite under
+#    /app/data, so create that dir, hand it to a dedicated user and run as
+#    that user from here on. Chromium lives in /opt/ms-playwright (step 5),
+#    readable by everyone.
+RUN useradd --create-home --uid 10001 astro \
+    && mkdir -p /app/data \
+    && chown -R astro:astro /app/data
+USER astro
+
+# 8. Default process: the astro MCP server (stdio). Override the command to run
 #    one-off scripts (e.g. generate a PDF) — see README/compose.
 CMD ["python", "-m", "services.astro_mcp"]
