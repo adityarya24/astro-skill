@@ -23,7 +23,7 @@ Current capabilities:
   certainty predictions.
 
 `services/astro_mcp/` wraps the same calculators as a generic stdio MCP server
-(9 tools) — see `services/astro_mcp/README.md`.
+(11 tools) — see `services/astro_mcp/README.md`.
 
 ## PDF Renderers
 

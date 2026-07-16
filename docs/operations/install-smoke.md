@@ -81,7 +81,7 @@ test (`astro/tests/test_smoke_mcp_script.py`).
 ## 3. Run The MCP Server
 
 Pick whichever invocation suits the client wiring. All three do the same
-thing — they spin up the stdio server bound to the 9-tool registry.
+thing — they spin up the stdio server bound to the 11-tool registry.
 
 ```powershell
 # Module form
@@ -187,7 +187,7 @@ Expected output:
 ```
 Astro MCP smoke summary
 ----------------------------------------
-  PASS  list_tools              9 tools
+  PASS  list_tools              11 tools
   PASS  calculate_panchang      vara=Guruvara
   PASS  calculate_kundali       lagna=Mesha
   PASS  generate_report_json    path=rpt-XXXXXXXXXXXX.json exists=True

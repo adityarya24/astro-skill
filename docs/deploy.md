@@ -1,19 +1,26 @@
 # Deploying the astro MCP server
 
 The skill is the product: any MCP-speaking runtime gets astrology tools by
-running this server. The recommended path is the self-contained Docker image
-(Python + dependencies + Chromium + bundled fonts and ephemeris), but you can
-also run it straight from a Python environment.
+running this server. The recommended path is Docker, but you can also run it
+straight from a Python environment.
 
 ## Option A — Docker (recommended)
 
-The [`Dockerfile`](../Dockerfile) builds a self-contained image: Chromium for the
-Devanagari PDF renderer, the Noto Devanagari font, and the Swiss Ephemeris `.se1`
-data all travel inside the image, so nothing extra is needed on the host.
+There are two images. The [`Dockerfile`](../Dockerfile) at the repo root is
+the **default, slim** image: Python + dependencies + bundled fonts and
+ephemeris, no Chromium — it builds fast and stays small enough for registry
+build limits (e.g. Glama). Call `generate_pdf_report` with
+`renderer="reportlab"` there. [`Dockerfile.full`](../Dockerfile.full) adds
+Chromium/Playwright for the polished Devanagari HTML PDF renderer, at the cost
+of a 1GB+ image — build it explicitly with `docker build -f Dockerfile.full -t
+astro-skill .` for VPS/self-hosted deploys that need `renderer="html"`.
 
 ```bash
-# Build
+# Build (slim, default)
 docker build -t astro-skill .
+
+# Build (full, with Chromium)
+docker build -f Dockerfile.full -t astro-skill .
 
 # Smoke-test the image (computes a reference kundali inside the container)
 docker run --rm --entrypoint python astro-skill -c \

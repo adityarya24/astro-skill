@@ -39,7 +39,7 @@ Rules of thumb:
 
 ### `services/astro_mcp/` — generic MCP server
 
-- **What it owns:** a stable 9-tool surface, SQLite-backed client profile +
+- **What it owns:** a stable 11-tool surface, SQLite-backed client profile +
   report storage, an MCP stdio server, and JSON Schemas for each tool.
 - **What it does not own:** delivery channels, voice, web UI, any product wording.
 - **Reusable as:** an MCP server for any MCP client (Claude Desktop, a Codex
