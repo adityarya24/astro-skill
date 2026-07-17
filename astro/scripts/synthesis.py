@@ -46,15 +46,19 @@ class GeminiProvider(Provider):
             headers={"Content-Type": "application/json"}
         )
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 return res["candidates"][0]["content"]["parts"][0]["text"]
-        except Exception:
+        except Exception as e:
+            import sys
+            sys.stderr.write(f"GeminiProvider failed first attempt: {e}\n")
             try:
-                with urllib.request.urlopen(req) as resp:
+                with urllib.request.urlopen(req, timeout=20) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
                     return res["candidates"][0]["content"]["parts"][0]["text"]
-            except Exception:
+            except Exception as e:
+                import sys
+                sys.stderr.write(f"GeminiProvider failed second attempt: {e}\n")
                 return ""
 
 
@@ -80,15 +84,19 @@ class OpenAIProvider(Provider):
             }
         )
         try:
-            with urllib.request.urlopen(req) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 return res["choices"][0]["message"]["content"]
-        except Exception:
+        except Exception as e:
+            import sys
+            sys.stderr.write(f"OpenAIProvider failed first attempt: {e}\n")
             try:
-                with urllib.request.urlopen(req) as resp:
+                with urllib.request.urlopen(req, timeout=20) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
                     return res["choices"][0]["message"]["content"]
-            except Exception:
+            except Exception as e:
+                import sys
+                sys.stderr.write(f"OpenAIProvider failed second attempt: {e}\n")
                 return ""
 
 
@@ -101,13 +109,17 @@ class CLIProvider(Provider):
         # replace {prompt} as a whole-token substitution only
         cmd = [prompt if arg == "{prompt}" else arg for arg in self.args]
         try:
-            res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True)
+            res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=60)
             return res.stdout.strip()
-        except subprocess.CalledProcessError:
+        except Exception as e:
+            import sys
+            sys.stderr.write(f"CLIProvider failed first attempt: {e}\n")
             try:
-                res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True)
+                res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=60)
                 return res.stdout.strip()
-            except subprocess.CalledProcessError:
+            except Exception as e:
+                import sys
+                sys.stderr.write(f"CLIProvider failed second attempt: {e}\n")
                 return ""
 
 
@@ -198,7 +210,7 @@ FACT SHEET (ONLY USE THESE FACTS):
     return results
 
 
-def dasha_deep_dive(report: dict, lang: str) -> str:
+def dasha_deep_dive(report: dict, lang: str, gochar_narrative: dict | None = None) -> str:
     birth = report.get("sections", {}).get("birth_chart", {})
     dasha = report.get("sections", {}).get("current_dasha", {})
     if not dasha:
@@ -225,7 +237,8 @@ def dasha_deep_dive(report: dict, lang: str) -> str:
         "period": period,
         "antardasha_end": dasha.get("antardasha_end"),
         "mahadasha_lord_info": md_info,
-        "antardasha_lord_info": ad_info
+        "antardasha_lord_info": ad_info,
+        "gochar_narrative": gochar_narrative.get("synthesis_facts") if gochar_narrative else None
     }
 
     prompt = f"""Write a dasha deep dive focusing ONLY on the current antardasha window (opportunities, risks, month-wise guidance).
@@ -238,7 +251,7 @@ FACT SHEET:
     return get_provider().generate(prompt)
 
 
-def life_areas(report: dict, lang: str) -> dict:
+def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) -> dict:
     birth = report.get("sections", {}).get("birth_chart", {})
     houses = birth.get("houses", [])
     planets = birth.get("planets", {})
@@ -250,23 +263,28 @@ def life_areas(report: dict, lang: str) -> dict:
                 return h
         return {}
 
+    gochar_synthesis = gochar_narrative.get("synthesis_facts") if gochar_narrative else None
+
     career_facts = {
         "house_10": get_house(10),
         "Saturn": planets.get("Shani"),
         "Sun": planets.get("Surya"),
-        "dasha": dasha.get("period") if dasha else None
+        "dasha": dasha.get("period") if dasha else None,
+        "gochar_narrative": gochar_synthesis
     }
     wealth_facts = {
         "house_2": get_house(2),
         "house_11": get_house(11),
         "Jupiter": planets.get("Guru"),
-        "dasha": dasha.get("period") if dasha else None
+        "dasha": dasha.get("period") if dasha else None,
+        "gochar_narrative": gochar_synthesis
     }
     marriage_facts = {
         "house_7": get_house(7),
         "Venus": planets.get("Shukra"),
         "mangalik": birth.get("mangalik"),
-        "dasha": dasha.get("period") if dasha else None
+        "dasha": dasha.get("period") if dasha else None,
+        "gochar_narrative": gochar_synthesis
     }
     lagna_lord = get_house(1).get("lord", "")
     health_facts = {
@@ -274,7 +292,8 @@ def life_areas(report: dict, lang: str) -> dict:
         "house_8": get_house(8),
         "lagna_lord": lagna_lord,
         "lagna_lord_placement": planets.get(lagna_lord) if lagna_lord else None,
-        "dasha": dasha.get("period") if dasha else None
+        "dasha": dasha.get("period") if dasha else None,
+        "gochar_narrative": gochar_synthesis
     }
 
     areas = {
@@ -334,7 +353,7 @@ FACT SHEET (Weakest/Dasha planets prioritized: {', '.join(target_planets)}):
     return get_provider().generate(prompt)
 
 
-def synthesize_all(report: dict, lang: str) -> dict:
+def synthesize_all(report: dict, lang: str, gochar_narrative: dict | None = None) -> dict:
     data_dir = Path(__file__).parent.parent / "data"
     remedies_path = data_dir / "remedies.json"
     if not remedies_path.exists():
@@ -349,14 +368,14 @@ def synthesize_all(report: dict, lang: str) -> dict:
     return {
         "executive_summary": executive_summary(report, lang),
         "bhava_analysis": bhava_analysis(report, lang),
-        "dasha_deep_dive": dasha_deep_dive(report, lang),
-        "life_areas": life_areas(report, lang),
+        "dasha_deep_dive": dasha_deep_dive(report, lang, gochar_narrative),
+        "life_areas": life_areas(report, lang, gochar_narrative),
         "remedies": remedies_section(report, remedies_data, lang)
     }
 
 
-def synthesize_bilingual(report: dict) -> dict:
+def synthesize_bilingual(report: dict, gochar_narrative: dict | None = None) -> dict:
     return {
-        "hi": synthesize_all(report, "hi"),
-        "en": synthesize_all(report, "en")
+        "hi": synthesize_all(report, "hi", gochar_narrative),
+        "en": synthesize_all(report, "en", gochar_narrative)
     }

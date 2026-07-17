@@ -41,6 +41,25 @@ def _gochar(chart: dict) -> dict:
     return calculate_gochar(chart, on_date=date(2026, 5, 20))
 
 
+def _gochar_narrative() -> dict:
+    return {
+        "summary": "Gochar narrative summary.",
+        "samples": [
+            {
+                "date": "2026-05-20",
+                "highlights": [
+                    {
+                        "planet": "Surya",
+                        "sign": "Mesha",
+                        "house_from_moon": 1,
+                        "house_from_lagna": 1,
+                    }
+                ]
+            }
+        ]
+    }
+
+
 def _synth() -> dict:
     return {
         "en": {
@@ -114,6 +133,7 @@ def test_premium_sections_without_synthesis_do_not_crash():
         chart,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=_gochar_narrative(),
         language="en",
         template="pandit_v1",
         client_name="Kiran Verma",
@@ -144,6 +164,7 @@ def test_premium_sections_with_synthesis_include_prose():
         chart,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=_gochar_narrative(),
         language="en",
         template="pandit_v1",
         synthesis=synth,
@@ -170,6 +191,7 @@ def test_premium_fragment_builder_hi_headings():
         chart,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=_gochar_narrative(),
         language="hi",
         synthesis=_synth(),
     )
@@ -190,6 +212,7 @@ def test_standard_template_embeds_premium_sections():
         chart,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=_gochar_narrative(),
         language="en",
         template="standard",
     )
@@ -294,7 +317,9 @@ def test_hand_built_minimal_report_shape():
         },
     }
 
-    frag_no_synth = build_premium_sections_html(kundali, dasha=dasha, gochar=gochar, language="en")
+    frag_no_synth = build_premium_sections_html(
+        kundali, dasha=dasha, gochar=gochar, gochar_narrative=_gochar_narrative(), language="en"
+    )
     for heading in EN_HEADINGS:
         assert heading in frag_no_synth, f"missing: {heading}"
     assert "TestYoga" in frag_no_synth
@@ -307,6 +332,7 @@ def test_hand_built_minimal_report_shape():
         kundali,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=_gochar_narrative(),
         language="en",
         synthesis=_synth(),
     )

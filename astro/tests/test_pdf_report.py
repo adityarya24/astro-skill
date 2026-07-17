@@ -152,10 +152,12 @@ def test_html_renderer_path_does_not_require_reportlab(monkeypatch, tmp_path: Pa
         dasha: dict | None = None,
         panchang: dict | None = None,
         gochar: dict | None = None,
+        gochar_narrative: dict | None = None,
         output_path: Path,
         language: str = "hin",
         client_name: str | None = None,
         template: str = "standard",
+        synthesis: dict | None = None,
     ) -> Path:
         output_path.write_text("fake html pdf", encoding="utf-8")
         return output_path
