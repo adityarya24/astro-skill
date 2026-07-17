@@ -222,7 +222,8 @@ def test_pandit_v1_html_has_pitch_ready_sections():
     )
 
     # Client-facing janma patrika: interpretation-rich but paginated, no filler.
-    assert 14 <= document.count('class="pandit-page"') <= 19
+    # Upper bound raised after T4 premium analysis pages (strength, bhavas, etc.).
+    assert 14 <= document.count('class="pandit-page"') <= 28
     assert "जन्म पत्रिका" in document
     assert "Kiran Verma" in document
     assert "सूचना" in document

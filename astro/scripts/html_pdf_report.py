@@ -13,6 +13,7 @@ If Chromium is not installed, :func:`build_html_pdf_report` raises
 ``RuntimeError`` with the install command. Tests should skip themselves when
 ``chromium_available()`` returns ``False``.
 """
+
 from __future__ import annotations
 
 import base64
@@ -39,8 +40,18 @@ PLANET_ORDER = ["Surya", "Chandra", "Mangal", "Budh", "Guru", "Shukra", "Shani",
 
 # Zodiac order; index+1 is the rashi number shown in chart cells.
 SIGN_ORDER = [
-    "Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya",
-    "Tula", "Vrischika", "Dhanu", "Makara", "Kumbha", "Meena",
+    "Mesha",
+    "Vrishabha",
+    "Mithuna",
+    "Karka",
+    "Simha",
+    "Kanya",
+    "Tula",
+    "Vrischika",
+    "Dhanu",
+    "Makara",
+    "Kumbha",
+    "Meena",
 ]
 
 HI_PLANETS = {
@@ -68,33 +79,61 @@ EN_PLANETS = {
 }
 
 SIGN_ELEMENT = {
-    "Mesha": "Agni", "Simha": "Agni", "Dhanu": "Agni",
-    "Vrishabha": "Prithvi", "Kanya": "Prithvi", "Makara": "Prithvi",
-    "Mithuna": "Vayu", "Tula": "Vayu", "Kumbha": "Vayu",
-    "Karka": "Jal", "Vrischika": "Jal", "Meena": "Jal",
+    "Mesha": "Agni",
+    "Simha": "Agni",
+    "Dhanu": "Agni",
+    "Vrishabha": "Prithvi",
+    "Kanya": "Prithvi",
+    "Makara": "Prithvi",
+    "Mithuna": "Vayu",
+    "Tula": "Vayu",
+    "Kumbha": "Vayu",
+    "Karka": "Jal",
+    "Vrischika": "Jal",
+    "Meena": "Jal",
 }
 
 SIGN_MODALITY = {
-    "Mesha": "Chara", "Karka": "Chara", "Tula": "Chara", "Makara": "Chara",
-    "Vrishabha": "Sthira", "Simha": "Sthira", "Vrischika": "Sthira", "Kumbha": "Sthira",
-    "Mithuna": "Dvisvabhava", "Kanya": "Dvisvabhava", "Dhanu": "Dvisvabhava", "Meena": "Dvisvabhava",
+    "Mesha": "Chara",
+    "Karka": "Chara",
+    "Tula": "Chara",
+    "Makara": "Chara",
+    "Vrishabha": "Sthira",
+    "Simha": "Sthira",
+    "Vrischika": "Sthira",
+    "Kumbha": "Sthira",
+    "Mithuna": "Dvisvabhava",
+    "Kanya": "Dvisvabhava",
+    "Dhanu": "Dvisvabhava",
+    "Meena": "Dvisvabhava",
 }
 
 ELEMENT_DISP = {
-    "Agni": ("अग्नि", "Fire"), "Prithvi": ("पृथ्वी", "Earth"),
-    "Vayu": ("वायु", "Air"), "Jal": ("जल", "Water"),
+    "Agni": ("अग्नि", "Fire"),
+    "Prithvi": ("पृथ्वी", "Earth"),
+    "Vayu": ("वायु", "Air"),
+    "Jal": ("जल", "Water"),
 }
 
 MODALITY_DISP = {
-    "Chara": ("चर", "Cardinal"), "Sthira": ("स्थिर", "Fixed"),
+    "Chara": ("चर", "Cardinal"),
+    "Sthira": ("स्थिर", "Fixed"),
     "Dvisvabhava": ("द्विस्वभाव", "Dual"),
 }
 
 SIGN_LORD = {
-    "Mesha": "Mangal", "Vrishabha": "Shukra", "Mithuna": "Budh",
-    "Karka": "Chandra", "Simha": "Surya", "Kanya": "Budh",
-    "Tula": "Shukra", "Vrischika": "Mangal", "Dhanu": "Guru",
-    "Makara": "Shani", "Kumbha": "Shani", "Meena": "Guru",
+    "Mesha": "Mangal",
+    "Vrishabha": "Shukra",
+    "Mithuna": "Budh",
+    "Karka": "Chandra",
+    "Simha": "Surya",
+    "Kanya": "Budh",
+    "Tula": "Shukra",
+    "Vrischika": "Mangal",
+    "Dhanu": "Guru",
+    "Makara": "Shani",
+    "Kumbha": "Shani",
+    "Meena": "Guru",
 }
 
 HI_SIGNS = {
@@ -361,19 +400,75 @@ PANDIT_LABELS = {
     "dominant_element": ("प्रमुख तत्व", "Dominant Element"),
     "modality_balance": ("स्वभाव-प्रकार संतुलन", "Modality Balance"),
     "dominant_modality": ("प्रमुख स्वभाव-प्रकार", "Dominant Modality"),
-    "personality_note": ("यह व्यक्तित्व-चित्रण ग्रहों के तत्व एवं स्वभाव-संतुलन पर आधारित है; पूर्ण निष्कर्ष सम्पूर्ण कुंडली से निकाला जाए।", "This personality sketch is based on the elemental and modal balance of the planets; a complete conclusion should be drawn from the whole chart."),
+    "personality_note": (
+        "यह व्यक्तित्व-चित्रण ग्रहों के तत्व एवं स्वभाव-संतुलन पर आधारित है; पूर्ण निष्कर्ष सम्पूर्ण कुंडली से निकाला जाए।",
+        "This personality sketch is based on the elemental and modal balance of the planets; a complete conclusion should be drawn from the whole chart.",
+    ),
     "dominant_tag": ("प्रबल", "Strongly dominant"),
     "syn_title": ("व्यक्तित्व सार", "Personality Essence"),
     "syn_lagna": ("बाहरी स्वरूप (लग्न)", "Outer self (Lagna)"),
     "syn_moon": ("आंतरिक मन (चंद्र राशि)", "Inner mind (Moon sign)"),
     "syn_sun": ("मूल प्रेरणा (सूर्य राशि)", "Core drive (Sun sign)"),
-    "syn_template": ("बाहर से {0}; भीतर से {1}; और मूल में {2} प्रेरणा रहती है।", "Outwardly {0}; inwardly {1}; with a core drive that is {2}."),
+    "syn_template": (
+        "बाहर से {0}; भीतर से {1}; और मूल में {2} प्रेरणा रहती है।",
+        "Outwardly {0}; inwardly {1}; with a core drive that is {2}.",
+    ),
     "remedies": ("उपाय सुझाव", "Suggested Remedies"),
     "lagnesh_label": ("लग्नेश", "Ascendant Lord"),
     "dasha_lord_label": ("वर्तमान दशा-स्वामी", "Current Dasha Lord"),
     "jaap_day": ("जाप का दिन", "Recite on"),
-    "remedies_note": ("ये सामान्य शास्त्रीय उपाय हैं; व्यक्तिगत एवं विस्तृत उपाय पंडित जी सम्पूर्ण कुंडली देखकर दें।", "These are general classical suggestions; personalised and detailed remedies should be given by the pandit after studying the full chart."),
+    "remedies_note": (
+        "ये सामान्य शास्त्रीय उपाय हैं; व्यक्तिगत एवं विस्तृत उपाय पंडित जी सम्पूर्ण कुंडली देखकर दें।",
+        "These are general classical suggestions; personalised and detailed remedies should be given by the pandit after studying the full chart.",
+    ),
     "footer": ("जन्म पत्रिका — गणना आधारित प्रारूप", "Janma Patrika — calculation-based format"),
+    # --- Premium analysis sections ---
+    "premium_footer": ("प्रीमियम वैदिक विश्लेषण", "Premium Vedic Analysis"),
+    "exec_summary": ("कार्यकारी सार", "Executive Summary"),
+    "planet_strength": ("ग्रह बल तालिका", "Planetary Strength"),
+    "col_sign_house": ("राशि + भाव", "Sign + House"),
+    "col_dignity": ("अवस्था", "Dignity"),
+    "col_digbala": ("दिग्बल", "Digbala"),
+    "col_vargottama": ("वर्गोत्तम", "Vargottama"),
+    "col_combust": ("अस्त", "Combust"),
+    "col_verdict": ("बल निर्णय", "Strength Verdict"),
+    "bhava_analysis": ("बारह भाव विश्लेषण", "Twelve-House Analysis"),
+    "occupants": ("स्थित ग्रह", "Occupants"),
+    "lord_in": ("स्वामी स्थिति", "Lord placement"),
+    "aspects_recv": ("दृष्टि", "Aspects received"),
+    "karakas": ("कारक", "Karakas"),
+    "dasha_deep": ("दशा गहन विश्लेषण", "Dasha Deep-Dive"),
+    "gochar_highlights": ("गोचर मुख्य बिंदु", "Gochar Highlights"),
+    "transit_table": ("गोचर स्थिति", "Transit Positions"),
+    "sade_sati": ("साढ़े साती / ढैया", "Sade Sati / Dhaiya"),
+    "life_areas": ("जीवन क्षेत्र पूर्वानुमान", "Life-Area Forecasts"),
+    "yogas_detail": ("योग विवरण", "Yogas"),
+    "yoga_name": ("योग", "Yoga"),
+    "yoga_planets": ("संबंधित ग्रह", "Planets"),
+    "yoga_houses": ("भाव", "Houses"),
+    "yoga_strength": ("बल / निरस्तीकरण", "Strength / Cancellation"),
+    "ashtakavarga": ("अष्टकवर्ग", "Ashtakavarga"),
+    "sarva_title": ("सर्वाष्टकवर्ग", "Sarvashtakavarga"),
+    "bhinna_title": ("भिन्नाष्टकवर्ग सार", "Bhinnashtakavarga Summary"),
+    "best_sign": ("सर्वोत्तम राशि", "Best sign"),
+    "worst_sign": ("न्यूनतम राशि", "Lowest sign"),
+    "bindus": ("बिंदु", "bindus"),
+    "premium_remedies": ("उपाय (प्राथमिकता क्रम)", "Remedies (Prioritised)"),
+    "mantra_count": ("जाप संख्या", "Count"),
+    "gemstone": ("रत्न", "Gemstone"),
+    "fasting": ("उपवास दिन", "Fasting day"),
+    "daan": ("दान", "Daan"),
+    "ritual": ("अनुष्ठान", "Ritual"),
+    "gem_disclaimer": (
+        "रत्न संबंधी सलाह केवल पारंपरिक संदर्भ है; धारण से पहले योग्य ज्योतिषी/रत्न विशेषज्ञ से परामर्श लें।",
+        "Gemstone guidance is traditional only; consult a qualified astrologer/gem expert before wearing.",
+    ),
+    "mangalik_box": ("मांगलिक दोष", "Mangalik Dosha"),
+    "mangalik_status": ("स्थिति", "Status"),
+    "mangalik_reasons": ("कारण", "Reasons"),
+    "empty_house": ("रिक्त", "empty"),
+    "from_moon": ("चंद्र से भाव", "H. from Moon"),
+    "from_lagna": ("लग्न से भाव", "H. from Lagna"),
 }
 
 
@@ -424,20 +519,47 @@ def display_nakshatra(value: str, language: str) -> str:
 
 
 HI_YOGAS = {
-    "Vishkambha": "विष्कम्भ", "Priti": "प्रीति", "Ayushman": "आयुष्मान",
-    "Saubhagya": "सौभाग्य", "Shobhana": "शोभन", "Atiganda": "अतिगण्ड",
-    "Sukarma": "सुकर्मा", "Dhriti": "धृति", "Shula": "शूल", "Ganda": "गण्ड",
-    "Vriddhi": "वृद्धि", "Dhruva": "ध्रुव", "Vyaghata": "व्याघात",
-    "Harshana": "हर्षण", "Vajra": "वज्र", "Siddhi": "सिद्धि",
-    "Vyatipata": "व्यतीपात", "Variyana": "वरीयान", "Parigha": "परिघ",
-    "Shiva": "शिव", "Siddha": "सिद्ध", "Sadhya": "साध्य", "Shubha": "शुभ",
-    "Shukla": "शुक्ल", "Brahma": "ब्रह्म", "Indra": "इन्द्र", "Vaidhriti": "वैधृति",
+    "Vishkambha": "विष्कम्भ",
+    "Priti": "प्रीति",
+    "Ayushman": "आयुष्मान",
+    "Saubhagya": "सौभाग्य",
+    "Shobhana": "शोभन",
+    "Atiganda": "अतिगण्ड",
+    "Sukarma": "सुकर्मा",
+    "Dhriti": "धृति",
+    "Shula": "शूल",
+    "Ganda": "गण्ड",
+    "Vriddhi": "वृद्धि",
+    "Dhruva": "ध्रुव",
+    "Vyaghata": "व्याघात",
+    "Harshana": "हर्षण",
+    "Vajra": "वज्र",
+    "Siddhi": "सिद्धि",
+    "Vyatipata": "व्यतीपात",
+    "Variyana": "वरीयान",
+    "Parigha": "परिघ",
+    "Shiva": "शिव",
+    "Siddha": "सिद्ध",
+    "Sadhya": "साध्य",
+    "Shubha": "शुभ",
+    "Shukla": "शुक्ल",
+    "Brahma": "ब्रह्म",
+    "Indra": "इन्द्र",
+    "Vaidhriti": "वैधृति",
 }
 
 HI_KARANAS = {
-    "Kimstughna": "किंस्तुघ्न", "Chatushpada": "चतुष्पाद", "Shakuni": "शकुनि",
-    "Balava": "बालव", "Kaulava": "कौलव", "Taitila": "तैतिल", "Vanija": "वणिज",
-    "Vishti": "विष्टि", "Bava": "बव", "Gara": "गर", "Naga": "नाग",
+    "Kimstughna": "किंस्तुघ्न",
+    "Chatushpada": "चतुष्पाद",
+    "Shakuni": "शकुनि",
+    "Balava": "बालव",
+    "Kaulava": "कौलव",
+    "Taitila": "तैतिल",
+    "Vanija": "वणिज",
+    "Vishti": "विष्टि",
+    "Bava": "बव",
+    "Gara": "गर",
+    "Naga": "नाग",
 }
 
 HI_MISC = {"Vimshottari": "विंशोत्तरी"}
@@ -452,7 +574,9 @@ def _replace_longest_first(value: str, mapping: dict) -> str:
 def display_term(value: str, language: str) -> str:
     if not _is_hi(language):
         return value
-    return _replace_longest_first(value, {**HI_TERMS, **HI_NAKSHATRAS, **HI_YOGAS, **HI_KARANAS, **HI_MISC})
+    return _replace_longest_first(
+        value, {**HI_TERMS, **HI_NAKSHATRAS, **HI_YOGAS, **HI_KARANAS, **HI_MISC}
+    )
 
 
 def display_dasha_value(value: str, language: str) -> str:
@@ -484,12 +608,7 @@ def _h(value: object) -> str:
 
 def _cover_name(kundali: dict, client_name: str | None) -> str:
     inp = kundali.get("input", {})
-    return (
-        client_name
-        or inp.get("client_name")
-        or inp.get("name")
-        or inp.get("place", "")
-    )
+    return client_name or inp.get("client_name") or inp.get("name") or inp.get("place", "")
 
 
 def _ni_house_polygons(size: float) -> dict[str, list[tuple[float, float]]]:
@@ -612,10 +731,7 @@ def _ni_chart_svg(kundali: dict, language: str) -> str:
             longest = max(len(p) for p in planets)
             while font > 7.0:
                 spans = [row_span(r) for r in range(rows)]
-                if all(
-                    longest * font * 0.62 <= min(x - lo, hi - x)
-                    for lo, hi in spans
-                ):
+                if all(longest * font * 0.62 <= min(x - lo, hi - x) for lo, hi in spans):
                     break
                 font -= 0.5
 
@@ -679,12 +795,7 @@ def _table(headers: list[str], rows: list[list[str]]) -> str:
     for row in rows:
         cells = "".join(f"<td>{_h(cell)}</td>" for cell in row)
         body_rows.append(f"<tr>{cells}</tr>")
-    return (
-        "<table>"
-        f"<thead><tr>{thead}</tr></thead>"
-        f"<tbody>{''.join(body_rows)}</tbody>"
-        "</table>"
-    )
+    return f"<table><thead><tr>{thead}</tr></thead><tbody>{''.join(body_rows)}</tbody></table>"
 
 
 def _kv_table(rows: list[tuple[str, str]], language: str) -> str:
@@ -744,7 +855,9 @@ def _font_face_css() -> str:
 
 
 def _css() -> str:
-    return _font_face_css() + """
+    return (
+        _font_face_css()
+        + """
     @page { size: A4; margin: 16mm 14mm; }
     * { box-sizing: border-box; }
     body {
@@ -811,11 +924,30 @@ def _css() -> str:
         color: #6b7280;
         text-align: center;
     }
+    .premium-section { page-break-inside: avoid; margin: 14px 0 18px; }
+    .premium-section h2 { margin-top: 10px; }
+    .planet-strength-table td, .planet-strength-table th { font-size: 9.5pt; padding: 5px 7px; }
+    .house-card { border: 1px solid #efd4a7; background: #fffdf7; padding: 7px 9px; margin: 6px 0; page-break-inside: avoid; }
+    .house-card h3 { color: #b10000; font-size: 11pt; margin: 0 0 4px; border: none; }
+    .house-facts { color: #4b5563; font-size: 9.5pt; margin: 2px 0 4px; }
+    .house-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .yoga-card { border: 1px solid #efd4a7; background: rgba(255,255,255,.85); padding: 7px 9px; margin: 5px 0; page-break-inside: avoid; }
+    .mangalik-box { border: 2px solid #b10000; background: #fdecec; padding: 10px 12px; margin: 10px 0; border-radius: 3px; }
+    .mangalik-box.ok { border-color: #287133; background: #edf7ee; }
+    .sarva-best { background: #e8f5e9 !important; font-weight: 700; }
+    .sarva-worst { background: #fdecec !important; font-weight: 700; }
+    .flag-yes { color: #287133; font-weight: 700; }
+    .flag-no { color: #9ca3af; }
+    .prose { text-align: justify; font-size: 10.5pt; }
+    .compact-table td, .compact-table th { font-size: 8.5pt; padding: 4px 6px; }
     """
+    )
 
 
 def _pandit_css() -> str:
-    return _font_face_css() + """
+    return (
+        _font_face_css()
+        + """
     @page { size: A4; margin: 12mm 12mm; }
     * { box-sizing: border-box; }
     body {
@@ -897,7 +1029,24 @@ def _pandit_css() -> str:
     .remedy-list li, .summary-list li { margin: 8px 0; }
     .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
     .badge { border: 1px solid #d9a441; padding: 7px 10px; background: #fff6df; color: #7a3f00; }
+    .premium-section { margin: 8px 0 12px; page-break-inside: avoid; break-inside: avoid; }
+    .premium-section > h3 { text-align: left; font-size: 12pt; margin: 4px 0 6px; color: #b10000; }
+    .planet-strength-table td, .planet-strength-table th { font-size: 8.5pt; padding: 4px 6px; }
+    .house-card { border: 1px solid #efd4a7; background: rgba(255,255,255,.74); padding: 6px 8px; margin: 0; page-break-inside: avoid; }
+    .house-card h4 { color: #b10000; font-size: 9.5pt; margin: 0 0 3px; text-align: left; }
+    .house-facts { color: #4b5563; font-size: 8pt; margin: 1px 0 3px; line-height: 1.35; }
+    .house-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .yoga-card { border: 1px solid #efd4a7; background: rgba(255,255,255,.74); padding: 6px 8px; margin: 4px 0; page-break-inside: avoid; font-size: 9pt; }
+    .mangalik-box { border: 2px solid #b10000; background: #fdecec; padding: 8px 10px; margin: 8px 0; }
+    .mangalik-box.ok { border-color: #287133; background: #edf7ee; }
+    .sarva-best { background: #e8f5e9 !important; font-weight: 700; }
+    .sarva-worst { background: #fdecec !important; font-weight: 700; }
+    .flag-yes { color: #287133; font-weight: 700; }
+    .flag-no { color: #9ca3af; }
+    .prose { text-align: justify; font-size: 10pt; }
+    .compact-table td, .compact-table th { font-size: 8pt; padding: 3px 5px; }
     """
+    )
 
 
 def _page(
@@ -929,10 +1078,7 @@ def _cover_art_html() -> str:
         art = assets / name
         if art.exists():
             data = base64.b64encode(art.read_bytes()).decode("ascii")
-            return (
-                f'<img class="cover-art" alt="Ganesha" '
-                f'src="data:{mime};base64,{data}"/>'
-            )
+            return f'<img class="cover-art" alt="Ganesha" src="data:{mime};base64,{data}"/>'
     return _cover_motif_svg()
 
 
@@ -982,11 +1128,13 @@ def _current_period_page(dasha: dict | None, language: str, client: str) -> str 
     period_line = (
         f"{maha_name} {pl('mahadasha', language)} — {antar_name} {pl('antardasha', language)}"
     )
-    body = _pandit_kv([
-        (pl("running_period", language), period_line),
-        (pl("maha_end", language), current.get("mahadasha_end") or "-"),
-        (pl("antar_end", language), current.get("antardasha_end") or "-"),
-    ])
+    body = _pandit_kv(
+        [
+            (pl("running_period", language), period_line),
+            (pl("maha_end", language), current.get("mahadasha_end") or "-"),
+            (pl("antar_end", language), current.get("antardasha_end") or "-"),
+        ]
+    )
 
     theme = dp.get(maha, {}).get(dk, "")
     mind = gn.get(maha, {}).get(mind_k, "")
@@ -1016,7 +1164,9 @@ def _current_period_page(dasha: dict | None, language: str, client: str) -> str 
 
     body += "".join(panels)
     body += f"<p class='green'>{_h(pl('current_note', language))}</p>"
-    return _page(pl("current_analysis", language), body, footer=pl("footer", language), client=client)
+    return _page(
+        pl("current_analysis", language), body, footer=pl("footer", language), client=client
+    )
 
 
 def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[str]:
@@ -1046,14 +1196,19 @@ def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[s
     max_per = 4
     n_pages = max(1, -(-len(panels) // max_per))
     per = -(-len(panels) // n_pages)
-    groups = [panels[i:i + per] for i in range(0, len(panels), per)]
+    groups = [panels[i : i + per] for i in range(0, len(panels), per)]
     pages = []
     for gi, group in enumerate(groups):
         body = "".join(group)
         if gi == len(groups) - 1:
             body += f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
-        pages.append(_page(pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client))
+        pages.append(
+            _page(
+                pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client
+            )
+        )
     return pages
+
 
 def _personality_ext() -> dict:
     path = ROOT.parent / "data" / "personality_ext.json"
@@ -1114,10 +1269,14 @@ def _personality_pages(kundali: dict, language: str, client: str) -> list[str]:
     elem_order = ("Agni", "Prithvi", "Vayu", "Jal")
     mod_order = ("Chara", "Sthira", "Dvisvabhava")
 
-    page1 = f"<h3>{_h(pl('element_balance', language))}</h3>" + _pandit_kv(_rows(elem_count, elem_order, ELEMENT_DISP))
+    page1 = f"<h3>{_h(pl('element_balance', language))}</h3>" + _pandit_kv(
+        _rows(elem_count, elem_order, ELEMENT_DISP)
+    )
     page1 += _leaders(elem_count, elem_order, ELEMENT_DISP, et, "dominant_element")
 
-    page2 = f"<h3>{_h(pl('modality_balance', language))}</h3>" + _pandit_kv(_rows(mod_count, mod_order, MODALITY_DISP))
+    page2 = f"<h3>{_h(pl('modality_balance', language))}</h3>" + _pandit_kv(
+        _rows(mod_count, mod_order, MODALITY_DISP)
+    )
     page2 += _leaders(mod_count, mod_order, MODALITY_DISP, mt, "dominant_modality")
 
     moon_sign = (planets.get("Chandra") or {}).get("sign")
@@ -1144,6 +1303,7 @@ def _personality_pages(kundali: dict, language: str, client: str) -> list[str]:
         _page(pl("personality", language), page2, footer=pl("footer", language), client=client),
     ]
 
+
 def _pandit_interpretation_pages(
     kundali: dict,
     dasha: dict | None,
@@ -1155,9 +1315,7 @@ def _pandit_interpretation_pages(
     doshas = birth.get("doshas") or []
     # Prefer yoga_names (strings). Fall back to names extracted from full yoga dicts.
     raw_yogas = birth.get("yoga_names") or birth.get("yogas") or []
-    yoga_labels = [
-        y["name"] if isinstance(y, dict) else y for y in raw_yogas
-    ]
+    yoga_labels = [y["name"] if isinstance(y, dict) else y for y in raw_yogas]
     # The detector can flag the same yoga for several house-lord combinations.
     yogas = list(dict.fromkeys(yoga_labels))
     phalit = _phalit_data()
@@ -1186,17 +1344,18 @@ def _pandit_interpretation_pages(
     pages = [
         _page(
             pl("lrn_phal", language),
-            "".join(phalit_panels)
-            + f"<p class='green'>{_h(pl('swabhav_note', language))}</p>",
+            "".join(phalit_panels) + f"<p class='green'>{_h(pl('swabhav_note', language))}</p>",
             footer=pl("footer", language),
             client=client,
         ),
         _page(
             pl("yog_dosh", language),
-            _pandit_kv([
-                (pl("mukhya_yog", language), _safe_join(yogas, pl("no_yog", language))),
-                (pl("dosha_flag", language), _safe_join(doshas, pl("no_dosha", language))),
-            ])
+            _pandit_kv(
+                [
+                    (pl("mukhya_yog", language), _safe_join(yogas, pl("no_yog", language))),
+                    (pl("dosha_flag", language), _safe_join(doshas, pl("no_dosha", language))),
+                ]
+            )
             + f"<p class='green'>{_h(pl('yog_note', language))}</p>"
             + _remedies_html(kundali, dasha, language),
             footer=pl("footer", language),
@@ -1244,13 +1403,15 @@ def _birth_panchang(kundali: dict) -> dict | None:
         from panchang_calculator import PanchangInput, calculate_panchang
 
         born = datetime.fromisoformat(kundali["calculation"]["datetime_local"])
-        return calculate_panchang(PanchangInput(
-            date=born.strftime("%Y-%m-%d"),
-            place=inp.get("place", ""),
-            lat=float(inp["lat"]),
-            lon=float(inp["lon"]),
-            timezone_name=inp.get("timezone", "Asia/Kolkata"),
-        ))
+        return calculate_panchang(
+            PanchangInput(
+                date=born.strftime("%Y-%m-%d"),
+                place=inp.get("place", ""),
+                lat=float(inp["lat"]),
+                lon=float(inp["lon"]),
+                timezone_name=inp.get("timezone", "Asia/Kolkata"),
+            )
+        )
     except Exception:
         return None
 
@@ -1270,7 +1431,7 @@ def _antar_grid(timeline: list[dict], language: str) -> str:
             f"<table><thead><tr><th>{_h(pl('antardasha', language))}</th><th>{_h(pl('end', language))}</th></tr></thead>"
             f"<tbody>{antars}</tbody></table></div>"
         )
-    return f'<div class="antar-grid">{"".join(cards)}</div>' 
+    return f'<div class="antar-grid">{"".join(cards)}</div>'
 
 
 def _remedies_ext() -> dict:
@@ -1318,6 +1479,567 @@ def _remedies_html(kundali: dict, dasha: dict | None, language: str) -> str:
     )
 
 
+# ---------------------------------------------------------------------------
+# Premium analysis sections (T4) — report JSON + optional synthesis
+# ---------------------------------------------------------------------------
+
+
+def _synth_bundle(synthesis: dict | None, language: str) -> dict:
+    """Return the language-specific synthesis map; empty when synthesis is absent."""
+    if not isinstance(synthesis, dict):
+        return {}
+    if _is_hi(language):
+        block = synthesis.get("hi") or synthesis.get("hin") or {}
+    else:
+        block = synthesis.get("en") or {}
+    return block if isinstance(block, dict) else {}
+
+
+def _flag_mark(value: object) -> str:
+    return "✓" if bool(value) else "–"
+
+
+def _remedies_data() -> dict:
+    """Load ``astro/data/remedies.json`` when present (T5 data file)."""
+    path = ROOT.parent / "data" / "remedies.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+
+
+def _section_wrap(title: str, body: str, *, heading: str = "h3") -> str:
+    if not body:
+        return ""
+    return f'<div class="premium-section"><{heading}>{_h(title)}</{heading}>{body}</div>'
+
+
+def _render_exec_summary(planets: dict, language: str, synth: dict) -> str:
+    prose = synth.get("executive_summary") or synth.get("exec_summary") or ""
+    if isinstance(prose, dict):
+        prose = prose.get("text") or prose.get("body") or ""
+    if prose:
+        body = f'<p class="prose">{_h(prose)}</p>'
+    else:
+        lines = []
+        for name in PLANET_ORDER:
+            info = planets.get(name) or {}
+            verdict = info.get("strength_verdict") or "—"
+            lines.append(
+                f"<li><strong>{_h(display_planet(name, language))}</strong>"
+                f" — {_h(display_sign(info.get('sign', ''), language))} H{info.get('house', '—')}"
+                f": {_h(verdict)}</li>"
+            )
+        body = f'<ul class="summary-list">{"".join(lines)}</ul>'
+    return _section_wrap(pl("exec_summary", language), body)
+
+
+def _render_planet_strength(planets: dict, language: str) -> str:
+    headers = [
+        label("planet", language),
+        pl("col_sign_house", language),
+        pl("col_dignity", language),
+        pl("col_digbala", language),
+        pl("col_vargottama", language),
+        pl("col_combust", language),
+        pl("col_verdict", language),
+    ]
+    rows: list[list[str]] = []
+    for name in PLANET_ORDER:
+        info = planets.get(name) or {}
+        sign_house = f"{display_sign(info.get('sign', ''), language)} / H{info.get('house', '—')}"
+        digbala = info.get("digbala")
+        digbala_s = "—" if digbala in (None, "") else str(digbala)
+        rows.append(
+            [
+                display_planet(name, language),
+                sign_house,
+                str(info.get("dignity") or "—"),
+                digbala_s,
+                _flag_mark(info.get("vargottama")),
+                _flag_mark(info.get("combust")),
+                str(info.get("strength_verdict") or "—"),
+            ]
+        )
+    head = "".join(f"<th>{_h(h)}</th>" for h in headers)
+    body = "".join("<tr>" + "".join(f"<td>{_h(c)}</td>" for c in row) + "</tr>" for row in rows)
+    table = (
+        f'<table class="planet-strength-table"><thead><tr>{head}</tr></thead>'
+        f"<tbody>{body}</tbody></table>"
+    )
+    return _section_wrap(pl("planet_strength", language), table)
+
+
+def _render_bhava_analysis(houses: list[dict], language: str, synth: dict) -> str:
+    if not houses:
+        return ""
+    house_prose = synth.get("bhava_analysis") or {}
+    cards = []
+    for h in houses:
+        if not isinstance(h, dict):
+            continue
+        hno = h.get("house", "")
+        sign = display_sign(h.get("sign", ""), language)
+        lord = display_planet(h.get("lord", ""), language) if h.get("lord") else "—"
+        header = f"H{hno} · {sign} · {lord}"
+        occupants = h.get("planets") or []
+        occ_s = (
+            ", ".join(display_planet(p, language) for p in occupants)
+            if occupants
+            else pl("empty_house", language)
+        )
+        lp = h.get("lord_placement") or {}
+        lord_line = (
+            f"H{lp.get('house', '—')} {display_sign(lp.get('sign', ''), language)}" if lp else "—"
+        )
+        aspects = h.get("aspects_received") or []
+        asp_s = (
+            ", ".join(
+                f"{display_planet(a.get('from', ''), language)} ({a.get('type', '')})"
+                if isinstance(a, dict)
+                else str(a)
+                for a in aspects
+            )
+            if aspects
+            else "—"
+        )
+        karakas = h.get("karakas") or []
+        kar_s = ", ".join(display_planet(k, language) for k in karakas) if karakas else "—"
+        facts = (
+            f"{pl('occupants', language)}: {_h(occ_s)} · "
+            f"{pl('lord_in', language)}: {_h(lord_line)} · "
+            f"{pl('aspects_recv', language)}: {_h(asp_s)} · "
+            f"{pl('karakas', language)}: {_h(kar_s)}"
+        )
+        prose = ""
+        if isinstance(house_prose, dict):
+            prose = house_prose.get(str(hno)) or house_prose.get(hno) or ""
+        elif (
+            isinstance(house_prose, list) and isinstance(hno, int) and 1 <= hno <= len(house_prose)
+        ):
+            prose = house_prose[hno - 1]
+        prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
+        cards.append(
+            f'<div class="house-card"><h4>{_h(header)}</h4>'
+            f'<p class="house-facts">{facts}</p>{prose_html}</div>'
+        )
+    if not cards:
+        return ""
+    body = f'<div class="house-grid">{"".join(cards)}</div>'
+    return _section_wrap(pl("bhava_analysis", language), body)
+
+
+def _render_dasha_deep(dasha: dict | None, language: str, synth: dict) -> str:
+    current = (dasha or {}).get("current") or {}
+    prose = synth.get("dasha_deep_dive") or synth.get("dasha_deep") or ""
+    if isinstance(prose, dict):
+        prose = prose.get("text") or prose.get("body") or ""
+    if not current and not prose and not dasha:
+        return ""
+    period_bits = []
+    if current.get("mahadasha"):
+        period_bits.append(
+            f"MD: {display_planet(current['mahadasha'], language)}"
+            f" → {current.get('mahadasha_end') or '—'}"
+        )
+    if current.get("antardasha"):
+        period_bits.append(
+            f"AD: {display_planet(current['antardasha'], language)}"
+            f" → {current.get('antardasha_end') or '—'}"
+        )
+    if current.get("pratyantardasha"):
+        period_bits.append(
+            f"PD: {display_planet(current['pratyantardasha'], language)}"
+            f" → {current.get('pratyantardasha_end') or '—'}"
+        )
+    facts = "<br/>".join(_h(b) for b in period_bits) if period_bits else _h("—")
+    prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
+    body = f"<p>{facts}</p>{prose_html}"
+    return _section_wrap(pl("dasha_deep", language), body)
+
+
+def _render_gochar_highlights(gochar: dict | None, language: str) -> str:
+    if not gochar:
+        return ""
+    transits = gochar.get("transits") or {}
+    rows = []
+    for name in PLANET_ORDER:
+        t = transits.get(name)
+        if not t:
+            continue
+        rows.append(
+            [
+                display_planet(name, language),
+                display_sign(t.get("sign", ""), language),
+                str(t.get("house_from_moon", "—")),
+                str(t.get("house_from_lagna", "—")),
+            ]
+        )
+    table = ""
+    if rows:
+        table = _table(
+            [
+                label("planet", language),
+                label("sign", language),
+                pl("from_moon", language),
+                pl("from_lagna", language),
+            ],
+            rows,
+        )
+        table = table.replace("<table>", '<table class="compact-table">', 1)
+    sat = gochar.get("saturn_analysis") or {}
+    sat_bits = []
+    if sat:
+        sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
+        if sat.get("type"):
+            sat_bits.append(str(sat["type"]))
+        if sat.get("sign"):
+            sat_bits.append(display_sign(sat["sign"], language))
+        if sat.get("house_from_moon") is not None:
+            sat_bits.append(f"H{sat['house_from_moon']} {pl('from_moon', language)}")
+    sat_html = f"<p><strong>{_h(' · '.join(sat_bits))}</strong></p>" if sat_bits else ""
+    body = sat_html + table
+    if not body:
+        return ""
+    return _section_wrap(pl("gochar_highlights", language), body)
+
+
+def _render_life_areas(synth: dict, language: str) -> str:
+    life = synth.get("life_areas")
+    if not life:
+        return ""
+    if isinstance(life, str):
+        body = f'<p class="prose">{_h(life)}</p>'
+    elif isinstance(life, dict):
+        items = "".join(f"<li><strong>{_h(k)}</strong>: {_h(v)}</li>" for k, v in life.items() if v)
+        if not items:
+            return ""
+        body = f'<ul class="summary-list">{items}</ul>'
+    elif isinstance(life, list):
+        items = "".join(f"<li>{_h(x)}</li>" for x in life if x)
+        if not items:
+            return ""
+        body = f'<ul class="summary-list">{items}</ul>'
+    else:
+        return ""
+    return _section_wrap(pl("life_areas", language), body)
+
+
+def _render_yogas_detail(yogas: list, language: str) -> str:
+    if not yogas:
+        return ""
+    cards = []
+    for y in yogas:
+        if isinstance(y, str):
+            cards.append(f'<div class="yoga-card"><strong>{_h(y)}</strong></div>')
+            continue
+        if not isinstance(y, dict):
+            continue
+        name = y.get("name") or y.get("yoga") or "—"
+        planets = y.get("planets") or y.get("involved_planets") or []
+        houses = y.get("houses") or y.get("involved_houses") or []
+        strength = (
+            y.get("strength") or y.get("cancellation") or y.get("status") or y.get("type") or ""
+        )
+        desc = y.get("description") or ""
+        p_s = ", ".join(display_planet(p, language) for p in planets) if planets else "—"
+        h_s = ", ".join(str(h) for h in houses) if houses else "—"
+        meta = (
+            f"{pl('yoga_planets', language)}: {_h(p_s)} · {pl('yoga_houses', language)}: {_h(h_s)}"
+        )
+        if strength:
+            meta += f" · {pl('yoga_strength', language)}: {_h(strength)}"
+        desc_html = f'<p class="prose">{_h(desc)}</p>' if desc else ""
+        cards.append(
+            f'<div class="yoga-card"><strong>{_h(name)}</strong>'
+            f'<p class="house-facts">{meta}</p>{desc_html}</div>'
+        )
+    if not cards:
+        return ""
+    return _section_wrap(pl("yogas_detail", language), "".join(cards))
+
+
+def _render_ashtakavarga(ashtakavarga: dict | None, language: str) -> str:
+    if not isinstance(ashtakavarga, dict):
+        return ""
+    sarva = ashtakavarga.get("sarva") or ashtakavarga.get("sarvashtakavarga")
+    if not isinstance(sarva, list) or len(sarva) < 12:
+        return ""
+    best_i = max(range(12), key=lambda i: sarva[i])
+    worst_i = min(range(12), key=lambda i: sarva[i])
+    head = "".join(f"<th>{_h(display_sign(SIGN_ORDER[i], language))}</th>" for i in range(12))
+    cells = []
+    for i, val in enumerate(sarva[:12]):
+        cls = ""
+        if i == best_i:
+            cls = ' class="sarva-best"'
+        elif i == worst_i:
+            cls = ' class="sarva-worst"'
+        cells.append(f"<td{cls}>{_h(val)}</td>")
+    sarva_table = (
+        f"<p><strong>{_h(pl('sarva_title', language))}</strong></p>"
+        f'<table class="compact-table"><thead><tr>{head}</tr></thead>'
+        f"<tbody><tr>{''.join(cells)}</tr></tbody></table>"
+        f"<p>{_h(pl('best_sign', language))}: "
+        f"{_h(display_sign(SIGN_ORDER[best_i], language))} "
+        f"({sarva[best_i]} {_h(pl('bindus', language))}) · "
+        f"{_h(pl('worst_sign', language))}: "
+        f"{_h(display_sign(SIGN_ORDER[worst_i], language))} "
+        f"({sarva[worst_i]} {_h(pl('bindus', language))})</p>"
+    )
+    bhinna = ashtakavarga.get("bhinna_totals") or {}
+    bhinna_lines = []
+    if isinstance(bhinna, dict) and bhinna:
+        for name in PLANET_ORDER:
+            if name in bhinna:
+                bhinna_lines.append(
+                    f"{display_planet(name, language)}: {bhinna[name]} {pl('bindus', language)}"
+                )
+    bhinna_html = ""
+    if bhinna_lines:
+        bhinna_html = (
+            f"<p><strong>{_h(pl('bhinna_title', language))}</strong> — "
+            f"{_h(' · '.join(bhinna_lines))}</p>"
+        )
+    return _section_wrap(pl("ashtakavarga", language), sarva_table + bhinna_html)
+
+
+def _priority_remedy_planets(kundali: dict, dasha: dict | None, planets: dict) -> list[str]:
+    """Lagna lord, dasha lords, then weak/combust planets — de-duplicated."""
+    ordered: list[str] = []
+    lagnesh = SIGN_LORD.get(kundali.get("lagna", ""))
+    current = (dasha or {}).get("current") or {}
+    for p in (
+        lagnesh,
+        current.get("mahadasha"),
+        current.get("antardasha"),
+        current.get("pratyantardasha"),
+    ):
+        if p and p not in ordered:
+            ordered.append(p)
+    for name in PLANET_ORDER:
+        info = planets.get(name) or {}
+        weak = info.get("combust") or str(info.get("strength_verdict", "")).lower().startswith(
+            "weak"
+        )
+        if weak and name not in ordered:
+            ordered.append(name)
+    return ordered
+
+
+def _render_premium_remedies(
+    kundali: dict,
+    dasha: dict | None,
+    planets: dict,
+    language: str,
+    synth: dict,
+) -> str:
+    hi = _is_hi(language)
+    cards: list[str] = []
+
+    synth_rem = synth.get("remedies")
+    if isinstance(synth_rem, str) and synth_rem.strip():
+        return _section_wrap(
+            pl("premium_remedies", language),
+            f'<p class="prose">{_h(synth_rem)}</p>',
+        )
+    if isinstance(synth_rem, list):
+        for item in synth_rem:
+            if isinstance(item, str):
+                cards.append(f'<div class="panel"><p class="prose">{_h(item)}</p></div>')
+                continue
+            if not isinstance(item, dict):
+                continue
+            planet = item.get("planet") or item.get("name") or ""
+            title = display_planet(planet, language) if planet else (item.get("title") or "—")
+            bits = [f"<h4>{_h(title)}</h4>"]
+            if item.get("mantra"):
+                bits.append(f'<p class="mantra-line">{_h(item["mantra"])}</p>')
+            if item.get("count") is not None:
+                bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(item['count'])}</p>")
+            if item.get("gemstone"):
+                bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(item['gemstone'])}</p>")
+            if item.get("fasting") or item.get("fasting_day"):
+                bits.append(
+                    f"<p>{_h(pl('fasting', language))}: "
+                    f"{_h(item.get('fasting') or item.get('fasting_day'))}</p>"
+                )
+            if item.get("daan"):
+                bits.append(f"<p>{_h(pl('daan', language))}: {_h(item['daan'])}</p>")
+            if item.get("ritual"):
+                bits.append(f"<p>{_h(pl('ritual', language))}: {_h(item['ritual'])}</p>")
+            cards.append(f'<div class="panel">{"".join(bits)}</div>')
+
+    if not cards:
+        data = _remedies_data().get("planets") or {}
+        if data:
+            for planet in _priority_remedy_planets(kundali, dasha, planets):
+                r = data.get(planet)
+                if not r:
+                    continue
+                mantra = r.get("mantra") or {}
+                gem = r.get("gemstone") or {}
+                fasting = r.get("fasting") or {}
+                ritual = r.get("ritual") or {}
+                daan_list = r.get("daan") or []
+                daan_s = ", ".join(
+                    (d.get("hi") if hi else d.get("en")) or ""
+                    for d in daan_list
+                    if isinstance(d, dict)
+                )
+                gem_name = gem.get("name_hi") if hi else gem.get("name_en")
+                fast_day = fasting.get("day_hi") if hi else fasting.get("day_en")
+                ritual_s = ritual.get("hi") if hi else ritual.get("en")
+                bits = [
+                    f"<h4>{_h(display_planet(planet, language))}</h4>",
+                    f'<p class="mantra-line">{_h(mantra.get("hi") or "")}</p>',
+                    f'<p class="mantra-iast">{_h(mantra.get("iast") or "")}</p>',
+                ]
+                if mantra.get("count") is not None:
+                    bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(mantra['count'])}</p>")
+                if gem_name:
+                    bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(gem_name)}</p>")
+                if fast_day:
+                    bits.append(f"<p>{_h(pl('fasting', language))}: {_h(fast_day)}</p>")
+                if daan_s:
+                    bits.append(f"<p>{_h(pl('daan', language))}: {_h(daan_s)}</p>")
+                if ritual_s:
+                    bits.append(f"<p>{_h(pl('ritual', language))}: {_h(ritual_s)}</p>")
+                cards.append(f'<div class="panel">{"".join(bits)}</div>')
+            if cards:
+                cards.append(f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>')
+                cards.append(f'<p class="green">{_h(pl("remedies_note", language))}</p>')
+
+    if not cards:
+        return ""
+    return _section_wrap(pl("premium_remedies", language), "".join(cards))
+
+
+def _render_mangalik_box(mangalik: dict | None, language: str) -> str:
+    if not isinstance(mangalik, dict):
+        return ""
+    status = mangalik.get("status") or "—"
+    reasons = mangalik.get("reasons") or []
+    if isinstance(reasons, str):
+        reasons = [reasons]
+    ok = str(status).lower() in {"cancelled", "none", "absent", "no", "clear"}
+    cls = "mangalik-box ok" if ok else "mangalik-box"
+    reason_s = ", ".join(str(r) for r in reasons) if reasons else "—"
+    body = (
+        f'<div class="{cls}">'
+        f"<p><strong>{_h(pl('mangalik_status', language))}:</strong> {_h(status)}</p>"
+        f"<p><strong>{_h(pl('mangalik_reasons', language))}:</strong> {_h(reason_s)}</p>"
+        f"</div>"
+    )
+    return _section_wrap(pl("mangalik_box", language), body)
+
+
+def build_premium_sections_html(
+    kundali: dict,
+    *,
+    dasha: dict | None = None,
+    gochar: dict | None = None,
+    language: str = "hin",
+    synthesis: dict | None = None,
+) -> str:
+    """Compose all premium analysis blocks as a single HTML fragment.
+
+    Safe when ``synthesis`` is missing — falls back to computed digests.
+    Section order matches the T4 spec.
+    """
+    birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
+    raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
+    synth = _synth_bundle(raw_synth, language)
+    planets = birth.get("planets") or kundali.get("planets") or {}
+    houses = birth.get("houses") or []
+    yogas = birth.get("yogas") or kundali.get("yogas") or []
+    ashtak = (
+        birth.get("ashtakavarga")
+        if birth.get("ashtakavarga") is not None
+        else kundali.get("ashtakavarga")
+    )
+    mangalik = birth.get("mangalik") if "mangalik" in birth else kundali.get("mangalik")
+
+    parts = [
+        _render_exec_summary(planets, language, synth),
+        _render_planet_strength(planets, language),
+        _render_bhava_analysis(houses, language, synth),
+        _render_dasha_deep(dasha, language, synth),
+        _render_gochar_highlights(gochar, language),
+        _render_life_areas(synth, language),
+        _render_yogas_detail(yogas, language),
+        _render_ashtakavarga(ashtak, language),
+        _render_premium_remedies(kundali, dasha, planets, language, synth),
+        _render_mangalik_box(mangalik, language),
+    ]
+    return "".join(p for p in parts if p)
+
+
+def _premium_pandit_pages(
+    kundali: dict,
+    *,
+    dasha: dict | None,
+    gochar: dict | None,
+    language: str,
+    client: str,
+    synthesis: dict | None,
+) -> list[str]:
+    """Pack premium sections into a few print pages for the pandit template."""
+    birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
+    raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
+    synth = _synth_bundle(raw_synth, language)
+    planets = birth.get("planets") or kundali.get("planets") or {}
+    houses = birth.get("houses") or []
+    yogas = birth.get("yogas") or kundali.get("yogas") or []
+    ashtak = (
+        birth.get("ashtakavarga")
+        if birth.get("ashtakavarga") is not None
+        else kundali.get("ashtakavarga")
+    )
+    mangalik = birth.get("mangalik") if "mangalik" in birth else kundali.get("mangalik")
+    footer = pl("premium_footer", language)
+
+    pages: list[str] = []
+    body_a = (
+        _render_exec_summary(planets, language, synth)
+        + _render_planet_strength(planets, language)
+        + _render_mangalik_box(mangalik, language)
+    )
+    if body_a:
+        pages.append(_page(pl("exec_summary", language), body_a, footer=footer, client=client))
+
+    if houses:
+        mid = (len(houses) + 1) // 2
+        for chunk in (houses[:mid], houses[mid:]):
+            body = _render_bhava_analysis(chunk, language, synth)
+            if body:
+                pages.append(
+                    _page(
+                        pl("bhava_analysis", language),
+                        body,
+                        footer=footer,
+                        client=client,
+                    )
+                )
+
+    body_d = (
+        _render_dasha_deep(dasha, language, synth)
+        + _render_gochar_highlights(gochar, language)
+        + _render_life_areas(synth, language)
+    )
+    if body_d:
+        pages.append(_page(pl("dasha_deep", language), body_d, footer=footer, client=client))
+
+    body_e = _render_yogas_detail(yogas, language) + _render_ashtakavarga(ashtak, language)
+    if body_e:
+        pages.append(_page(pl("yogas_detail", language), body_e, footer=footer, client=client))
+
+    body_f = _render_premium_remedies(kundali, dasha, planets, language, synth)
+    if body_f:
+        pages.append(_page(pl("premium_remedies", language), body_f, footer=footer, client=client))
+
+    return pages
+
 
 def _pandit_report_html(
     kundali: dict,
@@ -1327,6 +2049,7 @@ def _pandit_report_html(
     gochar: dict | None,
     language: str,
     client_name: str | None,
+    synthesis: dict | None = None,
 ) -> str:
     report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
     birth = report["sections"]["birth_chart"]
@@ -1371,10 +2094,19 @@ def _pandit_report_html(
         client=client,
     )
     ava_rows = [
-        (pl("ava_lagna", language), f'{display_sign(birth["lagna"], language)} - {ava["lagna_lord_hi"] if _is_hi(language) else ava["lagna_lord"]}'),
-        (pl("ava_rashi", language), f'{display_sign(birth["rashi"], language)} - {ava["rashi_lord_hi"] if _is_hi(language) else ava["rashi_lord"]}'),
+        (
+            pl("ava_lagna", language),
+            f"{display_sign(birth['lagna'], language)} - {ava['lagna_lord_hi'] if _is_hi(language) else ava['lagna_lord']}",
+        ),
+        (
+            pl("ava_rashi", language),
+            f"{display_sign(birth['rashi'], language)} - {ava['rashi_lord_hi'] if _is_hi(language) else ava['rashi_lord']}",
+        ),
         (pl("ava_nak", language), display_nakshatra(birth["nakshatra"], language)),
-        (pl("ava_naklord", language), ava["nakshatra_lord_hi"] if _is_hi(language) else ava["nakshatra_lord"]),
+        (
+            pl("ava_naklord", language),
+            ava["nakshatra_lord_hi"] if _is_hi(language) else ava["nakshatra_lord"],
+        ),
         (pl("gan", language), ava["gan"]),
         (pl("yoni", language), ava["yoni"]),
         (pl("nadi", language), ava["nadi"]),
@@ -1390,13 +2122,15 @@ def _pandit_report_html(
         ava_rows.append((pl("dinamaan", language), ava["dinamaan"]))
     birth_page = _page(
         pl("birth_details", language),
-        _pandit_kv([
-            (pl("name", language), client),
-            (pl("birth_place", language), birth["birth_place"]),
-            (pl("birth_dt", language), f'{inp.get("dob", "")} | {inp.get("tob", "")}'),
-            (pl("moon_house", language), birth["moon_house"]),
-            (pl("dosha_flag", language), _safe_join(birth["doshas"], pl("no_dosha", language))),
-        ])
+        _pandit_kv(
+            [
+                (pl("name", language), client),
+                (pl("birth_place", language), birth["birth_place"]),
+                (pl("birth_dt", language), f"{inp.get('dob', '')} | {inp.get('tob', '')}"),
+                (pl("moon_house", language), birth["moon_house"]),
+                (pl("dosha_flag", language), _safe_join(birth["doshas"], pl("no_dosha", language))),
+            ]
+        )
         + f"<h3>{_h(pl('avakahada', language))}</h3>"
         + _pandit_kv(ava_rows),
         footer=pl("footer", language),
@@ -1404,26 +2138,39 @@ def _pandit_report_html(
     )
     panchang_page = _page(
         pl("janma_panchang", language),
-        _pandit_kv([
-            (pl("date", language), daily["date"] if daily else "-"),
-            (pl("place", language), daily["place"] if daily else "-"),
-            (pl("vara", language), display_term(daily["vara"], language) if daily else "-"),
-            (pl("tithi", language), display_term(daily["tithi"], language) if daily else "-"),
-            (pl("nakshatra", language), display_nakshatra(daily["nakshatra"], language) if daily else "-"),
-            (pl("yoga", language), display_term(daily["yoga"], language) if daily else "-"),
-            (pl("karana", language), display_term(daily["karana"], language) if daily else "-"),
-            (pl("sunrise", language), format_time(daily["sunrise"]) if daily else "-"),
-            (pl("sunset", language), format_time(daily["sunset"]) if daily else "-"),
-        ]),
+        _pandit_kv(
+            [
+                (pl("date", language), daily["date"] if daily else "-"),
+                (pl("place", language), daily["place"] if daily else "-"),
+                (pl("vara", language), display_term(daily["vara"], language) if daily else "-"),
+                (pl("tithi", language), display_term(daily["tithi"], language) if daily else "-"),
+                (
+                    pl("nakshatra", language),
+                    display_nakshatra(daily["nakshatra"], language) if daily else "-",
+                ),
+                (pl("yoga", language), display_term(daily["yoga"], language) if daily else "-"),
+                (pl("karana", language), display_term(daily["karana"], language) if daily else "-"),
+                (pl("sunrise", language), format_time(daily["sunrise"]) if daily else "-"),
+                (pl("sunset", language), format_time(daily["sunset"]) if daily else "-"),
+            ]
+        ),
         footer=pl("footer", language),
         client=client,
     )
     charts = [
         (pl("lagna_kundali", language), _ni_chart_svg(kundali, language)),
-        (pl("chandra_kundali", language), _ni_chart_svg({"houses": _chandra_houses(kundali)}, language)),
+        (
+            pl("chandra_kundali", language),
+            _ni_chart_svg({"houses": _chandra_houses(kundali)}, language),
+        ),
     ]
     if kundali.get("navamsa"):
-        charts.append((pl("navamsa", language), _ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language)))
+        charts.append(
+            (
+                pl("navamsa", language),
+                _ni_chart_svg({"houses": kundali["navamsa"]["houses"]}, language),
+            )
+        )
     chart_cards = "".join(
         f'<div class="chart-card"><h3>{_h(title)}</h3><div class="mini-chart">{svg}</div></div>'
         for title, svg in charts
@@ -1440,7 +2187,21 @@ def _pandit_report_html(
 
     planet_rows = _planet_rows(kundali, language)
     planet_pages = [
-        _page(pl("graha_sthiti", language), _table([label("planet", language), label("sign", language), label("house", language), label("nakshatra", language), label("degree", language)], planet_rows), footer=pl("footer", language), client=client),
+        _page(
+            pl("graha_sthiti", language),
+            _table(
+                [
+                    label("planet", language),
+                    label("sign", language),
+                    label("house", language),
+                    label("nakshatra", language),
+                    label("degree", language),
+                ],
+                planet_rows,
+            ),
+            footer=pl("footer", language),
+            client=client,
+        ),
     ]
     dasha_pages = []
     if current:
@@ -1455,15 +2216,43 @@ def _pandit_report_html(
             for row in timeline[:9]
         ]
         dasha_pages = [
-            _page(pl("dasha_table", language), _dasha_timeline_html(dasha or {}, language) + _pandit_kv([
-                (pl("paddhati", language), current["system"]),
-                (pl("dasha_beej", language), display_dasha_value(current["seed"], language)),
-                (pl("vartaman_dasha", language), display_dasha_value(current["period"] or "-", language)),
-                (pl("maha_end", language), current["mahadasha_end"] or "-"),
-                (pl("antar_end", language), current["antardasha_end"] or "-"),
-                (pl("praty_end", language), current.get("pratyantardasha_end") or "-"),
-            ]) + _table([pl("mahadasha", language), pl("start", language), pl("end", language), pl("duration", language)], maha_rows), footer=pl("footer", language), client=client),
-            _page(pl("antar_table", language), _antar_grid(timeline, language), footer=pl("footer", language), client=client),
+            _page(
+                pl("dasha_table", language),
+                _dasha_timeline_html(dasha or {}, language)
+                + _pandit_kv(
+                    [
+                        (pl("paddhati", language), current["system"]),
+                        (
+                            pl("dasha_beej", language),
+                            display_dasha_value(current["seed"], language),
+                        ),
+                        (
+                            pl("vartaman_dasha", language),
+                            display_dasha_value(current["period"] or "-", language),
+                        ),
+                        (pl("maha_end", language), current["mahadasha_end"] or "-"),
+                        (pl("antar_end", language), current["antardasha_end"] or "-"),
+                        (pl("praty_end", language), current.get("pratyantardasha_end") or "-"),
+                    ]
+                )
+                + _table(
+                    [
+                        pl("mahadasha", language),
+                        pl("start", language),
+                        pl("end", language),
+                        pl("duration", language),
+                    ],
+                    maha_rows,
+                ),
+                footer=pl("footer", language),
+                client=client,
+            ),
+            _page(
+                pl("antar_table", language),
+                _antar_grid(timeline, language),
+                footer=pl("footer", language),
+                client=client,
+            ),
         ]
 
     interpretation_pages = list(_personality_pages(kundali, language, client))
@@ -1472,6 +2261,14 @@ def _pandit_report_html(
         interpretation_pages.append(_cp)
     interpretation_pages += _dasha_phala_pages(dasha, language, client)
 
+    premium_pages = _premium_pandit_pages(
+        kundali,
+        dasha=dasha,
+        gochar=gochar,
+        language=language,
+        client=client,
+        synthesis=synthesis,
+    )
     pages = [
         cover,
         notice,
@@ -1482,6 +2279,7 @@ def _pandit_report_html(
         *dasha_pages,
         *interpretation_pages,
         *_pandit_interpretation_pages(kundali, dasha, gochar, language, client),
+        *premium_pages,
     ]
     return (
         "<!DOCTYPE html>"
@@ -1501,6 +2299,7 @@ def build_html(
     language: str = "hin",
     client_name: str | None = None,
     template: str = "standard",
+    synthesis: dict | None = None,
 ) -> str:
     """Compose the self-contained HTML document for the report."""
     if template == "pandit_v1":
@@ -1511,6 +2310,7 @@ def build_html(
             gochar=gochar,
             language=language,
             client_name=client_name,
+            synthesis=synthesis,
         )
     if template != "standard":
         raise ValueError("template must be one of: standard, pandit_v1")
@@ -1524,22 +2324,22 @@ def build_html(
     cover = (
         '<section class="cover">'
         f"{_cover_motif_svg()}"
-        f'<h1>{_h(label("title", language))}</h1>'
+        f"<h1>{_h(label('title', language))}</h1>"
         f'<div class="mantra">{_h(label("cover_mantra", language))}</div>'
         f'<div class="subtitle">{_h(label("subtitle", language))}</div>'
         f'<div class="birth-meta"><strong>{_h(cover_name)}</strong></div>'
         f'<div class="birth-meta">{_h(inp.get("dob", ""))} | {_h(inp.get("tob", ""))}</div>'
         f'<div class="birth-meta">'
-        f'{_h(label("lagna", language))}: {_h(display_sign(birth["lagna"], language))} | '
-        f'{_h(label("rashi", language))}: {_h(display_sign(birth["rashi"], language))} | '
-        f'{_h(label("nakshatra", language))}: {_h(display_nakshatra(birth["nakshatra"], language))}'
+        f"{_h(label('lagna', language))}: {_h(display_sign(birth['lagna'], language))} | "
+        f"{_h(label('rashi', language))}: {_h(display_sign(birth['rashi'], language))} | "
+        f"{_h(label('nakshatra', language))}: {_h(display_nakshatra(birth['nakshatra'], language))}"
         f"</div>"
         "</section>"
     )
 
     notice_block = (
         f'<div class="notice"><strong>{_h(label("notice_title", language))}:</strong> '
-        f'{_h(label("notice", language))}</div>'
+        f"{_h(label('notice', language))}</div>"
     )
 
     birth_kv = _kv_table(
@@ -1571,14 +2371,14 @@ def build_html(
     sections: list[str] = [
         cover,
         '<section class="section">'
-        f'<h2>{_h(label("birth_details", language))}</h2>'
+        f"<h2>{_h(label('birth_details', language))}</h2>"
         f"{notice_block}{birth_kv}"
         "</section>",
         '<section class="section">'
-        f'<h2>{_h(label("planet_chart", language))}</h2>'
+        f"<h2>{_h(label('planet_chart', language))}</h2>"
         '<div class="ni-wrap">'
         f"{_ni_chart_svg(kundali, language)}"
-        f'<div><h3>{_h(label("planet_table", language))}</h3>{planet_table}</div>'
+        f"<div><h3>{_h(label('planet_table', language))}</h3>{planet_table}</div>"
         "</div>"
         "</section>",
     ]
@@ -1586,7 +2386,7 @@ def build_html(
     if kundali.get("navamsa"):
         sections.append(
             '<section class="section">'
-            f'<h2>{_h(label("navamsa_chart", language))}</h2>'
+            f"<h2>{_h(label('navamsa_chart', language))}</h2>"
             '<div class="ni-wrap">'
             f"{_ni_chart_svg({'houses': kundali['navamsa']['houses']}, language)}"
             "</div>"
@@ -1599,7 +2399,10 @@ def build_html(
             [
                 (label("system", language), display_dasha_value(current["system"], language)),
                 (label("seed", language), display_dasha_value(current["seed"], language)),
-                (label("current_period", language), display_dasha_value(current["period"] or "—", language)),
+                (
+                    label("current_period", language),
+                    display_dasha_value(current["period"] or "—", language),
+                ),
                 (label("mahadasha_end", language), current["mahadasha_end"] or "—"),
                 (label("antardasha_end", language), current["antardasha_end"] or "—"),
                 (label("pratyantardasha_end", language), current.get("pratyantardasha_end") or "—"),
@@ -1608,7 +2411,7 @@ def build_html(
         )
         sections.append(
             '<section class="section">'
-            f'<h2>{_h(label("dasha", language))}</h2>'
+            f"<h2>{_h(label('dasha', language))}</h2>"
             f"{timeline_html}{dasha_kv}"
             "</section>"
         )
@@ -1616,7 +2419,7 @@ def build_html(
     if daily:
         sections.append(
             '<section class="section">'
-            f'<h2>{_h(label("panchang", language))}</h2>'
+            f"<h2>{_h(label('panchang', language))}</h2>"
             + _kv_table(
                 [
                     (label("date", language), daily["date"]),
@@ -1634,13 +2437,20 @@ def build_html(
             + "</section>"
         )
 
+    premium_html = build_premium_sections_html(
+        kundali,
+        dasha=dasha,
+        gochar=gochar,
+        language=language,
+        synthesis=synthesis,
+    )
+    if premium_html:
+        sections.append(f'<section class="section premium-analysis">{premium_html}</section>')
+
     notes = report.get("notes", [])
     safety_items = "".join(f'<div class="safety">{_h(note)}</div>' for note in notes)
     sections.append(
-        '<section class="section">'
-        f'<h2>{_h(label("safety", language))}</h2>'
-        f"{safety_items}"
-        "</section>"
+        f'<section class="section"><h2>{_h(label("safety", language))}</h2>{safety_items}</section>'
     )
 
     return (
@@ -1648,10 +2458,10 @@ def build_html(
         f'<html lang="{"hi" if _is_hi(language) else "en"}">'
         "<head>"
         '<meta charset="utf-8"/>'
-        f'<title>{_h(label("title", language))}</title>'
+        f"<title>{_h(label('title', language))}</title>"
         f"<style>{_css()}</style>"
         "</head>"
-        f'<body>{"".join(sections)}</body>'
+        f"<body>{''.join(sections)}</body>"
         "</html>"
     )
 
@@ -1725,6 +2535,7 @@ def build_html_pdf_report(
     language: str = "hin",
     client_name: str | None = None,
     template: str = "standard",
+    synthesis: dict | None = None,
 ) -> Path:
     """End-to-end: compose HTML, render to PDF, return the output path."""
     document = build_html(
@@ -1735,6 +2546,7 @@ def build_html_pdf_report(
         language=language,
         client_name=client_name,
         template=template,
+        synthesis=synthesis,
     )
     return render_html_to_pdf(document, output_path)
 
