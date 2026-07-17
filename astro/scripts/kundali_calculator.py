@@ -221,71 +221,103 @@ def check_combust(planet: str, lon: float, sun_lon: float, is_retrograde: bool) 
     sep = abs(lon - sun_lon)
     if sep > 180:
         sep = 360 - sep
-    if planet == "Chandra": orb = 12
-    elif planet == "Mangal": orb = 17
-    elif planet == "Budh": orb = 12 if is_retrograde else 14
-    elif planet == "Guru": orb = 11
-    elif planet == "Shukra": orb = 8 if is_retrograde else 10
-    elif planet == "Shani": orb = 15
-    else: orb = 0
+    if planet == "Chandra":
+        orb = 12
+    elif planet == "Mangal":
+        orb = 17
+    elif planet == "Budh":
+        orb = 12 if is_retrograde else 14
+    elif planet == "Guru":
+        orb = 11
+    elif planet == "Shukra":
+        orb = 8 if is_retrograde else 10
+    elif planet == "Shani":
+        orb = 15
+    else:
+        orb = 0
     return sep <= orb
+
 
 def get_functional_nature(planet: str, lagna_sign: str, functional_data: dict) -> str:
     data = functional_data.get("lagnas", {}).get(lagna_sign, {})
-    if planet in data.get("benefic", []): return "benefic"
-    if planet in data.get("malefic", []): return "malefic"
-    if planet in data.get("neutral", []): return "neutral"
+    if planet in data.get("benefic", []):
+        return "benefic"
+    if planet in data.get("malefic", []):
+        return "malefic"
+    if planet in data.get("neutral", []):
+        return "neutral"
     return "neutral"
 
+
 def get_digbala(planet: str, house: int) -> str | None:
-    if planet in ("Rahu", "Ketu"): return None
+    if planet in ("Rahu", "Ketu"):
+        return None
     full_house = 0
-    if planet in ("Guru", "Budh"): full_house = 1
-    elif planet in ("Chandra", "Shukra"): full_house = 4
-    elif planet == "Shani": full_house = 7
-    elif planet in ("Surya", "Mangal"): full_house = 10
-    if not full_house: return None
-    
+    if planet in ("Guru", "Budh"):
+        full_house = 1
+    elif planet in ("Chandra", "Shukra"):
+        full_house = 4
+    elif planet == "Shani":
+        full_house = 7
+    elif planet in ("Surya", "Mangal"):
+        full_house = 10
+    if not full_house:
+        return None
+
     dist = abs(house - full_house)
     if dist > 6:
         dist = 12 - dist
-        
-    if dist == 0: return "full"
-    elif dist in (1, 2): return "strong"
-    elif dist in (3, 4): return "moderate"
-    else: return "weak"
+
+    if dist == 0:
+        return "full"
+    if dist in (1, 2):
+        return "strong"
+    if dist in (3, 4):
+        return "moderate"
+    return "weak"
+
 
 def get_dignity(planet: str, sign_name: str, signs: list[dict], graha_data: dict) -> str:
-    if planet in ("Rahu", "Ketu"): return "neutral"
+    if planet in ("Rahu", "Ketu"):
+        return "neutral"
     pdata = graha_data["planets"].get(planet, {})
-    if sign_name == pdata.get("exaltation_sign"): return "exalted"
-    if sign_name == pdata.get("debilitation_sign"): return "debilitated"
-    if sign_name in pdata.get("own_signs", []): return "own"
-    
+    if sign_name == pdata.get("exaltation_sign"):
+        return "exalted"
+    if sign_name == pdata.get("debilitation_sign"):
+        return "debilitated"
+    if sign_name in pdata.get("own_signs", []):
+        return "own"
+
     lord = next((s["lord"] for s in signs if s["name"] == sign_name), None)
-    if lord in pdata.get("friends", []): return "friend"
-    if lord in pdata.get("enemies", []): return "enemy"
+    if lord in pdata.get("friends", []):
+        return "friend"
+    if lord in pdata.get("enemies", []):
+        return "enemy"
     return "neutral"
+
 
 def calculate_graha_yuddha(planets: dict) -> dict:
     # only Mangal, Budh, Guru, Shukra, Shani
     participants = ["Mangal", "Budh", "Guru", "Shukra", "Shani"]
     yuddha = {p: {"in_war": False, "winner": None, "with": None} for p in planets}
-    
+
     for i, p1 in enumerate(participants):
-        if p1 not in planets: continue
+        if p1 not in planets:
+            continue
         lon1 = planets[p1]["longitude"]
-        for p2 in participants[i+1:]:
-            if p2 not in planets: continue
+        for p2 in participants[i + 1 :]:
+            if p2 not in planets:
+                continue
             lon2 = planets[p2]["longitude"]
             sep = abs(lon1 - lon2)
-            if sep > 180: sep = 360 - sep
+            if sep > 180:
+                sep = 360 - sep
             if sep <= 1.0:
                 # War! lower longitude wins
-                w = p1 if lon1 < lon2 else p2
-                l = p2 if lon1 < lon2 else p1
-                yuddha[w] = {"in_war": True, "winner": True, "with": l}
-                yuddha[l] = {"in_war": True, "winner": False, "with": w}
+                winner = p1 if lon1 < lon2 else p2
+                loser = p2 if lon1 < lon2 else p1
+                yuddha[winner] = {"in_war": True, "winner": True, "with": loser}
+                yuddha[loser] = {"in_war": True, "winner": False, "with": winner}
     return yuddha
 
 def calculate_navamsa(lagna_lon: float, planets: dict, signs: list[dict]) -> dict:
@@ -350,14 +382,16 @@ def detect_mangalik(planets: dict, lagna_sign_idx: int, moon_sign_idx: int, sign
     if house_from_lagna in {1, 2, 4, 7, 8, 12}:
         is_mangalik = True
         sev = "full" if house_from_lagna in {7, 8} else "partial"
-        if sev == "full": severity_full = True
-        reasons.append(f"from lagna")
-        
+        if sev == "full":
+            severity_full = True
+        reasons.append("from lagna")
+
     if house_from_moon in {1, 2, 4, 7, 8, 12}:
         is_mangalik = True
         sev = "full" if house_from_moon in {7, 8} else "partial"
-        if sev == "full": severity_full = True
-        reasons.append(f"from chandra")
+        if sev == "full":
+            severity_full = True
+        reasons.append("from chandra")
         
     if not is_mangalik:
         return {"status": "none", "reasons": [], "legacy_list": legacy_list}
@@ -466,23 +500,41 @@ def calculate_kundali(input_data: BirthInput) -> dict:
         pos = []
         neg = []
         mild = []  # descriptors that inform but don't move the verdict
-        if dignity == "exalted": pos.append("exalted")
-        elif dignity == "own": pos.append("own sign")
-        elif dignity == "friend": mild.append("friend")
-        elif dignity == "debilitated": neg.append("debilitated")
-        elif dignity == "enemy": neg.append("enemy")
+        if dignity == "exalted":
+            pos.append("exalted")
+        elif dignity == "own":
+            pos.append("own sign")
+        elif dignity == "friend":
+            mild.append("friend")
+        elif dignity == "debilitated":
+            neg.append("debilitated")
+        elif dignity == "enemy":
+            neg.append("enemy")
 
-        if info["vargottama"]: pos.append("vargottama")
-        if info["digbala"] == "full": pos.append("digbala full")
-        if info["graha_yuddha"]["winner"] is True: pos.append("war winner")
+        if info["vargottama"]:
+            pos.append("vargottama")
+        if info["digbala"] == "full":
+            pos.append("digbala full")
+        if info["graha_yuddha"]["winner"] is True:
+            pos.append("war winner")
 
-        if info["combust"]: neg.append("combust")
-        if info["graha_yuddha"]["winner"] is False: neg.append("war loser")
+        if info["combust"]:
+            neg.append("combust")
+        if info["graha_yuddha"]["winner"] is False:
+            neg.append("war loser")
 
         score = len(pos) - len(neg)
-        prefix = "Strong" if score > 0 else "Weak" if score < 0 else "Moderate"
+        if score > 0:
+            prefix = "Strong"
+        elif score < 0:
+            prefix = "Weak"
+        else:
+            prefix = "Moderate"
         reasons = pos + neg + mild
-        info["strength_verdict"] = f"{prefix} — {', '.join(reasons)}" if reasons else f"{prefix} — neutral"
+        if reasons:
+            info["strength_verdict"] = f"{prefix} — {', '.join(reasons)}"
+        else:
+            info["strength_verdict"] = f"{prefix} — neutral"
 
     houses: dict[str, dict] = {}
     for offset in range(12):
