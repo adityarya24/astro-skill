@@ -1,0 +1,275 @@
+{
+  "_comment": "Per-planet classical remedies (mantra, gemstone, fasting, daan, ritual). Mantra strings reuse remedies_ext.json. Descriptive only — personalised remedies require a qualified astrologer.",
+  "planets": {
+    "Surya": {
+      "mantra": {
+        "hi": "ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः",
+        "iast": "Om Hraam Hreem Hraum Sah Suryaya Namah",
+        "count": 7000
+      },
+      "gemstone": {
+        "name_hi": "माणिक्य",
+        "name_en": "Ruby",
+        "metal": "gold",
+        "finger": "ring finger (right hand)",
+        "day": "Sunday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "रविवार",
+        "day_en": "Sunday"
+      },
+      "daan": [
+        {"hi": "गेहूँ", "en": "wheat"},
+        {"hi": "गुड़", "en": "jaggery"},
+        {"hi": "ताँबे का बर्तन", "en": "copper vessel"}
+      ],
+      "ritual": {
+        "hi": "रविवार को सूर्योदय के समय सूर्य को जल अर्पित करें और सूर्य देव का ध्यान करें।",
+        "en": "On Sunday at sunrise, offer water to the Sun and meditate on Surya Dev."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Chandra": {
+      "mantra": {
+        "hi": "ॐ श्रां श्रीं श्रौं सः चन्द्राय नमः",
+        "iast": "Om Shraam Shreem Shraum Sah Chandraya Namah",
+        "count": 11000
+      },
+      "gemstone": {
+        "name_hi": "मोती",
+        "name_en": "Pearl",
+        "metal": "silver",
+        "finger": "little finger (right hand)",
+        "day": "Monday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "सोमवार",
+        "day_en": "Monday"
+      },
+      "daan": [
+        {"hi": "चावल", "en": "rice"},
+        {"hi": "दूध", "en": "milk"},
+        {"hi": "श्वेत वस्त्र", "en": "white cloth"}
+      ],
+      "ritual": {
+        "hi": "सोमवार को चन्द्रमा को दूध या जल अर्पित करें और श्वेत वस्त्र धारण करें।",
+        "en": "On Monday, offer milk or water to the Moon and wear white clothing."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Mangal": {
+      "mantra": {
+        "hi": "ॐ क्रां क्रीं क्रौं सः भौमाय नमः",
+        "iast": "Om Kraam Kreem Kraum Sah Bhaumaya Namah",
+        "count": 10000
+      },
+      "gemstone": {
+        "name_hi": "मूंगा",
+        "name_en": "Red Coral",
+        "metal": "gold or copper",
+        "finger": "ring finger (right hand)",
+        "day": "Tuesday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "मंगलवार",
+        "day_en": "Tuesday"
+      },
+      "daan": [
+        {"hi": "लाल मसूर दाल", "en": "red lentils"},
+        {"hi": "गुड़", "en": "jaggery"},
+        {"hi": "ताँबा", "en": "copper"}
+      ],
+      "ritual": {
+        "hi": "मंगलवार को हनुमान जी की पूजा करें और लाल पुष्प अर्पित करें।",
+        "en": "On Tuesday, worship Hanuman and offer red flowers."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Budh": {
+      "mantra": {
+        "hi": "ॐ ब्रां ब्रीं ब्रौं सः बुधाय नमः",
+        "iast": "Om Braam Breem Braum Sah Budhaya Namah",
+        "count": 9000
+      },
+      "gemstone": {
+        "name_hi": "पन्ना",
+        "name_en": "Emerald",
+        "metal": "gold",
+        "finger": "little finger (right hand)",
+        "day": "Wednesday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "बुधवार",
+        "day_en": "Wednesday"
+      },
+      "daan": [
+        {"hi": "मूंग दाल", "en": "moong dal"},
+        {"hi": "हरी सब्जी", "en": "green vegetables"},
+        {"hi": "पुस्तक", "en": "books"}
+      ],
+      "ritual": {
+        "hi": "बुधवार को विद्या की देवी सरस्वती का स्मरण करें और हरित वस्त्र धारण करें।",
+        "en": "On Wednesday, remember Goddess Saraswati and wear green clothing."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Guru": {
+      "mantra": {
+        "hi": "ॐ ग्रां ग्रीं ग्रौं सः गुरवे नमः",
+        "iast": "Om Graam Greem Graum Sah Gurave Namah",
+        "count": 19000
+      },
+      "gemstone": {
+        "name_hi": "पुखराज",
+        "name_en": "Yellow Sapphire",
+        "metal": "gold",
+        "finger": "index finger (right hand)",
+        "day": "Thursday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "गुरुवार",
+        "day_en": "Thursday"
+      },
+      "daan": [
+        {"hi": "चने की दाल", "en": "chickpeas"},
+        {"hi": "हल्दी", "en": "turmeric"},
+        {"hi": "पीला वस्त्र", "en": "yellow cloth"}
+      ],
+      "ritual": {
+        "hi": "गुरुवार को पीला वस्त्र धारण करें और गुरु/बृहस्पति देव का ध्यान करें।",
+        "en": "On Thursday, wear yellow clothing and meditate on Guru (Brihaspati)."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Shukra": {
+      "mantra": {
+        "hi": "ॐ द्रां द्रीं द्रौं सः शुक्राय नमः",
+        "iast": "Om Draam Dreem Draum Sah Shukraya Namah",
+        "count": 16000
+      },
+      "gemstone": {
+        "name_hi": "हीरा",
+        "name_en": "Diamond",
+        "metal": "silver or platinum",
+        "finger": "middle finger (right hand)",
+        "day": "Friday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "शुक्रवार",
+        "day_en": "Friday"
+      },
+      "daan": [
+        {"hi": "चीनी", "en": "sugar"},
+        {"hi": "सफेद फूल", "en": "white flowers"},
+        {"hi": "दही", "en": "curd"}
+      ],
+      "ritual": {
+        "hi": "शुक्रवार को देवी लक्ष्मी की पूजा करें और श्वेत अथवा हल्का रंग धारण करें।",
+        "en": "On Friday, worship Goddess Lakshmi and wear white or light colours."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Shani": {
+      "mantra": {
+        "hi": "ॐ प्रां प्रीं प्रौं सः शनैश्चराय नमः",
+        "iast": "Om Praam Preem Praum Sah Shanaishcharaya Namah",
+        "count": 23000
+      },
+      "gemstone": {
+        "name_hi": "नीलम",
+        "name_en": "Blue Sapphire",
+        "metal": "silver or iron",
+        "finger": "middle finger (right hand)",
+        "day": "Saturday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "शनिवार",
+        "day_en": "Saturday"
+      },
+      "daan": [
+        {"hi": "तिल का तेल", "en": "sesame oil"},
+        {"hi": "काले उड़द", "en": "black urad dal"},
+        {"hi": "लोहा", "en": "iron"}
+      ],
+      "ritual": {
+        "hi": "शनिवार को तिल का तेल अर्पित करें और शनि देव का जाप करें।",
+        "en": "On Saturday, offer sesame oil and chant the Shani mantra."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Rahu": {
+      "mantra": {
+        "hi": "ॐ भ्रां भ्रीं भ्रौं सः राहवे नमः",
+        "iast": "Om Bhraam Bhreem Bhraum Sah Rahave Namah",
+        "count": 18000
+      },
+      "gemstone": {
+        "name_hi": "गोमेद",
+        "name_en": "Hessonite",
+        "metal": "silver",
+        "finger": "middle finger (right hand)",
+        "day": "Saturday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "शनिवार",
+        "day_en": "Saturday"
+      },
+      "daan": [
+        {"hi": "सरसों का तेल", "en": "mustard oil"},
+        {"hi": "नीला वस्त्र", "en": "blue cloth"},
+        {"hi": "नारियल", "en": "coconut"}
+      ],
+      "ritual": {
+        "hi": "शनिवार को राहु का जाप करें और नीले रंग का दान करें।",
+        "en": "On Saturday, chant the Rahu mantra and donate items of blue colour."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    },
+    "Ketu": {
+      "mantra": {
+        "hi": "ॐ स्रां स्रीं स्रौं सः केतवे नमः",
+        "iast": "Om Sraam Sreem Sraum Sah Ketave Namah",
+        "count": 17000
+      },
+      "gemstone": {
+        "name_hi": "लहसुनिया",
+        "name_en": "Cat's Eye",
+        "metal": "silver",
+        "finger": "middle or ring finger (right hand)",
+        "day": "Tuesday",
+        "disclaimer_hi": "रत्न केवल योग्य ज्योतिषी से परामर्श के बाद ही धारण करें।",
+        "disclaimer_en": "Gemstones should only be worn after consulting a qualified astrologer."
+      },
+      "fasting": {
+        "day_hi": "मंगलवार",
+        "day_en": "Tuesday"
+      },
+      "daan": [
+        {"hi": "तिल", "en": "sesame seeds"},
+        {"hi": "कम्बल", "en": "blanket"},
+        {"hi": "कुत्ते को भोजन", "en": "food for dogs"}
+      ],
+      "ritual": {
+        "hi": "मंगलवार को केतु का जाप करें और आध्यात्मिक साधना करें।",
+        "en": "On Tuesday, chant the Ketu mantra and engage in spiritual practice."
+      },
+      "_source": "standard jyotish convention, operator-reviewed"
+    }
+  }
+}
