@@ -1,0 +1,189 @@
+{
+  "_comment": "Classical gochar house-from-Moon one-liners for slow grahas (Shani, Guru, Rahu). Descriptive only — not predictions of fate. Bilingual hi/en.",
+  "planets_tracked": ["Shani", "Guru", "Rahu"],
+  "house_lines": {
+    "Shani": {
+      "1": {
+        "en": "Saturn over natal Moon (peak Sade Sati zone) — body/mind load, patience and routine pay off.",
+        "hi": "शनि जन्म चंद्र पर (साढ़े साती का शिखर) — तन-मन पर भार; धैर्य और नियमित दिनचर्या फलदायी।"
+      },
+      "2": {
+        "en": "Saturn 2nd from Moon — speech, family budget and food habits under slow pressure; cut waste.",
+        "hi": "शनि चंद्र से द्वितीय — वाणी, पारिवारिक बजट और आहार पर धीमा दबाव; अपव्यय घटाएँ।"
+      },
+      "3": {
+        "en": "Saturn 3rd from Moon — effort-heavy phase; siblings/short travel need disciplined pacing.",
+        "hi": "शनि चंद्र से तृतीय — श्रम-प्रधान काल; बंधु-बांधव व लघु यात्रा में अनुशासित गति।"
+      },
+      "4": {
+        "en": "Saturn 4th from Moon (kantaka dhaiya) — home, mother-figure and inner peace need steady care.",
+        "hi": "शनि चंद्र से चतुर्थ (कंटक ढैया) — गृह, मातृ-पक्ष और आंतरिक शांति पर स्थिर ध्यान।"
+      },
+      "5": {
+        "en": "Saturn 5th from Moon — creativity and children-related matters slow; long study beats shortcuts.",
+        "hi": "शनि चंद्र से पंचम — सृजन व संतान-संबंधी विषय धीमे; दीर्घ अध्ययन शॉर्टकट से बेहतर।"
+      },
+      "6": {
+        "en": "Saturn 6th from Moon — service, health discipline and debt-clearing improve with daily grit.",
+        "hi": "शनि चंद्र से षष्ठ — सेवा, स्वास्थ्य-अनुशासन और ऋण-मुक्ति दैनिक साधना से सुधरते हैं।"
+      },
+      "7": {
+        "en": "Saturn 7th from Moon — partnerships tested for durability; contracts need clear boundaries.",
+        "hi": "शनि चंद्र से सप्तम — साझेदारी की परीक्षा; अनुबंधों में स्पष्ट सीमाएँ रखें।"
+      },
+      "8": {
+        "en": "Saturn 8th from Moon (ashtama dhaiya) — shared resources and sudden shifts; research before leaps.",
+        "hi": "शनि चंद्र से अष्टम (अष्टम ढैया) — साझा संसाधन व अचानक बदलाव; छलांग से पहले शोध।"
+      },
+      "9": {
+        "en": "Saturn 9th from Moon — dharma, mentors and long travel demand mature, unhurried steps.",
+        "hi": "शनि चंद्र से नवम — धर्म, गुरुजन व दीर्घ यात्रा में परिपक्व, अविवेकी-रहित कदम।"
+      },
+      "10": {
+        "en": "Saturn 10th from Moon — career weight and public duty; results come from sustained effort.",
+        "hi": "शनि चंद्र से दशम — कर्म-भार व सार्वजनिक दायित्व; फल निरंतर प्रयास से।"
+      },
+      "11": {
+        "en": "Saturn 11th from Moon — gains slow but solid; networks favour elders and long-term allies.",
+        "hi": "शनि चंद्र से एकादश — लाभ धीमे किंतु ठोस; जाल-जंजाल में वरिष्ठ व दीर्घ सहयोगी।"
+      },
+      "12": {
+        "en": "Saturn 12th from Moon (rising Sade Sati) — solitude, expenses and foreign links need budgeting.",
+        "hi": "शनि चंद्र से द्वादश (उदय साढ़े साती) — एकांत, व्यय व विदेश-संबंध में बजट-अनुशासन।"
+      }
+    },
+    "Guru": {
+      "1": {
+        "en": "Jupiter over natal Moon — morale and guidance improve; avoid over-promising on optimism alone.",
+        "hi": "गुरु जन्म चंद्र पर — मनोबल व मार्गदर्शन सुधरता है; केवल आशावाद पर वचन न दें।"
+      },
+      "2": {
+        "en": "Jupiter 2nd from Moon — family speech and savings themes expand; prefer honest income.",
+        "hi": "गुरु चंद्र से द्वितीय — पारिवारिक वाणी व बचत का विस्तार; ईमानदार आय को प्राथमिकता।"
+      },
+      "3": {
+        "en": "Jupiter 3rd from Moon — courage and skills teaching/writing; siblings may bring good news.",
+        "hi": "गुरु चंद्र से तृतीय — साहस, कौशल, लेखन/शिक्षण; सहोदरों से शुभ समाचार संभव।"
+      },
+      "4": {
+        "en": "Jupiter 4th from Moon — home comfort and learning at the roots; property talks need clarity.",
+        "hi": "गुरु चंद्र से चतुर्थ — गृह-सुख व मूल शिक्षा; संपत्ति-चर्चा में स्पष्टता रखें।"
+      },
+      "5": {
+        "en": "Jupiter 5th from Moon — counsel, creativity and good counsel around children/students thrive.",
+        "hi": "गुरु चंद्र से पंचम — सृजन, मंत्रणा व संतान/शिष्य-संबंधी शुभ अवसर।"
+      },
+      "6": {
+        "en": "Jupiter 6th from Moon — help with disputes and health recovery through wise routines.",
+        "hi": "गुरु चंद्र से षष्ठ — विवाद व स्वास्थ्य में विवेकपूर्ण दिनचर्या से सहायता।"
+      },
+      "7": {
+        "en": "Jupiter 7th from Moon — alliances and counsel from partner/advisor; fair deals favoured.",
+        "hi": "गुरु चंद्र से सप्तम — साझीदार/सलाहकार से सहयोग; न्यायसंगत सौदे अनुकूल।"
+      },
+      "8": {
+        "en": "Jupiter 8th from Moon — research, inheritance talks and occult study deepen; avoid greed.",
+        "hi": "गुरु चंद्र से अष्टम — शोध, उत्तराधिकार-चर्चा व गूढ़ अध्ययन गहराते हैं; लोभ से बचें।"
+      },
+      "9": {
+        "en": "Jupiter 9th from Moon — teachers, travel and dharma doors open with gratitude practice.",
+        "hi": "गुरु चंद्र से नवम — गुरु, यात्रा व धर्म-द्वार; कृतज्ञता से मार्ग खुलते हैं।"
+      },
+      "10": {
+        "en": "Jupiter 10th from Moon — status and ethical leadership themes; mentor favour at work.",
+        "hi": "गुरु चंद्र से दशम — प्रतिष्ठा व नैतिक नेतृत्व; कार्यक्षेत्र में गुरु-अनुग्रह।"
+      },
+      "11": {
+        "en": "Jupiter 11th from Moon — gains via elders and well-wishers; goals expand realistically.",
+        "hi": "गुरु चंद्र से एकादश — वरिष्ठों व शुभचिंतकों से लाभ; लक्ष्य यथार्थ विस्तार पाते हैं।"
+      },
+      "12": {
+        "en": "Jupiter 12th from Moon — charity, foreign links and spiritual retreat; watch quiet expenses.",
+        "hi": "गुरु चंद्र से द्वादश — दान, विदेश-संपर्क व आध्यात्मिक विराम; मौन व्यय पर नज़र।"
+      }
+    },
+    "Rahu": {
+      "1": {
+        "en": "Rahu over natal Moon — mind restlessness and image shifts; ground with sleep and diet.",
+        "hi": "राहु जन्म चंद्र पर — मन की अस्थिरता व छवि-परिवर्तन; निद्रा-आहार से स्थिर करें।"
+      },
+      "2": {
+        "en": "Rahu 2nd from Moon — unconventional speech/income paths; verify sources before trust.",
+        "hi": "राहु चंद्र से द्वितीय — असामान्य वाणी/आय-मार्ग; विश्वास से पहले स्रोत जाँचें।"
+      },
+      "3": {
+        "en": "Rahu 3rd from Moon — bold media/skill experiments; avoid rash short trips.",
+        "hi": "राहु चंद्र से तृतीय — साहसिक कौशल/माध्यम प्रयोग; उतावली लघु यात्रा से बचें।"
+      },
+      "4": {
+        "en": "Rahu 4th from Moon — home/vehicle changes or foreign domicile themes; paperwork first.",
+        "hi": "राहु चंद्र से चतुर्थ — गृह/वाहन या विदेश-निवास विषय; पहले कागज़ी कार्य।"
+      },
+      "5": {
+        "en": "Rahu 5th from Moon — speculative creativity; keep romance and risk accounts separate.",
+        "hi": "राहु चंद्र से पंचम — सट्टा-सृजन; रोमांस व जोखिम-लेखे अलग रखें।"
+      },
+      "6": {
+        "en": "Rahu 6th from Moon — odd competitors and tech-service wins; hygiene and deadlines matter.",
+        "hi": "राहु चंद्र से षष्ठ — अजीब प्रतिस्पर्धा व तकनीकी सेवा में लाभ; स्वच्छता व समय-सीमा।"
+      },
+      "7": {
+        "en": "Rahu 7th from Moon — unusual partners/clients; contracts need extra due diligence.",
+        "hi": "राहु चंद्र से सप्तम — असामान्य साझेदार/ग्राहक; अनुबंध में अतिरिक्त सावधानी।"
+      },
+      "8": {
+        "en": "Rahu 8th from Moon — hidden finance and research rabbit-holes; avoid shortcuts with others' money.",
+        "hi": "राहु चंद्र से अष्टम — गुप्त वित्त व शोध-भूलभुलैया; दूसरों के धन में शॉर्टकट न लें।"
+      },
+      "9": {
+        "en": "Rahu 9th from Moon — foreign teaching/travel pull; test gurus before full faith.",
+        "hi": "राहु चंद्र से नवम — विदेश शिक्षा/यात्रा खिंचाव; पूर्ण श्रद्धा से पहले गुरु-परीक्षा।"
+      },
+      "10": {
+        "en": "Rahu 10th from Moon — unconventional career visibility; reputation needs clean records.",
+        "hi": "राहु चंद्र से दशम — असामान्य करियर-दृश्यता; प्रतिष्ठा के लिए स्वच्छ रिकॉर्ड।"
+      },
+      "11": {
+        "en": "Rahu 11th from Moon — large networks and sudden goals; filter hype from real gains.",
+        "hi": "राहु चंद्र से एकादश — विशाल नेटवर्क व अचानक लक्ष्य; हाइप से वास्तविक लाभ अलग करें।"
+      },
+      "12": {
+        "en": "Rahu 12th from Moon — foreign stays and digital isolation; budget sleep and screen time.",
+        "hi": "राहु चंद्र से द्वादश — विदेश-प्रवास व डिजिटल एकांत; निद्रा व स्क्रीन-समय का बजट।"
+      }
+    }
+  },
+  "retro_suffix": {
+    "en": " (retrograde — review and revise rather than launch)",
+    "hi": " (वक्री — नई शुरुआत से अधिक समीक्षा/संशोधन)"
+  },
+  "saturn_status_lines": {
+    "sade_sati": {
+      "en": "Window sits inside Sade Sati ({phase}) — prioritise health, duty and fewer commitments.",
+      "hi": "यह अवधि साढ़े साती ({phase}) में है — स्वास्थ्य, कर्तव्य और कम वचन प्राथमिक।"
+    },
+    "dhaiya": {
+      "en": "Window sits inside {type} dhaiya — pace home/shared-resource decisions carefully.",
+      "hi": "यह अवधि {type} ढैया में है — गृह/साझा-संसाधन निर्णय धीरे लें।"
+    },
+    "none": {
+      "en": "No Sade Sati/Dhaiya on the sample dates — Saturn still colours its house themes slowly.",
+      "hi": "नमूना तिथियों पर साढ़े साती/ढैया नहीं — फिर भी शनि अपने भाव के रंग धीरे डालता है।"
+    }
+  },
+  "phase_labels": {
+    "rising": {"en": "rising", "hi": "उदय"},
+    "peak": {"en": "peak", "hi": "शिखर"},
+    "setting": {"en": "setting", "hi": "अस्तगामी"},
+    "kantaka": {"en": "kantaka", "hi": "कंटक"},
+    "ashtama": {"en": "ashtama", "hi": "अष्टम"}
+  },
+  "summary_template": {
+    "en": "During {md}/{ad} antardasha ({start} → {end}), sampled {cadence} gochar for Saturn, Jupiter and Rahu ({n} points). {saturn_note}",
+    "hi": "{md}/{ad} अंतर्दशा ({start} → {end}) में शनि-गुरु-राहु गोचर का {cadence} नमूना ({n} बिंदु)। {saturn_note}"
+  },
+  "cadence_labels": {
+    "monthly": {"en": "monthly", "hi": "मासिक"},
+    "quarterly": {"en": "quarterly", "hi": "त्रैमासिक"}
+  }
+}

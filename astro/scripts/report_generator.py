@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 """Generate a practical astrology draft from computed calculator JSON."""
+
 from __future__ import annotations
 
 import argparse
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 try:
@@ -196,18 +198,35 @@ def build_basic_report(
     dasha: dict | None = None,
     panchang: dict | None = None,
     language: str = "hin",
+    include_gochar_narrative: bool = False,
+    on_date: date | None = None,
 ) -> dict:
     if language not in {"hin", "hi", "en"}:
         raise ValueError("language must be one of: hin, hi, en")
 
+    sections: dict = {
+        "birth_chart": build_birth_chart_section(kundali),
+        "current_dasha": build_dasha_section(dasha),
+        "daily_panchang": build_panchang_section(panchang),
+    }
+    # Opt-in: monthly/quarterly Shani-Guru-Rahu one-liners for the running antardasha.
+    if include_gochar_narrative and dasha is not None:
+        try:
+            from .gochar_narrative import build_antardasha_gochar_narrative
+        except ImportError:  # pragma: no cover
+            from gochar_narrative import build_antardasha_gochar_narrative  # noqa: E402
+
+        sections["gochar_narrative"] = build_antardasha_gochar_narrative(
+            kundali,
+            dasha,
+            on_date=on_date,
+            language=language,
+        )
+
     return {
         "language": language,
         "title": "Basic Astrology Draft",
-        "sections": {
-            "birth_chart": build_birth_chart_section(kundali),
-            "current_dasha": build_dasha_section(dasha),
-            "daily_panchang": build_panchang_section(panchang),
-        },
+        "sections": sections,
         "notes": (
             [
                 "यह प्रारूप केवल ज्योतिषी/संचालक की समीक्षा हेतु है; गणनाएँ व्याख्या में सहायक हैं, विवेक का स्थान नहीं लेतीं।",
@@ -244,6 +263,19 @@ def build_text_report(report: dict) -> str:
             f"Antardasha ends {dasha['antardasha_end'] or '-'}."
         )
 
+    gochar_narr = report["sections"].get("gochar_narrative")
+    if gochar_narr:
+        lines.append(f"Gochar narrative: {gochar_narr.get('summary') or '-'}")
+        # First sample only — full list stays in the JSON section.
+        samples = gochar_narr.get("samples") or []
+        if samples:
+            first = samples[0]
+            bits = "; ".join(
+                f"{h['planet']} H{h['house_from_moon']} from Moon"
+                for h in first.get("highlights") or []
+            )
+            lines.append(f"Gochar sample {first.get('date')}: {bits}.")
+
     panchang = report["sections"]["daily_panchang"]
     if panchang:
         lines.append(
@@ -260,7 +292,9 @@ def build_text_report(report: dict) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate a basic astrology draft from JSON inputs.")
+    parser = argparse.ArgumentParser(
+        description="Generate a basic astrology draft from JSON inputs."
+    )
     parser.add_argument("--kundali-json", required=True, help="Path to kundali JSON")
     parser.add_argument("--dasha-json", help="Optional path to dasha JSON")
     parser.add_argument("--panchang-json", help="Optional path to panchang JSON")
