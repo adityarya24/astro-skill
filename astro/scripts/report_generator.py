@@ -7,6 +7,29 @@ import json
 import sys
 from pathlib import Path
 
+try:
+    from .aspects import ASPECT_OFFSETS, DEFAULT_OFFSETS, _aspected_house, compute_aspects
+except ImportError:  # pragma: no cover - direct script execution path.
+    from aspects import ASPECT_OFFSETS, DEFAULT_OFFSETS, _aspected_house, compute_aspects
+
+# Standard bhava karakas (BPHS convention). Data table — not an if-chain.
+HOUSE_KARAKAS: dict[int, list[str]] = {
+    1: ["Surya"],
+    2: ["Guru"],
+    3: ["Mangal"],
+    4: ["Chandra", "Budh"],
+    5: ["Guru"],
+    6: ["Mangal", "Shani"],
+    7: ["Shukra"],
+    8: ["Shani"],
+    9: ["Guru", "Surya"],
+    10: ["Surya", "Budh", "Guru", "Shani"],
+    11: ["Guru"],
+    12: ["Shani"],
+}
+
+_ORDINAL = {1: "1st", 2: "2nd", 3: "3rd"}
+
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -16,8 +39,83 @@ def format_doshas(doshas: list[str]) -> list[str]:
     return doshas if doshas else []
 
 
-def build_birth_chart_section(kundali: dict) -> dict:
+def _ordinal(n: int) -> str:
+    return _ORDINAL.get(n, f"{n}th")
+
+
+def _aspect_type(planet: str, from_house: int, target_house: int) -> str:
+    """Return the Parashari aspect label (e.g. '7th', '5th') used for this cast."""
+    offsets = ASPECT_OFFSETS.get(planet, DEFAULT_OFFSETS)
+    for off in offsets:
+        if _aspected_house(from_house, off) == target_house:
+            return _ordinal(off)
+    return "7th"
+
+
+def _aspects_received_for_house(house_no: int, planets: dict) -> list[dict]:
+    """Planets casting full drishti on ``house_no``, as ``{from, type}``."""
+    received: list[dict] = []
+    for name, info in planets.items():
+        from_house = int(info["house"])
+        offsets = ASPECT_OFFSETS.get(name, DEFAULT_OFFSETS)
+        for off in offsets:
+            if _aspected_house(from_house, off) == house_no:
+                received.append({"from": name, "type": _ordinal(off)})
+                break
+    return received
+
+
+def _lord_placement(lord: str, planets: dict) -> dict:
+    info = planets[lord]
     return {
+        "house": int(info["house"]),
+        "sign": info["sign"],
+        "strength_verdict": info.get("strength_verdict", ""),
+    }
+
+
+def build_houses_section(kundali: dict) -> list[dict]:
+    """All 12 houses with lord placement, aspects received, and karakas."""
+    planets = kundali["planets"]
+    raw_houses = kundali.get("houses", {})
+    houses: list[dict] = []
+    for house_no in range(1, 13):
+        raw = raw_houses.get(str(house_no), {})
+        lord = raw.get("lord", "")
+        houses.append(
+            {
+                "house": house_no,
+                "sign": raw.get("sign", ""),
+                "lord": lord,
+                "lord_placement": _lord_placement(lord, planets) if lord in planets else {
+                    "house": 0,
+                    "sign": "",
+                    "strength_verdict": "",
+                },
+                "planets": list(raw.get("planets", [])),
+                "aspects_received": _aspects_received_for_house(house_no, planets),
+                "karakas": list(HOUSE_KARAKAS[house_no]),
+            }
+        )
+    return houses
+
+
+def _yoga_names(yogas: list) -> list[str]:
+    """Extract display names; supports full detector dicts or plain name strings."""
+    names: list[str] = []
+    for yoga in yogas:
+        if isinstance(yoga, dict):
+            names.append(yoga["name"])
+        else:
+            names.append(str(yoga))
+    return names
+
+
+def build_birth_chart_section(kundali: dict) -> dict:
+    # Full yoga_detector objects (name/type/planets/description). Name-only
+    # consumers should use yoga_names; key_houses kept for older readers.
+    yogas = list(kundali.get("yogas", []))
+    section = {
         "birth_place": kundali["input"]["place"],
         "birth_datetime_local": kundali["calculation"]["datetime_local"],
         "lagna": kundali["lagna"],
@@ -29,9 +127,19 @@ def build_birth_chart_section(kundali: dict) -> dict:
             for house in ("1", "5", "7", "9", "10")
             if house in kundali["houses"]
         },
+        "houses": build_houses_section(kundali),
         "doshas": format_doshas(kundali.get("doshas", [])),
-        "yogas": [yoga["name"] for yoga in kundali.get("yogas", [])],
+        "yogas": yogas,
+        "yoga_names": _yoga_names(yogas),
+        "ashtakavarga": kundali.get("ashtakavarga"),
+        # Pass-through of T1 planet flags (vargottama/combust/graha_yuddha/
+        # digbala/functional_nature/dignity/strength_verdict) untouched.
+        "planets": kundali.get("planets", {}),
+        "aspects": kundali.get("aspects") or compute_aspects(kundali.get("planets", {})),
     }
+    if "mangalik" in kundali:
+        section["mangalik"] = kundali["mangalik"]
+    return section
 
 
 def build_dasha_section(dasha: dict | None) -> dict | None:
@@ -124,8 +232,9 @@ def build_text_report(report: dict) -> str:
     ]
     if birth["doshas"]:
         lines.append(f"Doshas flagged: {', '.join(birth['doshas'])}.")
-    if birth.get("yogas"):
-        lines.append(f"Yogas: {', '.join(birth['yogas'])}.")
+    yoga_names = birth.get("yoga_names") or _yoga_names(birth.get("yogas") or [])
+    if yoga_names:
+        lines.append(f"Yogas: {', '.join(yoga_names)}.")
 
     dasha = report["sections"]["current_dasha"]
     if dasha:
