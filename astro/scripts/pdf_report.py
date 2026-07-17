@@ -656,11 +656,13 @@ def build_pdf_report(
     dasha: dict | None = None,
     panchang: dict | None = None,
     gochar: dict | None = None,
+    gochar_narrative: dict | None = None,
     output_path: Path,
     language: str = "hin",
     renderer: str = DEFAULT_RENDERER,
     client_name: str | None = None,
     template: str = "standard",
+    synthesis: dict | None = None,
 ) -> Path:
     """Build a PDF astrology report.
 
@@ -683,10 +685,12 @@ def build_pdf_report(
             dasha=dasha,
             panchang=panchang,
             gochar=gochar,
+            gochar_narrative=gochar_narrative,
             output_path=output_path,
             language=language,
             client_name=client_name,
             template=template,
+            synthesis=synthesis,
         )
     if template != "standard":
         raise ValueError("template='pandit_v1' requires renderer='html'")

@@ -109,6 +109,16 @@ _GOCHAR_PROPERTY = {
     "description": "Optional gochar JSON from calculate_gochar; adds the transit section.",
 }
 
+_GOCHAR_NARRATIVE_PROPERTY = {
+    "type": ["object", "null"],
+    "description": "Optional gochar narrative JSON from build_antardasha_gochar_narrative. If missing, it will be computed automatically.",
+}
+
+_SYNTHESIS_PROPERTY = {
+    "type": ["object", "null"],
+    "description": "Optional synthesis JSON from synthesize_bilingual. If missing, it will be computed automatically.",
+}
+
 _LANGUAGE_PROPERTY = {
     "type": "string",
     "enum": ["hin", "hi", "en"],
@@ -330,6 +340,8 @@ TOOL_DEFINITIONS: list[types.Tool] = [
                 "dasha": _DASHA_PROPERTY,
                 "panchang": _PANCHANG_PROPERTY,
                 "gochar": _GOCHAR_PROPERTY,
+                "gochar_narrative": _GOCHAR_NARRATIVE_PROPERTY,
+                "synthesis": _SYNTHESIS_PROPERTY,
                 "language": _LANGUAGE_PROPERTY,
                 "client_id": _CLIENT_ID_PROPERTY,
                 "client_name": _CLIENT_NAME_PROPERTY,
@@ -360,6 +372,8 @@ TOOL_DEFINITIONS: list[types.Tool] = [
                 "dasha": _DASHA_PROPERTY,
                 "panchang": _PANCHANG_PROPERTY,
                 "gochar": _GOCHAR_PROPERTY,
+                "gochar_narrative": _GOCHAR_NARRATIVE_PROPERTY,
+                "synthesis": _SYNTHESIS_PROPERTY,
                 "language": _LANGUAGE_PROPERTY,
                 "client_id": _CLIENT_ID_PROPERTY,
                 "client_name": _CLIENT_NAME_PROPERTY,

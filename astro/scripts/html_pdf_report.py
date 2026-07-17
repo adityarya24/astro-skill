@@ -1658,50 +1658,64 @@ def _render_dasha_deep(dasha: dict | None, language: str, synth: dict) -> str:
     return _section_wrap(pl("dasha_deep", language), body)
 
 
-def _render_gochar_highlights(gochar: dict | None, language: str) -> str:
-    if not gochar:
+def _render_gochar_highlights(gochar_narrative: dict | None, language: str) -> str:
+    if not gochar_narrative:
         return ""
-    transits = gochar.get("transits") or {}
-    rows = []
-    for name in PLANET_ORDER:
-        t = transits.get(name)
-        if not t:
-            continue
-        rows.append(
-            [
-                display_planet(name, language),
-                display_sign(t.get("sign", ""), language),
-                str(t.get("house_from_moon", "—")),
-                str(t.get("house_from_lagna", "—")),
-            ]
-        )
-    table = ""
-    if rows:
-        table = _table(
-            [
-                label("planet", language),
-                label("sign", language),
-                pl("from_moon", language),
-                pl("from_lagna", language),
-            ],
-            rows,
-        )
-        table = table.replace("<table>", '<table class="compact-table">', 1)
-    sat = gochar.get("saturn_analysis") or {}
-    sat_bits = []
-    if sat:
-        sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
-        if sat.get("type"):
-            sat_bits.append(str(sat["type"]))
-        if sat.get("sign"):
-            sat_bits.append(display_sign(sat["sign"], language))
-        if sat.get("house_from_moon") is not None:
-            sat_bits.append(f"H{sat['house_from_moon']} {pl('from_moon', language)}")
-    sat_html = f"<p><strong>{_h(' · '.join(sat_bits))}</strong></p>" if sat_bits else ""
-    body = sat_html + table
-    if not body:
+    
+    summary = gochar_narrative.get("summary")
+    samples = gochar_narrative.get("samples") or []
+    
+    body_html = ""
+    if summary:
+        body_html += f'<p class="prose">{_h(summary)}</p>'
+        
+    for s in samples:
+        date_str = s.get("date", "")
+        # Format date if possible, but keep simple for now
+        body_html += f"<h4>{_h(date_str)}</h4>"
+        
+        highlights = s.get("highlights") or []
+        rows = []
+        for h in highlights:
+            rows.append(
+                [
+                    display_planet(h["planet"], language),
+                    display_sign(h.get("sign", ""), language),
+                    str(h.get("house_from_moon", "—")),
+                    str(h.get("house_from_lagna", "—")),
+                ]
+            )
+        
+        if rows:
+            table = _table(
+                [
+                    label("planet", language),
+                    label("sign", language),
+                    pl("from_moon", language),
+                    pl("from_lagna", language),
+                ],
+                rows,
+            )
+            table = table.replace("<table>", '<table class="compact-table">', 1)
+            body_html += table
+            
+        sat = s.get("saturn_analysis") or {}
+        sat_bits = []
+        if sat:
+            sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
+            if sat.get("type"):
+                sat_bits.append(str(sat["type"]))
+            if sat.get("sign"):
+                sat_bits.append(display_sign(sat["sign"], language))
+            if sat.get("house_from_moon") is not None:
+                sat_bits.append(f"H{sat['house_from_moon']} {pl('from_moon', language)}")
+        
+        if sat_bits:
+            body_html += f"<p><strong>{_h(' · '.join(sat_bits))}</strong></p>"
+
+    if not body_html:
         return ""
-    return _section_wrap(pl("gochar_highlights", language), body)
+    return _section_wrap(pl("gochar_highlights", language), body_html)
 
 
 def _render_life_areas(synth: dict, language: str) -> str:
@@ -1965,7 +1979,7 @@ def build_premium_sections_html(
         _render_planet_strength(planets, language),
         _render_bhava_analysis(houses, language, synth),
         _render_dasha_deep(dasha, language, synth),
-        _render_gochar_highlights(gochar, language),
+        _render_gochar_highlights(gochar_narrative, language),
         _render_life_areas(synth, language),
         _render_yogas_detail(yogas, language),
         _render_ashtakavarga(ashtak, language),
@@ -2265,6 +2279,7 @@ def _pandit_report_html(
         kundali,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=gochar_narrative,
         language=language,
         client=client,
         synthesis=synthesis,
@@ -2296,6 +2311,7 @@ def build_html(
     dasha: dict | None = None,
     panchang: dict | None = None,
     gochar: dict | None = None,
+    gochar_narrative: dict | None = None,
     language: str = "hin",
     client_name: str | None = None,
     template: str = "standard",
@@ -2308,6 +2324,7 @@ def build_html(
             dasha=dasha,
             panchang=panchang,
             gochar=gochar,
+            gochar_narrative=gochar_narrative,
             language=language,
             client_name=client_name,
             synthesis=synthesis,
@@ -2441,6 +2458,7 @@ def build_html(
         kundali,
         dasha=dasha,
         gochar=gochar,
+        gochar_narrative=gochar_narrative,
         language=language,
         synthesis=synthesis,
     )
@@ -2531,6 +2549,7 @@ def build_html_pdf_report(
     dasha: dict | None = None,
     panchang: dict | None = None,
     gochar: dict | None = None,
+    gochar_narrative: dict | None = None,
     output_path: Path,
     language: str = "hin",
     client_name: str | None = None,
@@ -2543,6 +2562,7 @@ def build_html_pdf_report(
         dasha=dasha,
         panchang=panchang,
         gochar=gochar,
+        gochar_narrative=gochar_narrative,
         language=language,
         client_name=client_name,
         template=template,
@@ -2565,6 +2585,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dasha-json", help="Optional path to dasha JSON")
     parser.add_argument("--panchang-json", help="Optional path to panchang JSON")
     parser.add_argument("--gochar-json", help="Optional path to gochar JSON")
+    parser.add_argument("--gochar-narrative-json", help="Optional path to gochar narrative JSON")
+    parser.add_argument("--synthesis-json", help="Optional path to synthesis JSON")
     parser.add_argument("--output", required=True, help="Output PDF path")
     parser.add_argument("--language", choices=["hin", "hi", "en"], default="hin")
     parser.add_argument("--client-name", help="Client/native name shown on the cover page")
@@ -2576,6 +2598,8 @@ def main(argv: list[str] | None = None) -> int:
         dasha=_load_json(Path(args.dasha_json)) if args.dasha_json else None,
         panchang=_load_json(Path(args.panchang_json)) if args.panchang_json else None,
         gochar=_load_json(Path(args.gochar_json)) if args.gochar_json else None,
+        gochar_narrative=_load_json(Path(args.gochar_narrative_json)) if getattr(args, "gochar_narrative_json", None) else None,
+        synthesis=_load_json(Path(args.synthesis_json)) if getattr(args, "synthesis_json", None) else None,
         output_path=Path(args.output),
         language=args.language,
         client_name=args.client_name,
