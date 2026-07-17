@@ -131,6 +131,7 @@ def test_report_cli_outputs_json(tmp_path: Path):
         check=True,
         capture_output=True,
         text=True,
+        encoding="utf-8",
     )
 
     report = json.loads(completed.stdout)
