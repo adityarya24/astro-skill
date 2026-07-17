@@ -28,7 +28,26 @@ The repo is split so each layer can be reused on its own:
 ## Features
 
 - **Kundali** — lagna, rashi, nakshatra + pada, nine grahas (with retrograde),
-  whole-sign houses, and dosha flags (e.g. Mangalik).
+  whole-sign houses, and dosha flags (e.g. Mangalik with classical cancellation
+  rules).
+- **Planetary strength flags** — dignity, digbala, vargottama, combustion,
+  graha yuddha, functional benefic/malefic per lagna, and a composite
+  per-planet strength verdict.
+- **Yogas** — Gajakesari, Budhaditya, Pancha Mahapurusha, Raja, Neechabhanga,
+  Vipreet (Harsha/Sarala/Vimala), Kaal Sarp (full/partial), Parivartana
+  (maha/khala/dainya), and more — with cancellation checks where classical.
+- **Full 12-house bhava data** — house lords with placement + strength,
+  occupants, Parashari aspects received, and bhava karakas, surfaced in the
+  report JSON for downstream analysis.
+- **Gochar narrative** — month-by-month (quarterly for long windows) transit
+  sampling across the current antardasha window, with true per-date ephemeris
+  recomputation.
+- **Remedies data** — per-planet mantra/gemstone/fasting/daan/ritual reference
+  (Hindi + English) with prioritization by planetary weakness and running dasha.
+- **Optional LLM synthesis** — provider-pluggable prose layer (executive
+  summary, per-house analysis, dasha deep-dive, life-area forecasts, remedies)
+  generated strictly from the computed chart JSON; the pipeline degrades
+  gracefully to a factual report when no provider is configured.
 - **Navamsa (D9)** divisional chart in both JSON and the PDF report.
 - **Vimshottari dasha** — mahadasha + antardasha timeline with correct
   birth-balance handling (the sub-period actually running at birth, not a fresh
@@ -66,6 +85,23 @@ python -m ruff check astro services scripts
 All tests pass; the HTML/Chromium PDF render test skips automatically until
 Chromium is installed. For OS-specific venv details and MCP client config
 examples, see [`docs/operations/install-smoke.md`](docs/operations/install-smoke.md).
+
+## LLM synthesis (optional)
+
+The premium report sections can carry LLM-written prose (bilingual hi/en),
+generated strictly from the computed chart JSON — prompts forbid inventing any
+placement, yoga, or date. Configure via environment variables:
+
+| Env var | Default | Meaning |
+| --- | --- | --- |
+| `ASTRO_LLM_PROVIDER` | `gemini` | `gemini`, `openai` (OpenAI-compatible), or `cli` |
+| `ASTRO_LLM_API_KEY` | *(empty)* | API key for the chosen provider |
+| `ASTRO_LLM_MODEL` | provider default | Model name |
+| `ASTRO_LLM_CLI_ARGS` | — | For `cli` provider: JSON argv with a `{prompt}` token |
+
+With no key configured, every section falls back to a compact factual digest —
+the pipeline never fails because a provider is down. Calls have timeouts and
+log provider failures to stderr.
 
 ## MCP server
 

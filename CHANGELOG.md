@@ -6,6 +6,32 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Planetary strength layer: dignity, digbala, vargottama, combustion, graha
+  yuddha, functional benefic/malefic per lagna, composite `strength_verdict`
+  per planet; Mangalik detection now returns status + classical cancellation
+  reasons (from lagna and from Chandra).
+- Report JSON surfaces all 12 houses (lord placement + strength, occupants,
+  Parashari aspects received, bhava karakas) plus yoga and ashtakavarga
+  passthrough.
+- New yoga families: Neechabhanga Raja (with cancellation conditions), Vipreet
+  Raja (Harsha/Sarala/Vimala with full/weaker strength), Kaal Sarp
+  (full/partial + direction), Parivartana (maha/khala/dainya).
+- Per-planet remedies reference data (`astro/data/remedies.json`): mantra,
+  gemstone (with consult disclaimer), fasting, daan, ritual — Hindi + English.
+- Gochar narrative for the current antardasha window: monthly/quarterly
+  sampling with per-date ephemeris recomputation, bounded call count, and
+  `synthesis_facts` for downstream prose.
+- Optional provider-pluggable LLM synthesis layer (`ASTRO_LLM_*` env vars;
+  Gemini / OpenAI-compatible / CLI): executive summary, 12-house analysis,
+  dasha deep-dive, life areas, remedies — bilingual, grounded-only prompts,
+  graceful factual fallback, timeouts, stderr diagnostics.
+- Premium PDF sections rendering all of the above (HTML renderer), with
+  HTML-escaped prose and factual fallbacks per section; `--synthesis-json` /
+  `--gochar-narrative-json` CLI flags; MCP `generate_pdf_report` /
+  `generate_report_json` accept or auto-compute `synthesis` and
+  `gochar_narrative`.
+
 ### Changed
 - Richer MCP tool definitions: every parameter now carries a description
   (formats, units, defaults), `ayanamsa` and `language` are proper enums,
