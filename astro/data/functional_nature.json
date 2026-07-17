@@ -1,0 +1,183 @@
+{
+  "_source": "BPHS convention",
+  "lagnas": {
+    "Mesha": {
+      "benefic": [
+        "Surya",
+        "Chandra",
+        "Mangal",
+        "Guru"
+      ],
+      "malefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": []
+    },
+    "Vrishabha": {
+      "benefic": [
+        "Surya",
+        "Budh",
+        "Shani"
+      ],
+      "malefic": [
+        "Chandra",
+        "Mangal",
+        "Guru",
+        "Shukra"
+      ],
+      "neutral": []
+    },
+    "Mithuna": {
+      "benefic": [
+        "Shukra"
+      ],
+      "malefic": [
+        "Surya",
+        "Mangal",
+        "Guru"
+      ],
+      "neutral": [
+        "Chandra",
+        "Budh",
+        "Shani"
+      ]
+    },
+    "Karka": {
+      "benefic": [
+        "Chandra",
+        "Mangal",
+        "Guru"
+      ],
+      "malefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": [
+        "Surya"
+      ]
+    },
+    "Simha": {
+      "benefic": [
+        "Surya",
+        "Mangal",
+        "Guru"
+      ],
+      "malefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": [
+        "Chandra"
+      ]
+    },
+    "Kanya": {
+      "benefic": [
+        "Shukra"
+      ],
+      "malefic": [
+        "Chandra",
+        "Mangal",
+        "Guru"
+      ],
+      "neutral": [
+        "Surya",
+        "Budh",
+        "Shani"
+      ]
+    },
+    "Tula": {
+      "benefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "malefic": [
+        "Surya",
+        "Mangal",
+        "Guru"
+      ],
+      "neutral": [
+        "Chandra"
+      ]
+    },
+    "Vrischika": {
+      "benefic": [
+        "Surya",
+        "Chandra",
+        "Guru"
+      ],
+      "malefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": [
+        "Mangal"
+      ]
+    },
+    "Dhanu": {
+      "benefic": [
+        "Surya",
+        "Mangal"
+      ],
+      "malefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": [
+        "Chandra",
+        "Guru"
+      ]
+    },
+    "Makara": {
+      "benefic": [
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "malefic": [
+        "Chandra",
+        "Mangal",
+        "Guru"
+      ],
+      "neutral": [
+        "Surya"
+      ]
+    },
+    "Kumbha": {
+      "benefic": [
+        "Shukra",
+        "Shani"
+      ],
+      "malefic": [
+        "Chandra",
+        "Mangal",
+        "Guru"
+      ],
+      "neutral": [
+        "Surya",
+        "Budh"
+      ]
+    },
+    "Meena": {
+      "benefic": [
+        "Chandra",
+        "Mangal"
+      ],
+      "malefic": [
+        "Surya",
+        "Budh",
+        "Shukra",
+        "Shani"
+      ],
+      "neutral": [
+        "Guru"
+      ]
+    }
+  }
+}

@@ -214,6 +214,80 @@ def navamsa_sign_index(longitude: float) -> int:
     return int(normalize_lon(longitude) // NAVAMSA_SPAN) % 12
 
 
+
+def check_combust(planet: str, lon: float, sun_lon: float, is_retrograde: bool) -> bool:
+    if planet in ("Surya", "Rahu", "Ketu"):
+        return False
+    sep = abs(lon - sun_lon)
+    if sep > 180:
+        sep = 360 - sep
+    if planet == "Chandra": orb = 12
+    elif planet == "Mangal": orb = 17
+    elif planet == "Budh": orb = 12 if is_retrograde else 14
+    elif planet == "Guru": orb = 11
+    elif planet == "Shukra": orb = 8 if is_retrograde else 10
+    elif planet == "Shani": orb = 15
+    else: orb = 0
+    return sep <= orb
+
+def get_functional_nature(planet: str, lagna_sign: str, functional_data: dict) -> str:
+    data = functional_data.get("lagnas", {}).get(lagna_sign, {})
+    if planet in data.get("benefic", []): return "benefic"
+    if planet in data.get("malefic", []): return "malefic"
+    if planet in data.get("neutral", []): return "neutral"
+    return "neutral"
+
+def get_digbala(planet: str, house: int) -> str | None:
+    if planet in ("Rahu", "Ketu"): return None
+    full_house = 0
+    if planet in ("Guru", "Budh"): full_house = 1
+    elif planet in ("Chandra", "Shukra"): full_house = 4
+    elif planet == "Shani": full_house = 7
+    elif planet in ("Surya", "Mangal"): full_house = 10
+    if not full_house: return None
+    
+    dist = abs(house - full_house)
+    if dist > 6:
+        dist = 12 - dist
+        
+    if dist == 0: return "full"
+    elif dist in (1, 2): return "strong"
+    elif dist in (3, 4): return "moderate"
+    else: return "weak"
+
+def get_dignity(planet: str, sign_name: str, signs: list[dict], graha_data: dict) -> str:
+    if planet in ("Rahu", "Ketu"): return "neutral"
+    pdata = graha_data["planets"].get(planet, {})
+    if sign_name == pdata.get("exaltation_sign"): return "exalted"
+    if sign_name == pdata.get("debilitation_sign"): return "debilitated"
+    if sign_name in pdata.get("own_signs", []): return "own"
+    
+    lord = next((s["lord"] for s in signs if s["name"] == sign_name), None)
+    if lord in pdata.get("friends", []): return "friend"
+    if lord in pdata.get("enemies", []): return "enemy"
+    return "neutral"
+
+def calculate_graha_yuddha(planets: dict) -> dict:
+    # only Mangal, Budh, Guru, Shukra, Shani
+    participants = ["Mangal", "Budh", "Guru", "Shukra", "Shani"]
+    yuddha = {p: {"in_war": False, "winner": None, "with": None} for p in planets}
+    
+    for i, p1 in enumerate(participants):
+        if p1 not in planets: continue
+        lon1 = planets[p1]["longitude"]
+        for p2 in participants[i+1:]:
+            if p2 not in planets: continue
+            lon2 = planets[p2]["longitude"]
+            sep = abs(lon1 - lon2)
+            if sep > 180: sep = 360 - sep
+            if sep <= 1.0:
+                # War! lower longitude wins
+                w = p1 if lon1 < lon2 else p2
+                l = p2 if lon1 < lon2 else p1
+                yuddha[w] = {"in_war": True, "winner": True, "with": l}
+                yuddha[l] = {"in_war": True, "winner": False, "with": w}
+    return yuddha
+
 def calculate_navamsa(lagna_lon: float, planets: dict, signs: list[dict]) -> dict:
     nav_lagna_sign = navamsa_sign_index(lagna_lon)
     nav_planets: dict[str, dict] = {}
@@ -252,15 +326,79 @@ def duration_to_ymd(years_decimal: float) -> dict:
     return {"years": years, "months": months, "days": days}
 
 
-def detect_mangalik(planets: dict) -> list[str]:
+
+def detect_mangalik(planets: dict, lagna_sign_idx: int, moon_sign_idx: int, signs: list[dict]) -> dict:
     mangal = planets.get("Mangal")
     if not mangal:
-        return []
-    house = int(mangal["house"])
-    if house in {1, 2, 4, 7, 8, 12}:
-        severity = "full" if house in {7, 8} else "partial"
-        return [f"Mangalik ({severity})"]
-    return []
+        return {"status": "none", "reasons": [], "legacy_list": []}
+    
+    mangal_sign_name = mangal["sign"]
+    mangal_sign_idx = next(i for i, s in enumerate(signs) if s["name"] == mangal_sign_name)
+    
+    house_from_lagna = ((mangal_sign_idx - lagna_sign_idx) % 12) + 1
+    house_from_moon = ((mangal_sign_idx - moon_sign_idx) % 12) + 1 if moon_sign_idx != -1 else 0
+    
+    reasons = []
+    is_mangalik = False
+    severity_full = False
+    
+    legacy_list = []
+    if house_from_lagna in {1, 2, 4, 7, 8, 12}:
+        sev = "full" if house_from_lagna in {7, 8} else "partial"
+        legacy_list.append(f"Mangalik ({sev})")
+    
+    if house_from_lagna in {1, 2, 4, 7, 8, 12}:
+        is_mangalik = True
+        sev = "full" if house_from_lagna in {7, 8} else "partial"
+        if sev == "full": severity_full = True
+        reasons.append(f"from lagna")
+        
+    if house_from_moon in {1, 2, 4, 7, 8, 12}:
+        is_mangalik = True
+        sev = "full" if house_from_moon in {7, 8} else "partial"
+        if sev == "full": severity_full = True
+        reasons.append(f"from chandra")
+        
+    if not is_mangalik:
+        return {"status": "none", "reasons": [], "legacy_list": legacy_list}
+        
+    cancellations = []
+    if mangal_sign_name in {"Mesha", "Vrischika"}:
+        cancellations.append("Mars in own sign")
+    elif mangal_sign_name == "Makara":
+        cancellations.append("Mars in exalted sign")
+        
+    guru = planets.get("Guru")
+    if guru:
+        guru_sign_idx = next(i for i, s in enumerate(signs) if s["name"] == guru["sign"])
+        guru_aspects = [(guru_sign_idx + 4) % 12, (guru_sign_idx + 6) % 12, (guru_sign_idx + 8) % 12]
+        if mangal_sign_idx in guru_aspects:
+            cancellations.append("Guru drishti")
+            
+    conjunctions = []
+    if guru and guru["house"] == mangal["house"]:
+        conjunctions.append("Guru")
+    shukra = planets.get("Shukra")
+    if shukra and shukra["house"] == mangal["house"]:
+        conjunctions.append("Shukra")
+    
+    moon = planets.get("Chandra")
+    if moon and moon["house"] == mangal["house"]:
+        sun = planets.get("Surya")
+        if sun:
+            diff = (moon["longitude"] - sun["longitude"]) % 360
+            if 0 < diff <= 180:
+                conjunctions.append("waxing Chandra")
+                
+    if conjunctions:
+        cancellations.append("benefic conjunction")
+        
+    if cancellations:
+        return {"status": "cancelled", "reasons": reasons + ["cancelled: " + ", ".join(cancellations)], "legacy_list": legacy_list}
+        
+    return {"status": "full" if severity_full else "partial", "reasons": reasons, "legacy_list": legacy_list}
+
+
 
 
 @serialized
@@ -268,6 +406,10 @@ def calculate_kundali(input_data: BirthInput) -> dict:
     setup_ayanamsa(input_data.ayanamsa)
     graha_data = load_json(DATA_DIR / "graha_data.json")
     nakshatra_data = load_json(DATA_DIR / "nakshatra_db.json")["nakshatras"]
+    try:
+        functional_data = load_json(DATA_DIR / "functional_nature.json")
+    except Exception:
+        functional_data = {}
     signs = graha_data["signs"]
 
     local_dt = local_datetime(input_data)
@@ -304,6 +446,41 @@ def calculate_kundali(input_data: BirthInput) -> dict:
         "retrograde": planets["Rahu"]["retrograde"],
     }
 
+    # Now calculate additional properties
+    navamsa = calculate_navamsa(lagna_lon, planets, signs)
+    yuddha_data = calculate_graha_yuddha(planets)
+    sun_lon = planets.get("Surya", {}).get("longitude", 0.0)
+    lagna_sign_name = sign_name(lagna_lon, signs)
+
+    for p, info in planets.items():
+        info["vargottama"] = info["sign"] == navamsa["planets"][p]["sign"]
+        info["combust"] = check_combust(p, info["longitude"], sun_lon, info["retrograde"])
+        info["graha_yuddha"] = yuddha_data[p]
+        info["digbala"] = get_digbala(p, info["house"])
+        info["functional_nature"] = get_functional_nature(p, lagna_sign_name, functional_data)
+        dignity = get_dignity(p, info["sign"], signs, graha_data)
+        info["dignity"] = dignity
+        
+        pos = []
+        neg = []
+        if dignity == "exalted": pos.append("exalted")
+        elif dignity == "own": pos.append("own sign")
+        elif dignity == "friend": pos.append("friend")
+        elif dignity == "debilitated": neg.append("debilitated")
+        elif dignity == "enemy": neg.append("enemy")
+        
+        if info["vargottama"]: pos.append("vargottama")
+        if info["digbala"] == "full": pos.append("digbala full")
+        if info["graha_yuddha"]["winner"] is True: pos.append("war winner")
+        
+        if info["combust"]: neg.append("combust")
+        if info["graha_yuddha"]["winner"] is False: neg.append("war loser")
+        
+        score = len(pos) - len(neg)
+        prefix = "Strong" if score > 0 else "Weak" if score < 0 else "Moderate"
+        reasons = pos + neg
+        info["strength_verdict"] = f"{prefix} — {', '.join(reasons)}" if reasons else f"{prefix} — neutral"
+
     houses: dict[str, dict] = {}
     for offset in range(12):
         idx = (lagna_sign + offset) % 12
@@ -321,6 +498,9 @@ def calculate_kundali(input_data: BirthInput) -> dict:
     lord_years = float(graha_data["planets"][lord]["vimshottari_years"])
     elapsed_fraction = moon_nak["longitude_within"] / NAKSHATRA_SPAN
     balance_years = lord_years * (1.0 - elapsed_fraction)
+    
+    moon_sign_idx = sign_index(moon_lon)
+    mangalik_result = detect_mangalik(planets, lagna_sign, moon_sign_idx, signs)
 
     return {
         "input": {
@@ -349,7 +529,7 @@ def calculate_kundali(input_data: BirthInput) -> dict:
         "planets": planets,
         "houses": houses,
         "aspects": compute_aspects(planets),
-        "navamsa": calculate_navamsa(lagna_lon, planets, signs),
+        "navamsa": navamsa,
         "divisional_charts": compute_divisional_charts(
             {**{name: info["longitude"] for name, info in planets.items()}, "Lagna": lagna_lon},
             signs,
@@ -366,8 +546,10 @@ def calculate_kundali(input_data: BirthInput) -> dict:
             "balance_years_decimal": round(balance_years, 8),
             "balance_at_birth": duration_to_ymd(balance_years),
         },
-        "doshas": detect_mangalik(planets),
+        "doshas": mangalik_result["legacy_list"],
+        "mangalik": {"status": mangalik_result["status"], "reasons": mangalik_result["reasons"]},
     }
+
 
 
 def build_parser() -> argparse.ArgumentParser:
