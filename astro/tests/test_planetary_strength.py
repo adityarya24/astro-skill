@@ -81,6 +81,78 @@ def test_mangalik():
     res = detect_mangalik({"Mangal": {"sign": "Mithuna", "house": 3}}, 0, -1, signs)
     assert res["status"] == "none"
 
+SIGNS_12 = [{"name": n} for n in ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrischika", "Dhanu", "Makara", "Kumbha", "Meena"]]
+
+
+def test_yuddha_boundary_and_wrap():
+    # exactly 1.0 degree apart is still war (<= orb)
+    res = calculate_graha_yuddha({"Mangal": {"longitude": 10.0}, "Budh": {"longitude": 11.0}})
+    assert res["Mangal"]["in_war"] is True
+    # just past the orb is not
+    res = calculate_graha_yuddha({"Mangal": {"longitude": 10.0}, "Budh": {"longitude": 11.01}})
+    assert res["Mangal"]["in_war"] is False
+    # 360-degree wrap: 359.8 and 0.3 are 0.5 apart
+    res = calculate_graha_yuddha({"Guru": {"longitude": 359.8}, "Shukra": {"longitude": 0.3}})
+    assert res["Guru"]["in_war"] is True
+    # known convention: winner by raw lower longitude (0.3 wins across the wrap)
+    assert res["Shukra"]["winner"] is True
+
+
+def test_combust_shukra_retro_orb():
+    # Shukra orb: 10 direct, 8 retro; separation 9 flips the outcome
+    assert check_combust("Shukra", 10.0, 19.0, False) is True
+    assert check_combust("Shukra", 10.0, 19.0, True) is False
+
+
+def test_mangalik_combust_moon_is_not_benefic():
+    # Mangal in 4th (sign idx 3 from Mesha lagna), waxing Chandra conjunct but combust
+    planets = {
+        "Mangal": {"sign": "Karka", "house": 4, "longitude": 100.0},
+        "Chandra": {"sign": "Karka", "house": 4, "longitude": 100.5, "combust": True},
+        "Surya": {"sign": "Karka", "house": 4, "longitude": 95.0},
+    }
+    res = detect_mangalik(planets, 0, 3, SIGNS_12)
+    assert res["status"] == "partial"  # no cancellation from a combust Moon
+    # same setup, Moon not combust -> benefic conjunction cancels
+    planets["Chandra"]["combust"] = False
+    res = detect_mangalik(planets, 0, 3, SIGNS_12)
+    assert res["status"] == "cancelled"
+
+
+@pytest.fixture(scope="module")
+def sample_b_kundali():
+    inp = BirthInput(dob="07/03/2000", tob="03:20", place="Udaipur", lat=24.571, lon=73.691, timezone_name="Asia/Kolkata", ayanamsa="lahiri")
+    return calculate_kundali(inp)
+
+
+def test_functional_nature_loads_from_data_file(sample_b_kundali):
+    # Dhanu lagna per shipped functional_nature.json; also guards against the
+    # silent {} fallback in calculate_kundali (which would yield all-neutral)
+    planets = sample_b_kundali["planets"]
+    assert planets["Surya"]["functional_nature"] == "benefic"
+    assert planets["Shani"]["functional_nature"] == "malefic"
+    assert planets["Guru"]["functional_nature"] == "neutral"
+
+
+def test_strength_verdict_fixture(sample_b_kundali):
+    planets = sample_b_kundali["planets"]
+    assert planets["Shani"]["strength_verdict"].startswith("Weak")
+    assert "debilitated" in planets["Shani"]["strength_verdict"]
+    # friend dignity alone must not inflate to Strong
+    assert planets["Mangal"]["strength_verdict"].startswith("Moderate")
+    # combust + digbala full cancel out
+    assert planets["Chandra"]["strength_verdict"].startswith("Moderate")
+    assert "combust" in planets["Chandra"]["strength_verdict"]
+
+
+def test_mangalik_fixture_partial_not_cancelled(sample_b_kundali):
+    # Chandra is combust in this chart, so the conjunction does not cancel;
+    # matches the previously shipped report for the same birth data
+    m = sample_b_kundali["mangalik"]
+    assert m["status"] == "partial"
+    assert "from lagna" in m["reasons"] and "from chandra" in m["reasons"]
+
+
 def test_fixture_sample_b():
     # SAMPLE_B: dob 07/03/2000, tob 03:20, place "Udaipur", lat 24.571, lon 73.691, timezone Asia/Kolkata, Lahiri
     inp = BirthInput(dob="07/03/2000", tob="03:20", place="Udaipur", lat=24.571, lon=73.691, timezone_name="Asia/Kolkata", ayanamsa="lahiri")

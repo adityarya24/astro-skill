@@ -383,7 +383,9 @@ def detect_mangalik(planets: dict, lagna_sign_idx: int, moon_sign_idx: int, sign
         conjunctions.append("Shukra")
     
     moon = planets.get("Chandra")
-    if moon and moon["house"] == mangal["house"]:
+    if moon and moon["house"] == mangal["house"] and not moon.get("combust", False):
+        # A combust (Sun-close) Moon lacks paksha bala and does not count as a
+        # benefic for mangalik cancellation, even in shukla paksha.
         sun = planets.get("Surya")
         if sun:
             diff = (moon["longitude"] - sun["longitude"]) % 360
@@ -463,22 +465,23 @@ def calculate_kundali(input_data: BirthInput) -> dict:
         
         pos = []
         neg = []
+        mild = []  # descriptors that inform but don't move the verdict
         if dignity == "exalted": pos.append("exalted")
         elif dignity == "own": pos.append("own sign")
-        elif dignity == "friend": pos.append("friend")
+        elif dignity == "friend": mild.append("friend")
         elif dignity == "debilitated": neg.append("debilitated")
         elif dignity == "enemy": neg.append("enemy")
-        
+
         if info["vargottama"]: pos.append("vargottama")
         if info["digbala"] == "full": pos.append("digbala full")
         if info["graha_yuddha"]["winner"] is True: pos.append("war winner")
-        
+
         if info["combust"]: neg.append("combust")
         if info["graha_yuddha"]["winner"] is False: neg.append("war loser")
-        
+
         score = len(pos) - len(neg)
         prefix = "Strong" if score > 0 else "Weak" if score < 0 else "Moderate"
-        reasons = pos + neg
+        reasons = pos + neg + mild
         info["strength_verdict"] = f"{prefix} — {', '.join(reasons)}" if reasons else f"{prefix} — neutral"
 
     houses: dict[str, dict] = {}
