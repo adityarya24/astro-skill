@@ -1153,8 +1153,13 @@ def _pandit_interpretation_pages(
 ) -> list[str]:
     birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
     doshas = birth.get("doshas") or []
+    # Prefer yoga_names (strings). Fall back to names extracted from full yoga dicts.
+    raw_yogas = birth.get("yoga_names") or birth.get("yogas") or []
+    yoga_labels = [
+        y["name"] if isinstance(y, dict) else y for y in raw_yogas
+    ]
     # The detector can flag the same yoga for several house-lord combinations.
-    yogas = list(dict.fromkeys(birth.get("yogas") or []))
+    yogas = list(dict.fromkeys(yoga_labels))
     phalit = _phalit_data()
     ext = _phalit_ext()
     hi = _is_hi(language)
