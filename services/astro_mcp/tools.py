@@ -313,8 +313,7 @@ def generate_report_json_tool(
     output_dir: Path | str | None = None,
     db_path: Path | str | None = None,
 ) -> dict:
-    from astro.scripts.report_generator import build_basic_report as bbr
-    report = bbr(kundali, dasha=dasha, panchang=panchang, language=language)
+    report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
     # The MCP schema advertises these optional fields; carry them into the
     # written report instead of rejecting the call.
     if gochar is not None:
@@ -372,8 +371,7 @@ def generate_pdf_report_tool(
     if not gochar_narrative and dasha:
         gochar_narrative = build_antardasha_gochar_narrative(kundali, dasha, language=language)
     if not synthesis:
-        from astro.scripts.report_generator import build_basic_report as bbr
-        _base_report = bbr(kundali, dasha=dasha, panchang=panchang, language=language)
+        _base_report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
         synthesis = synthesize_bilingual(_base_report, gochar_narrative)
 
     out_dir = _resolve_output_dir(output_dir)
