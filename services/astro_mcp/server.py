@@ -115,8 +115,8 @@ _GOCHAR_NARRATIVE_PROPERTY = {
 }
 
 _SYNTHESIS_PROPERTY = {
-    "type": ["object", "null"],
-    "description": "Optional synthesis JSON from synthesize_bilingual. If missing, it will be computed automatically.",
+    "type": ["object", "boolean", "null"],
+    "description": "Optional synthesis JSON from synthesize_bilingual, or True to generate it. If missing, it will be computed automatically.",
 }
 
 _LANGUAGE_PROPERTY = {

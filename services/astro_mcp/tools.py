@@ -305,25 +305,35 @@ def generate_report_json_tool(
     dasha: dict | None = None,
     panchang: dict | None = None,
     gochar: dict | None = None,
+    gochar_narrative: dict | None = None,
+    synthesis: dict | bool | None = None,
     language: str = "hin",
     client_id: str = "anonymous",
     client_name: str | None = None,
     output_dir: Path | str | None = None,
     db_path: Path | str | None = None,
 ) -> dict:
-    report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
+    from astro.scripts.report_generator import build_basic_report as bbr
+    report = bbr(kundali, dasha=dasha, panchang=panchang, language=language)
     # The MCP schema advertises these optional fields; carry them into the
     # written report instead of rejecting the call.
     if gochar is not None:
         report["sections"]["gochar"] = gochar
     if client_name:
         report["client_name"] = client_name
-    if not gochar_narrative and dasha:
-        gochar_narrative = build_antardasha_gochar_narrative(kundali, dasha, language=language)
-    if not synthesis:
-        from astro.scripts.report_generator import build_basic_report
-        _dummy_report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
-        synthesis = synthesize_bilingual(_dummy_report, gochar_narrative)
+
+    if synthesis is True:
+        from astro.scripts.synthesis import synthesize_bilingual
+        from astro.scripts.gochar_narrative import build_antardasha_gochar_narrative
+        if not gochar_narrative and dasha:
+            gochar_narrative = build_antardasha_gochar_narrative(kundali, dasha, language=language)
+        
+        synthesis = synthesize_bilingual(report, gochar_narrative)
+    
+    if gochar_narrative is not None:
+        report["sections"]["gochar_narrative"] = gochar_narrative
+    if isinstance(synthesis, dict):
+        report["sections"]["synthesis"] = synthesis
 
     out_dir = _resolve_output_dir(output_dir)
     report_id = _new_report_id("rpt")
@@ -362,9 +372,9 @@ def generate_pdf_report_tool(
     if not gochar_narrative and dasha:
         gochar_narrative = build_antardasha_gochar_narrative(kundali, dasha, language=language)
     if not synthesis:
-        from astro.scripts.report_generator import build_basic_report
-        _dummy_report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
-        synthesis = synthesize_bilingual(_dummy_report, gochar_narrative)
+        from astro.scripts.report_generator import build_basic_report as bbr
+        _base_report = bbr(kundali, dasha=dasha, panchang=panchang, language=language)
+        synthesis = synthesize_bilingual(_base_report, gochar_narrative)
 
     out_dir = _resolve_output_dir(output_dir)
     report_id = _new_report_id("pdf")

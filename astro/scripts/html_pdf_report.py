@@ -1953,6 +1953,7 @@ def build_premium_sections_html(
     *,
     dasha: dict | None = None,
     gochar: dict | None = None,
+    gochar_narrative: dict | None = None,
     language: str = "hin",
     synthesis: dict | None = None,
 ) -> str:
@@ -1994,6 +1995,7 @@ def _premium_pandit_pages(
     *,
     dasha: dict | None,
     gochar: dict | None,
+    gochar_narrative: dict | None,
     language: str,
     client: str,
     synthesis: dict | None,
@@ -2038,7 +2040,7 @@ def _premium_pandit_pages(
 
     body_d = (
         _render_dasha_deep(dasha, language, synth)
-        + _render_gochar_highlights(gochar, language)
+        + _render_gochar_highlights(gochar_narrative, language)
         + _render_life_areas(synth, language)
     )
     if body_d:
@@ -2061,6 +2063,7 @@ def _pandit_report_html(
     dasha: dict | None,
     panchang: dict | None,
     gochar: dict | None,
+    gochar_narrative: dict | None = None,
     language: str,
     client_name: str | None,
     synthesis: dict | None = None,

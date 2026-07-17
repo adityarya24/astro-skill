@@ -177,7 +177,7 @@ def test_retry_on_empty_logic(monkeypatch):
         def __exit__(self, *args):
             pass
 
-    def mock_urlopen(req):
+    def mock_urlopen(req, timeout=None):
         nonlocal call_count
         if call_count == 0:
             call_count += 1
