@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astro-skill"
-version = "1.0.0"
+version = "1.1.0"
 description = "Portable Vedic astrology engine, agent skill, and stdio MCP server (kundali, dasha, panchang, PDF reports)"
 requires-python = ">=3.11"
 dependencies = [

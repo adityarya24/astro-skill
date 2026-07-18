@@ -6,7 +6,33 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-07-18
+
+Premium report tier: a pandit-grade Janma Patrika with an at-a-glance
+dashboard, grounded LLM narrative, honest strength ratings, and a shareable
+verdict page. All additive and backward-compatible — the core calculations and
+MCP tools are unchanged, and every new layer is optional (the report degrades
+to a factual fallback with no LLM configured).
+
 ### Added
+- At-a-Glance dashboard (front of the premium report): top strengths, major
+  challenges, per-area one-liners, and the current Mahadasha snapshot.
+- Honest composite ratings (`astro/scripts/scoring.py`): per-house and
+  per-life-area ★ ratings derived only from computed factors (lord strength,
+  digbala, benefic/malefic occupants and aspects, dasha activation, and
+  benefic yoga support, capped) — shown as stars/bands, never fabricated
+  percentages; every rating carries its contributing factors.
+- Overall Assessment (verdict) page with per-area ★ ratings and a plain-English
+  reason for each, plus an engine colophon (Swiss Ephemeris tier · ayanamsa ·
+  date) and a "heuristic index — not a statistical probability" note.
+- Grounded synthesis rendered as grouped bullet points (Opportunities / Risks /
+  per-house / life-area) instead of dense paragraphs, for scannability.
+- Constructive, client-facing band wording (Favourable / Balanced / Growth
+  Area) in the display layer, with the honest star math unchanged.
+- Per-planet remedy detail: daily-minimum vs total-japa, best time, mala,
+  facing direction, and duration.
+- Configurable, white-label-safe `brand` on the report footer (no hardcoded
+  product name).
 - Planetary strength layer: dignity, digbala, vargottama, combustion, graha
   yuddha, functional benefic/malefic per lagna, composite `strength_verdict`
   per planet; Mangalik detection now returns status + classical cancellation
@@ -42,6 +68,11 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
   moved to `Dockerfile.full`: `docker build -f Dockerfile.full -t astro-skill .`
 
 ### Fixed
+- Saturn transit status is passed to the synthesis prompts as a readable label
+  (`Sade Sati` / `Dhaiya`) so the raw enum token is never echoed into the prose.
+- Premium pages reuse the standard page frame/footer and paginate long prose
+  cleanly; verdict reasons cite the yogas that drive a rating (no "5★ but weak
+  lord" contradiction).
 - `generate_pdf_report`'s input schema now accepts `gochar` and `client_name`
   — the tool already supported both, but the schema's
   `additionalProperties: false` rejected them over MCP.
