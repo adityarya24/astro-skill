@@ -21,6 +21,7 @@ import html
 import json
 import math
 import os
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -1029,8 +1030,8 @@ def _pandit_css() -> str:
     .remedy-list li, .summary-list li { margin: 8px 0; }
     .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
     .badge { border: 1px solid #d9a441; padding: 7px 10px; background: #fff6df; color: #7a3f00; }
-    .premium-section { margin: 8px 0 12px; page-break-inside: avoid; break-inside: avoid; }
-    .premium-section > h3 { text-align: left; font-size: 12pt; margin: 4px 0 6px; color: #b10000; }
+    .premium-section { margin: 8px 0 12px; }
+    .premium-section > h3 { text-align: left; font-size: 12pt; margin: 4px 0 6px; color: #b10000; break-after: avoid; page-break-after: avoid; }
     .planet-strength-table td, .planet-strength-table th { font-size: 8.5pt; padding: 4px 6px; }
     .house-card { border: 1px solid #efd4a7; background: rgba(255,255,255,.74); padding: 6px 8px; margin: 0; page-break-inside: avoid; }
     .house-card h4 { color: #b10000; font-size: 9.5pt; margin: 0 0 3px; text-align: left; }
@@ -1508,13 +1509,16 @@ def _remedies_data() -> dict:
         return {}
 
 
-def _section_wrap(title: str, body: str, *, heading: str = "h3") -> str:
+def _section_wrap(title: str, body: str, *, heading: str = "h3", show_title: bool = True) -> str:
     if not body:
         return ""
-    return f'<div class="premium-section"><{heading}>{_h(title)}</{heading}>{body}</div>'
+    title_html = f"<{heading}>{_h(title)}</{heading}>" if show_title else ""
+    return f'<div class="premium-section">{title_html}{body}</div>'
 
 
-def _render_exec_summary(planets: dict, language: str, synth: dict) -> str:
+def _render_exec_summary(
+    planets: dict, language: str, synth: dict, *, show_title: bool = True
+) -> str:
     prose = synth.get("executive_summary") or synth.get("exec_summary") or ""
     if isinstance(prose, dict):
         prose = prose.get("text") or prose.get("body") or ""
@@ -1531,10 +1535,10 @@ def _render_exec_summary(planets: dict, language: str, synth: dict) -> str:
                 f": {_h(verdict)}</li>"
             )
         body = f'<ul class="summary-list">{"".join(lines)}</ul>'
-    return _section_wrap(pl("exec_summary", language), body)
+    return _section_wrap(pl("exec_summary", language), body, show_title=show_title)
 
 
-def _render_planet_strength(planets: dict, language: str) -> str:
+def _render_planet_strength(planets: dict, language: str, *, show_title: bool = True) -> str:
     headers = [
         label("planet", language),
         pl("col_sign_house", language),
@@ -1567,10 +1571,12 @@ def _render_planet_strength(planets: dict, language: str) -> str:
         f'<table class="planet-strength-table"><thead><tr>{head}</tr></thead>'
         f"<tbody>{body}</tbody></table>"
     )
-    return _section_wrap(pl("planet_strength", language), table)
+    return _section_wrap(pl("planet_strength", language), table, show_title=show_title)
 
 
-def _render_bhava_analysis(houses: list[dict], language: str, synth: dict) -> str:
+def _render_bhava_analysis(
+    houses: list[dict], language: str, synth: dict, *, show_title: bool = True
+) -> str:
     if not houses:
         return ""
     house_prose = synth.get("bhava_analysis") or {}
@@ -1626,10 +1632,12 @@ def _render_bhava_analysis(houses: list[dict], language: str, synth: dict) -> st
     if not cards:
         return ""
     body = f'<div class="house-grid">{"".join(cards)}</div>'
-    return _section_wrap(pl("bhava_analysis", language), body)
+    return _section_wrap(pl("bhava_analysis", language), body, show_title=show_title)
 
 
-def _render_dasha_deep(dasha: dict | None, language: str, synth: dict) -> str:
+def _render_dasha_deep(
+    dasha: dict | None, language: str, synth: dict, *, show_title: bool = True
+) -> str:
     current = (dasha or {}).get("current") or {}
     prose = synth.get("dasha_deep_dive") or synth.get("dasha_deep") or ""
     if isinstance(prose, dict):
@@ -1655,10 +1663,55 @@ def _render_dasha_deep(dasha: dict | None, language: str, synth: dict) -> str:
     facts = "<br/>".join(_h(b) for b in period_bits) if period_bits else _h("—")
     prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
     body = f"<p>{facts}</p>{prose_html}"
-    return _section_wrap(pl("dasha_deep", language), body)
+    return _section_wrap(pl("dasha_deep", language), body, show_title=show_title)
 
 
-def _render_gochar_highlights(gochar_narrative: dict | None, language: str) -> str:
+def _dasha_deep_pages(dasha: dict | None, language: str, synth: dict) -> list[str]:
+    """Dasha deep-dive as page-sized HTML body chunks.
+
+    The running-period facts (MD/AD/PD lines) share the first page with the
+    opening prose chunk; the LLM prose (often 5000+ characters) is then
+    split page-by-page via ``_chunk_prose`` so no single page's content
+    overflows the fixed-height ``.pandit-page`` div.
+    """
+    current = (dasha or {}).get("current") or {}
+    prose = synth.get("dasha_deep_dive") or synth.get("dasha_deep") or ""
+    if isinstance(prose, dict):
+        prose = prose.get("text") or prose.get("body") or ""
+    if not current and not prose and not dasha:
+        return []
+    period_bits = []
+    if current.get("mahadasha"):
+        period_bits.append(
+            f"MD: {display_planet(current['mahadasha'], language)}"
+            f" → {current.get('mahadasha_end') or '—'}"
+        )
+    if current.get("antardasha"):
+        period_bits.append(
+            f"AD: {display_planet(current['antardasha'], language)}"
+            f" → {current.get('antardasha_end') or '—'}"
+        )
+    if current.get("pratyantardasha"):
+        period_bits.append(
+            f"PD: {display_planet(current['pratyantardasha'], language)}"
+            f" → {current.get('pratyantardasha_end') or '—'}"
+        )
+    facts = "<br/>".join(_h(b) for b in period_bits) if period_bits else _h("—")
+    chunks = _chunk_prose(prose)
+    if not chunks:
+        return [f'<div class="premium-section"><p>{facts}</p></div>']
+    bodies = [
+        f'<div class="premium-section"><p>{facts}</p>'
+        f'<p class="prose">{_h(chunks[0])}</p></div>'
+    ]
+    for chunk in chunks[1:]:
+        bodies.append(f'<div class="premium-section"><p class="prose">{_h(chunk)}</p></div>')
+    return bodies
+
+
+def _render_gochar_highlights(
+    gochar_narrative: dict | None, language: str, *, show_title: bool = True
+) -> str:
     if not gochar_narrative:
         return ""
     
@@ -1715,10 +1768,79 @@ def _render_gochar_highlights(gochar_narrative: dict | None, language: str) -> s
 
     if not body_html:
         return ""
-    return _section_wrap(pl("gochar_highlights", language), body_html)
+    return _section_wrap(pl("gochar_highlights", language), body_html, show_title=show_title)
 
 
-def _render_life_areas(synth: dict, language: str) -> str:
+def _gochar_highlights_pages(gochar_narrative: dict | None, language: str) -> list[str]:
+    """Gochar highlights as page-sized HTML body chunks.
+
+    The summary shares the first page with an initial batch of transit
+    samples; remaining samples (a quarterly-sampled window can run to a
+    dozen+ dated entries) are grouped a few at a time per page so no single
+    page's table stack overflows the ``.pandit-page`` div.
+    """
+    if not gochar_narrative:
+        return []
+    summary = gochar_narrative.get("summary")
+    samples = gochar_narrative.get("samples") or []
+
+    def render_sample(s: dict) -> str:
+        date_str = s.get("date", "")
+        sample_html = f"<h4>{_h(date_str)}</h4>"
+        highlights = s.get("highlights") or []
+        rows = [
+            [
+                display_planet(h["planet"], language),
+                display_sign(h.get("sign", ""), language),
+                str(h.get("house_from_moon", "—")),
+                str(h.get("house_from_lagna", "—")),
+            ]
+            for h in highlights
+        ]
+        if rows:
+            table = _table(
+                [
+                    label("planet", language),
+                    label("sign", language),
+                    pl("from_moon", language),
+                    pl("from_lagna", language),
+                ],
+                rows,
+            )
+            sample_html += table.replace("<table>", '<table class="compact-table">', 1)
+        sat = s.get("saturn_analysis") or {}
+        sat_bits = []
+        if sat:
+            sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
+            if sat.get("type"):
+                sat_bits.append(str(sat["type"]))
+            if sat.get("sign"):
+                sat_bits.append(display_sign(sat["sign"], language))
+            if sat.get("house_from_moon") is not None:
+                sat_bits.append(f"H{sat['house_from_moon']} {pl('from_moon', language)}")
+        if sat_bits:
+            sample_html += f"<p><strong>{_h(' · '.join(sat_bits))}</strong></p>"
+        return sample_html
+
+    sample_htmls = [render_sample(s) for s in samples]
+    if not summary and not sample_htmls:
+        return []
+
+    # The summary paragraph adds enough height that the first page can only
+    # hold 3 samples even though later pages (no summary) fit 4.
+    first_chunk_size, chunk_size = 3, 4
+    bodies: list[str] = []
+    first_group = sample_htmls[:first_chunk_size]
+    first_body = (f'<p class="prose">{_h(summary)}</p>' if summary else "") + "".join(first_group)
+    if first_body:
+        bodies.append(f'<div class="premium-section">{first_body}</div>')
+    for i in range(first_chunk_size, len(sample_htmls), chunk_size):
+        group = sample_htmls[i : i + chunk_size]
+        bodies.append(f'<div class="premium-section">{"".join(group)}</div>')
+    return bodies
+
+
+def _render_life_areas(synth: dict, language: str, *, show_title: bool = True) -> str:
     life = synth.get("life_areas")
     if not life:
         return ""
@@ -1736,10 +1858,48 @@ def _render_life_areas(synth: dict, language: str) -> str:
         body = f'<ul class="summary-list">{items}</ul>'
     else:
         return ""
-    return _section_wrap(pl("life_areas", language), body)
+    return _section_wrap(pl("life_areas", language), body, show_title=show_title)
 
 
-def _render_yogas_detail(yogas: list, language: str) -> str:
+def _life_areas_pages(synth: dict, language: str) -> list[str]:
+    """Life-area forecasts as page-sized HTML body chunks, one per area.
+
+    Each area (career/wealth/marriage/health, ...) is itself often long
+    enough to need more than one page, so each area's text is run through
+    ``_chunk_prose`` and every resulting chunk becomes its own page body.
+    """
+    life = synth.get("life_areas")
+    if not life:
+        return []
+    bodies: list[str] = []
+    if isinstance(life, dict):
+        for key, value in life.items():
+            if not value:
+                continue
+            text = value if isinstance(value, str) else str(value)
+            chunks = _chunk_prose(text)
+            for idx, chunk in enumerate(chunks):
+                label_html = (
+                    f"<p><strong>{_h(str(key).title())}</strong></p>" if idx == 0 else ""
+                )
+                bodies.append(
+                    f'<div class="premium-section">{label_html}'
+                    f'<p class="prose">{_h(chunk)}</p></div>'
+                )
+    elif isinstance(life, str):
+        bodies.extend(
+            f'<div class="premium-section"><p class="prose">{_h(chunk)}</p></div>'
+            for chunk in _chunk_prose(life)
+        )
+    elif isinstance(life, list):
+        # Short discrete items rarely overflow a page; keep them together.
+        items = "".join(f"<li>{_h(x)}</li>" for x in life if x)
+        if items:
+            bodies.append(f'<div class="premium-section"><ul class="summary-list">{items}</ul></div>')
+    return bodies
+
+
+def _render_yogas_detail(yogas: list, language: str, *, show_title: bool = True) -> str:
     if not yogas:
         return ""
     cards = []
@@ -1770,10 +1930,12 @@ def _render_yogas_detail(yogas: list, language: str) -> str:
         )
     if not cards:
         return ""
-    return _section_wrap(pl("yogas_detail", language), "".join(cards))
+    return _section_wrap(pl("yogas_detail", language), "".join(cards), show_title=show_title)
 
 
-def _render_ashtakavarga(ashtakavarga: dict | None, language: str) -> str:
+def _render_ashtakavarga(
+    ashtakavarga: dict | None, language: str, *, show_title: bool = True
+) -> str:
     if not isinstance(ashtakavarga, dict):
         return ""
     sarva = ashtakavarga.get("sarva") or ashtakavarga.get("sarvashtakavarga")
@@ -1815,7 +1977,9 @@ def _render_ashtakavarga(ashtakavarga: dict | None, language: str) -> str:
             f"<p><strong>{_h(pl('bhinna_title', language))}</strong> — "
             f"{_h(' · '.join(bhinna_lines))}</p>"
         )
-    return _section_wrap(pl("ashtakavarga", language), sarva_table + bhinna_html)
+    return _section_wrap(
+        pl("ashtakavarga", language), sarva_table + bhinna_html, show_title=show_title
+    )
 
 
 def _priority_remedy_planets(kundali: dict, dasha: dict | None, planets: dict) -> list[str]:
@@ -1847,6 +2011,8 @@ def _render_premium_remedies(
     planets: dict,
     language: str,
     synth: dict,
+    *,
+    show_title: bool = True,
 ) -> str:
     hi = _is_hi(language)
     cards: list[str] = []
@@ -1856,6 +2022,7 @@ def _render_premium_remedies(
         return _section_wrap(
             pl("premium_remedies", language),
             f'<p class="prose">{_h(synth_rem)}</p>',
+            show_title=show_title,
         )
     if isinstance(synth_rem, list):
         for item in synth_rem:
@@ -1926,7 +2093,35 @@ def _render_premium_remedies(
 
     if not cards:
         return ""
-    return _section_wrap(pl("premium_remedies", language), "".join(cards))
+    return _section_wrap(
+        pl("premium_remedies", language), "".join(cards), show_title=show_title
+    )
+
+
+def _premium_remedies_pages(
+    kundali: dict,
+    dasha: dict | None,
+    planets: dict,
+    language: str,
+    synth: dict,
+) -> list[str]:
+    """Premium remedies as page-sized HTML body chunks.
+
+    ``synth["remedies"]`` from the LLM synthesis is most often one long
+    prose blob (several thousand characters) -- split that across pages the
+    same way as dasha/life-area prose. The structured card-list/fallback
+    forms already paginate gracefully (each remedy is its own
+    break-avoid ``.panel``), so they keep using the single combined body
+    from ``_render_premium_remedies``.
+    """
+    synth_rem = synth.get("remedies")
+    if isinstance(synth_rem, str) and synth_rem.strip():
+        return [
+            f'<div class="premium-section"><p class="prose">{_h(chunk)}</p></div>'
+            for chunk in _chunk_prose(synth_rem)
+        ]
+    body = _render_premium_remedies(kundali, dasha, planets, language, synth, show_title=False)
+    return [body] if body else []
 
 
 def _render_mangalik_box(mangalik: dict | None, language: str) -> str:
@@ -1990,6 +2185,35 @@ def build_premium_sections_html(
     return "".join(p for p in parts if p)
 
 
+def _chunk_prose(text: str, max_chars: int = 2600) -> list[str]:
+    """Split long prose into page-sized chunks on sentence boundaries.
+
+    A ``.pandit-page`` is a fixed-height div (see ``_page()``); a body
+    longer than one physical page silently overflows onto the next one,
+    leaving the frame/footer of the first page unclosed. Empirically,
+    ~2600 characters of ``.prose`` text (10pt, justified) comfortably fits
+    one page, so LLM prose that can run to several thousand characters
+    (dasha deep-dive, life-area forecasts, remedies) needs to be split into
+    that many separate ``_page()`` calls instead of one overflowing div.
+    """
+    text = (text or "").strip()
+    if not text:
+        return []
+    sentences = re.split(r"(?<=[.!?।])\s+", text)
+    chunks: list[str] = []
+    current = ""
+    for sentence in sentences:
+        candidate = f"{current} {sentence}".strip() if current else sentence
+        if current and len(candidate) > max_chars:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = candidate
+    if current:
+        chunks.append(current)
+    return chunks
+
+
 def _premium_pandit_pages(
     kundali: dict,
     *,
@@ -2000,7 +2224,19 @@ def _premium_pandit_pages(
     client: str,
     synthesis: dict | None,
 ) -> list[str]:
-    """Pack premium sections into a few print pages for the pandit template."""
+    """Pack premium sections into print pages for the pandit template.
+
+    Every page here reuses the same ``.pandit-page`` frame + footer as the
+    standard pandit pages (via ``_page()``). Each call below gives its
+    section its own page (houses are chunked a few at a time) rather than
+    stacking several variable-length LLM-prose sections into one page body:
+    ``.pandit-page`` sizes itself to its content, so an oversized body used
+    to spill across two physical pages, leaving the page-level title
+    orphaned alone on the first page and the frame/footer misplaced on the
+    second (see bugs: orphan section heading, duplicate section heading,
+    wrong footer). The section's own inner heading is suppressed
+    (``show_title=False``) since the page title already carries that label.
+    """
     birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
     raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
     synth = _synth_bundle(raw_synth, language)
@@ -2013,46 +2249,56 @@ def _premium_pandit_pages(
         else kundali.get("ashtakavarga")
     )
     mangalik = birth.get("mangalik") if "mangalik" in birth else kundali.get("mangalik")
-    footer = pl("premium_footer", language)
+    footer = pl("footer", language)
 
     pages: list[str] = []
-    body_a = (
-        _render_exec_summary(planets, language, synth)
-        + _render_planet_strength(planets, language)
-        + _render_mangalik_box(mangalik, language)
+
+    def add_page(title: str, body: str) -> None:
+        if body:
+            pages.append(_page(title, body, footer=footer, client=client))
+
+    add_page(
+        pl("exec_summary", language),
+        _render_exec_summary(planets, language, synth, show_title=False),
     )
-    if body_a:
-        pages.append(_page(pl("exec_summary", language), body_a, footer=footer, client=client))
+
+    add_page(
+        pl("planet_strength", language),
+        _render_planet_strength(planets, language, show_title=False)
+        + _render_mangalik_box(mangalik, language),
+    )
 
     if houses:
-        mid = (len(houses) + 1) // 2
-        for chunk in (houses[:mid], houses[mid:]):
-            body = _render_bhava_analysis(chunk, language, synth)
-            if body:
-                pages.append(
-                    _page(
-                        pl("bhava_analysis", language),
-                        body,
-                        footer=footer,
-                        client=client,
-                    )
-                )
+        chunk_size = 2
+        for i in range(0, len(houses), chunk_size):
+            add_page(
+                pl("bhava_analysis", language),
+                _render_bhava_analysis(
+                    houses[i : i + chunk_size], language, synth, show_title=False
+                ),
+            )
 
-    body_d = (
-        _render_dasha_deep(dasha, language, synth)
-        + _render_gochar_highlights(gochar_narrative, language)
-        + _render_life_areas(synth, language)
+    for body in _dasha_deep_pages(dasha, language, synth):
+        add_page(pl("dasha_deep", language), body)
+
+    for body in _gochar_highlights_pages(gochar_narrative, language):
+        add_page(pl("gochar_highlights", language), body)
+
+    for body in _life_areas_pages(synth, language):
+        add_page(pl("life_areas", language), body)
+
+    add_page(
+        pl("yogas_detail", language),
+        _render_yogas_detail(yogas, language, show_title=False),
     )
-    if body_d:
-        pages.append(_page(pl("dasha_deep", language), body_d, footer=footer, client=client))
 
-    body_e = _render_yogas_detail(yogas, language) + _render_ashtakavarga(ashtak, language)
-    if body_e:
-        pages.append(_page(pl("yogas_detail", language), body_e, footer=footer, client=client))
+    add_page(
+        pl("ashtakavarga", language),
+        _render_ashtakavarga(ashtak, language, show_title=False),
+    )
 
-    body_f = _render_premium_remedies(kundali, dasha, planets, language, synth)
-    if body_f:
-        pages.append(_page(pl("premium_remedies", language), body_f, footer=footer, client=client))
+    for body in _premium_remedies_pages(kundali, dasha, planets, language, synth):
+        add_page(pl("premium_remedies", language), body)
 
     return pages
 
