@@ -359,6 +359,7 @@ def generate_pdf_report_tool(
     language: str = "hin",
     client_id: str = "anonymous",
     client_name: str | None = None,
+    brand: str = "",
     output_dir: Path | str | None = None,
     db_path: Path | str | None = None,
     renderer: str = "html",
@@ -388,6 +389,7 @@ def generate_pdf_report_tool(
         language=language,
         renderer=renderer,
         client_name=client_name,
+        brand=brand,
         template=template,
     )
     record = ReportRecord(

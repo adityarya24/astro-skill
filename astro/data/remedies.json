@@ -29,6 +29,11 @@
         "hi": "रविवार को सूर्योदय के समय सूर्य को जल अर्पित करें और सूर्य देव का ध्यान करें।",
         "en": "On Sunday at sunrise, offer water to the Sun and meditate on Surya Dev."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्योदय के समय", "en": "At sunrise"},
+      "mala": {"hi": "रुद्राक्ष माला", "en": "Rudraksha mala"},
+      "direction": {"hi": "पूर्व", "en": "East"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Chandra": {
@@ -59,6 +64,11 @@
         "hi": "सोमवार को चन्द्रमा को दूध या जल अर्पित करें और श्वेत वस्त्र धारण करें।",
         "en": "On Monday, offer milk or water to the Moon and wear white clothing."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "चंद्रोदय के बाद", "en": "After moonrise"},
+      "mala": {"hi": "स्फटिक माला", "en": "Sphatik mala"},
+      "direction": {"hi": "उत्तर-पश्चिम", "en": "Northwest"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Mangal": {
@@ -89,6 +99,11 @@
         "hi": "मंगलवार को हनुमान जी की पूजा करें और लाल पुष्प अर्पित करें।",
         "en": "On Tuesday, worship Hanuman and offer red flowers."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्योदय से पहले", "en": "Before sunrise"},
+      "mala": {"hi": "लाल चंदन माला", "en": "Red sandalwood mala"},
+      "direction": {"hi": "दक्षिण", "en": "South"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Budh": {
@@ -119,6 +134,11 @@
         "hi": "बुधवार को विद्या की देवी सरस्वती का स्मरण करें और हरित वस्त्र धारण करें।",
         "en": "On Wednesday, remember Goddess Saraswati and wear green clothing."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "प्रातःकाल", "en": "In the morning"},
+      "mala": {"hi": "तुलसी माला", "en": "Tulsi mala"},
+      "direction": {"hi": "उत्तर", "en": "North"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Guru": {
@@ -149,6 +169,11 @@
         "hi": "गुरुवार को पीला वस्त्र धारण करें और गुरु/बृहस्पति देव का ध्यान करें।",
         "en": "On Thursday, wear yellow clothing and meditate on Guru (Brihaspati)."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्योदय के बाद", "en": "After sunrise"},
+      "mala": {"hi": "हल्दी माला", "en": "Turmeric mala"},
+      "direction": {"hi": "उत्तर-पूर्व", "en": "Northeast"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Shukra": {
@@ -179,6 +204,11 @@
         "hi": "शुक्रवार को देवी लक्ष्मी की पूजा करें और श्वेत अथवा हल्का रंग धारण करें।",
         "en": "On Friday, worship Goddess Lakshmi and wear white or light colours."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "प्रातःकाल", "en": "In the morning"},
+      "mala": {"hi": "स्फटिक माला", "en": "Sphatik mala"},
+      "direction": {"hi": "दक्षिण-पूर्व", "en": "Southeast"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Shani": {
@@ -209,6 +239,11 @@
         "hi": "शनिवार को तिल का तेल अर्पित करें और शनि देव का जाप करें।",
         "en": "On Saturday, offer sesame oil and chant the Shani mantra."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्यास्त के बाद", "en": "After sunset"},
+      "mala": {"hi": "रुद्राक्ष माला", "en": "Rudraksha mala"},
+      "direction": {"hi": "पश्चिम", "en": "West"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Rahu": {
@@ -239,6 +274,11 @@
         "hi": "शनिवार को राहु का जाप करें और नीले रंग का दान करें।",
         "en": "On Saturday, chant the Rahu mantra and donate items of blue colour."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्यास्त के बाद", "en": "After sunset"},
+      "mala": {"hi": "हकीक माला", "en": "Hakik mala"},
+      "direction": {"hi": "दक्षिण-पश्चिम", "en": "Southwest"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     },
     "Ketu": {
@@ -269,6 +309,11 @@
         "hi": "मंगलवार को केतु का जाप करें और आध्यात्मिक साधना करें।",
         "en": "On Tuesday, chant the Ketu mantra and engage in spiritual practice."
       },
+      "jaap_min": 108,
+      "best_time": {"hi": "सूर्योदय से पहले", "en": "Before sunrise"},
+      "mala": {"hi": "रुद्राक्ष माला", "en": "Rudraksha mala"},
+      "direction": {"hi": "उत्तर-पूर्व", "en": "Northeast"},
+      "duration": {"hi": "40 दिन", "en": "40 days"},
       "_source": "standard jyotish convention, operator-reviewed"
     }
   }

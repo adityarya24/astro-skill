@@ -202,6 +202,9 @@ HI_LABELS = {
     "sunrise": "सूर्योदय",
     "sunset": "सूर्यास्त",
     "safety": "सुरक्षा नोट्स",
+    "page": "पृष्ठ",
+    "ayanamsa": "अयनांश",
+    "generated": "निर्मित",
 }
 
 
@@ -350,12 +353,42 @@ def display_label(key: str, language: str) -> str:
         "sunrise": "Sunrise",
         "sunset": "Sunset",
         "safety": "Safety Notes",
+        "page": "Page",
+        "ayanamsa": "ayanamsa",
+        "generated": "generated",
     }[key]
 
 
+def _footer_text(brand: str, language: str) -> str:
+    """Return one safe, single-line footer label for the ReportLab canvas."""
+    return " ".join(str(brand or "").split()) or display_label("title", language)
+
+
+def _report_colophon(kundali: dict, language: str) -> str:
+    """Describe the calculation engine without assuming optional metadata exists."""
+    calculation = kundali.get("calculation") or {}
+    tier = str(calculation.get("ephemeris") or "—").upper()
+    ayanamsa = str(calculation.get("ayanamsa") or "—").replace("_", " ").title()
+    if ayanamsa == "Kp":
+        ayanamsa = "KP"
+    return (
+        f"Swiss Ephemeris ({tier}) · {ayanamsa} {display_label('ayanamsa', language)} · "
+        f"{display_label('generated', language)} {datetime.now().date().isoformat()}"
+    )
+
+
 class PageFrame:
-    def __init__(self, title: str, regular_font: str, bold_font: str):
+    def __init__(
+        self,
+        title: str,
+        footer: str,
+        language: str,
+        regular_font: str,
+        bold_font: str,
+    ):
         self.title = title
+        self.footer = footer
+        self.language = language
         self.regular_font = regular_font
         self.bold_font = bold_font
 
@@ -378,7 +411,11 @@ class PageFrame:
         canvas.drawCentredString(width / 2, height - 0.45 * inch, self.title)
         canvas.setFont(self.regular_font, 8)
         canvas.setFillColor(colors.HexColor("#3D405B"))
-        canvas.drawCentredString(width / 2, 0.25 * inch, f"Astro Skill Report | Page {doc.page}")
+        canvas.drawCentredString(
+            width / 2,
+            0.25 * inch,
+            f"{self.footer} | {display_label('page', self.language)} {doc.page}",
+        )
         canvas.restoreState()
 
 
@@ -661,6 +698,7 @@ def build_pdf_report(
     language: str = "hin",
     renderer: str = DEFAULT_RENDERER,
     client_name: str | None = None,
+    brand: str = "",
     template: str = "standard",
     synthesis: dict | None = None,
 ) -> Path:
@@ -689,6 +727,7 @@ def build_pdf_report(
             output_path=output_path,
             language=language,
             client_name=client_name,
+            brand=brand,
             template=template,
             synthesis=synthesis,
         )
@@ -701,6 +740,7 @@ def build_pdf_report(
         output_path=output_path,
         language=language,
         client_name=client_name,
+        brand=brand,
     )
 
 
@@ -712,6 +752,7 @@ def _build_reportlab_pdf_report(
     output_path: Path,
     language: str = "hin",
     client_name: str | None = None,
+    brand: str = "",
 ) -> Path:
     if _REPORTLAB_IMPORT_ERROR is not None:
         raise RuntimeError(
@@ -886,9 +927,18 @@ def _build_reportlab_pdf_report(
             Paragraph(display_label("safety", language), heading),
             Paragraph(report["notes"][0], styles["HindiBody"]),
             Paragraph(report["notes"][1], styles["HindiBody"]),
+            Spacer(1, 10),
+            Paragraph(rl_escape(_report_colophon(kundali, language)), styles["SmallNote"]),
         ]
     )
-    doc.build(story, onFirstPage=PageFrame(display_label("title", language), regular_font, bold_font), onLaterPages=PageFrame(display_label("title", language), regular_font, bold_font))
+    frame = PageFrame(
+        display_label("title", language),
+        _footer_text(brand, language),
+        language,
+        regular_font,
+        bold_font,
+    )
+    doc.build(story, onFirstPage=frame, onLaterPages=frame)
     return output_path
 
 
@@ -901,6 +951,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", required=True, help="Output PDF path")
     parser.add_argument("--language", choices=["hin", "hi", "en"], default="hin")
     parser.add_argument("--client-name", help="Client/native name shown on the cover page")
+    parser.add_argument(
+        "--brand",
+        default="",
+        help="Optional white-label footer text; empty keeps the neutral footer",
+    )
     parser.add_argument("--template", choices=["standard", "pandit_v1"], default="standard")
     parser.add_argument(
         "--renderer",
@@ -925,6 +980,7 @@ def main(argv: list[str] | None = None) -> int:
         language=args.language,
         renderer=args.renderer,
         client_name=args.client_name,
+        brand=args.brand,
         template=args.template,
     )
     print(f"Wrote PDF report ({args.renderer}): {output}")

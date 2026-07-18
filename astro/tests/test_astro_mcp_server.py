@@ -11,6 +11,8 @@ import pytest
 from mcp import ClientSession
 from mcp.client.stdio import StdioServerParameters, stdio_client
 
+from services.astro_mcp.server import TOOL_DEFINITIONS
+
 ROOT = Path(__file__).resolve().parents[2]
 
 # Neutral sample birth (26/12/2019 09:15 IST, Delhi) — Makara lagna, verified
@@ -108,3 +110,12 @@ def test_mcp_stdio_server_lists_tools_and_dispatches_calls(tmp_path: Path):
     assert tmp_path.resolve() in written.resolve().parents
     payload = json.loads(written.read_text(encoding="utf-8"))
     assert payload["sections"]["birth_chart"]["lagna"] == "Makara"
+
+
+def test_generate_pdf_report_schema_accepts_optional_brand():
+    tool = next(tool for tool in TOOL_DEFINITIONS if tool.name == "generate_pdf_report")
+
+    brand = tool.inputSchema["properties"]["brand"]
+    assert brand["type"] == "string"
+    assert brand["default"] == ""
+    assert "brand" not in tool.inputSchema["required"]

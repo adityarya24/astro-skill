@@ -136,6 +136,7 @@ def test_generate_pdf_report_tool_writes_pdf_with_metadata(tmp_path: Path):
         language="hi",
         client_id="client-001",
         client_name="Kiran Verma",
+        brand="Jyotish Paramarsh",
         output_dir=tmp_path,
         renderer="reportlab",
         template="standard",
@@ -150,6 +151,8 @@ def test_generate_pdf_report_tool_writes_pdf_with_metadata(tmp_path: Path):
     text = "\n".join((page.extract_text() or "") for page in PdfReader(str(path)).pages)
     assert "Kiran Verma" in text
     assert "Makara" in text
+    assert "Jyotish Paramarsh" in text
+    assert "Astro Skill" not in text
 
 
 def test_storage_tools_roundtrip_client_and_reports(tmp_path: Path):
