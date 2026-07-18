@@ -2631,17 +2631,28 @@ def _premium_remedies_pages(
     language: str,
     synth: dict,
 ) -> list[str]:
-    """Return one deterministic, break-safe remedy card per report page."""
+    """Return deterministic, break-safe remedy cards packed two per page.
+
+    Each card is a compact detail grid that fills only ~1/3 of a physical
+    page, so stacking two per page (mirroring how ``_premium_pandit_pages``
+    chunks houses ``chunk_size = 2``) halves the page count instead of
+    leaving each page mostly whitespace. Cards stack full-width rather than
+    side-by-side (unlike ``.house-grid``) because each card already contains
+    its own two-column detail grid, which would be squeezed unreadably thin
+    at half a page width.
+    """
     cards = _fallback_remedy_cards(kundali, dasha, planets, language)
     pages = []
-    for index, card in enumerate(cards):
+    chunk_size = 2
+    for i in range(0, len(cards), chunk_size):
+        chunk = cards[i : i + chunk_size]
         notes = ""
-        if index + 1 == len(cards):
+        if i + chunk_size >= len(cards):
             notes = (
                 f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
                 f'<p class="green">{_h(pl("remedies_note", language))}</p>'
             )
-        pages.append(f'<div class="premium-section">{card}{notes}</div>')
+        pages.append(f'<div class="premium-section">{"".join(chunk)}{notes}</div>')
     return pages
 
 
