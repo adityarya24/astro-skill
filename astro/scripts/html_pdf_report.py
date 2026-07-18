@@ -451,14 +451,15 @@ PANDIT_LABELS = {
     "area_health": ("स्वास्थ्य", "Health"),
     "area_education": ("शिक्षा", "Education"),
     "area_spiritual": ("आध्यात्मिकता", "Spiritual"),
-    "band_strong": ("प्रबल", "Strong"),
-    "band_mixed": ("मिश्रित", "Mixed"),
-    "band_weak": ("कमज़ोर", "Weak"),
+    # Client-facing wording: the canonical Strong/Mixed/Weak bands (scoring.py)
+    # are never shown verbatim — they're reframed constructively for a paid
+    # report. The ★ stars are computed from the same unchanged bands; only
+    # the word next to them changes here.
+    "band_strong": ("अनुकूल", "Favourable"),
+    "band_mixed": ("संतुलित", "Balanced"),
+    "band_weak": ("विकास क्षेत्र", "Growth Area"),
     "overall_assessment": ("समग्र मूल्यांकन", "Overall Assessment"),
-    "overall_band": ("समग्र संकेत", "Overall band"),
-    "overall_strong": ("समग्र रूप से प्रबल", "Strong overall"),
-    "overall_mixed": ("समग्र रूप से मिश्रित", "Mixed overall"),
-    "overall_weak": ("समग्र रूप से कमज़ोर", "Weak overall"),
+    "overall_band": ("समग्र दृष्टिकोण", "Overall Outlook"),
     "area_reason": (
         "भाव {0} के स्वामी {1} का बल {2} है{3}।",
         "H{0} lord {1} has {2} strength{3}.",
@@ -504,8 +505,11 @@ PANDIT_LABELS = {
     "worst_sign": ("न्यूनतम राशि", "Lowest sign"),
     "bindus": ("बिंदु", "bindus"),
     "premium_remedies": ("उपाय (प्राथमिकता क्रम)", "Remedies (Prioritised)"),
-    "mantra_count": ("जाप संख्या", "Count"),
-    "jaap_min": ("न्यूनतम जाप", "Minimum recitations"),
+    # "mantra_count" (the mantra's classical grand-total) and "jaap_min" (the
+    # daily floor) are shown side by side on a remedy card — label them so
+    # they read as two distinct figures, not a contradiction.
+    "mantra_count": ("कुल जाप", "Total japa"),
+    "jaap_min": ("दैनिक न्यूनतम", "Daily minimum"),
     "best_time": ("श्रेष्ठ समय", "Best time"),
     "mala": ("माला", "Mala"),
     "direction": ("दिशा", "Direction"),
@@ -1854,7 +1858,7 @@ def _render_overall_assessment(
     overall_band = "Strong" if overall_stars >= 4 else "Mixed" if overall_stars == 3 else "Weak"
     return (
         f'<div class="overall-band {_band_class(overall_band)}">'
-        f'{_h(pl("overall_band", language))}: {_h(pl(f"overall_{overall_band.lower()}", language))}</div>'
+        f'{_h(pl("overall_band", language))}: {_h(_localized_band(overall_band, language))}</div>'
         f'{"".join(rows)}'
         f'<p class="heuristic-note">{_h(pl("heuristic_footnote", language))}</p>'
         f"{colophon}"
@@ -2365,6 +2369,18 @@ def _priority_remedy_planets(kundali: dict, dasha: dict | None, planets: dict) -
     return ordered
 
 
+def _format_count(value: object) -> str:
+    """Thousands-separate a numeric mantra total; leave non-numeric values untouched."""
+    if isinstance(value, bool):
+        return str(value)
+    if isinstance(value, int):
+        return f"{value:,}"
+    if isinstance(value, float) and value.is_integer():
+        return f"{int(value):,}"
+    text = str(value).strip()
+    return f"{int(text):,}" if text.lstrip("-").isdigit() else str(value)
+
+
 def _remedy_detail_grid(remedy: dict, language: str) -> str:
     """Render bilingual practice details from remedies.json without inventing values."""
     hi = _is_hi(language)
@@ -2420,7 +2436,9 @@ def _fallback_remedy_cards(
             _remedy_detail_grid(r, language),
         ]
         if mantra.get("count") is not None:
-            bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(mantra['count'])}</p>")
+            bits.append(
+                f"<p>{_h(pl('mantra_count', language))}: {_h(_format_count(mantra['count']))}</p>"
+            )
         if gem_name:
             bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(gem_name)}</p>")
         if fast_day:
@@ -2465,7 +2483,10 @@ def _render_premium_remedies(
             if item.get("mantra"):
                 bits.append(f'<p class="mantra-line">{_h(item["mantra"])}</p>')
             if item.get("count") is not None:
-                bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(item['count'])}</p>")
+                bits.append(
+                    f"<p>{_h(pl('mantra_count', language))}: "
+                    f"{_h(_format_count(item['count']))}</p>"
+                )
             if item.get("gemstone"):
                 bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(item['gemstone'])}</p>")
             if item.get("fasting") or item.get("fasting_day"):
@@ -2593,12 +2614,12 @@ def build_premium_sections_html(
     """
     report = build_basic_report(kundali, dasha=dasha, language=language)
     birth = report["sections"]["birth_chart"]
-    scores = score_report(report, dasha)
+    yogas = birth.get("yogas") or kundali.get("yogas") or []
+    scores = score_report(report, dasha, yogas)
     raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
     synth = _synth_bundle(raw_synth, language)
     planets = birth.get("planets") or kundali.get("planets") or {}
     houses = birth.get("houses") or []
-    yogas = birth.get("yogas") or kundali.get("yogas") or []
     ashtak = (
         birth.get("ashtakavarga")
         if birth.get("ashtakavarga") is not None
@@ -2770,7 +2791,8 @@ def _pandit_report_html(
 ) -> str:
     report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
     birth = report["sections"]["birth_chart"]
-    scores = score_report(report, dasha)
+    yogas = birth.get("yogas") or kundali.get("yogas") or []
+    scores = score_report(report, dasha, yogas)
     raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
     synth = _synth_bundle(raw_synth, language)
     current = report["sections"]["current_dasha"]

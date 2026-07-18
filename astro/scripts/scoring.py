@@ -2,6 +2,14 @@
 
 The helpers return canonical data (including ``Strong``/``Mixed``/``Weak``
 bands); presentation code is responsible for translating those labels.
+
+Benefic yogas (see :data:`BENEFIC_YOGA_TYPES`) add up to
+:data:`MAX_YOGA_BONUS` points to a house's composite index when a
+participating planet is that house's lord, an occupant, or an aspecting
+planet — so a yoga-rich chart is no longer under-rated. Doshas/afflictions
+never contribute. The star bands themselves (:func:`_stars_for_index`,
+:func:`_band_for_stars`) are unchanged; a house can simply reach a higher,
+legitimately-earned index now.
 """
 
 from __future__ import annotations
@@ -19,6 +27,30 @@ LIFE_AREA_HOUSES: dict[str, tuple[int, ...]] = {
     "education": (5,),
     "spiritual": (9, 12),
 }
+
+# Yoga ``type`` strings (see ``yoga_detector.py``) that represent a benefic,
+# fortune-building combination. Mirrors the classification already used for
+# display purposes (``html_pdf_report._BENEFIC_YOGA_TYPES``) plus a couple of
+# forward-looking type strings ("dhana", "benefic") the detector doesn't emit
+# yet but the report schema documents as valid. Doshas/afflictions (Kaal Sarp,
+# Kemadruma, dainya-parivartana, Mangalik, ...) are deliberately excluded.
+BENEFIC_YOGA_TYPES: frozenset[str] = frozenset(
+    {
+        "raja",
+        "raja-like",
+        "vipreet-raja",
+        "dhana",
+        "benefic",
+        "mahapurusha",
+        "intellect",
+        "wealth-effort",
+        "maha",
+    }
+)
+
+# A house's composite index can gain at most this many points from benefic
+# yogas, however many qualify, so a yoga-rich chart cannot runaway-inflate.
+MAX_YOGA_BONUS = 2
 
 
 def _strength_points(verdict: object) -> int:
@@ -67,10 +99,44 @@ def _active_dasha_lords(dasha: Mapping[str, Any] | str | None) -> set[str]:
     return _active_dasha_lords(str(period)) if period else set()
 
 
+def _benefic_yoga_support(
+    house: Mapping[str, Any], yogas: Iterable[Mapping[str, Any]]
+) -> list[str]:
+    """Names of benefic yogas connected to this house.
+
+    A yoga counts when one of its participating planets is the house lord,
+    an occupant of the house, or a planet aspecting the house — and the
+    yoga's ``type`` is in :data:`BENEFIC_YOGA_TYPES` (doshas/afflictions
+    never contribute).
+    """
+    lord = str(house.get("lord") or "")
+    relevant = {str(name) for name in house.get("planets") or ()}
+    relevant.update(
+        str(aspect.get("from"))
+        for aspect in house.get("aspects_received") or ()
+        if aspect.get("from")
+    )
+    if lord:
+        relevant.add(lord)
+
+    names: list[str] = []
+    for yoga in yogas or ():
+        if not isinstance(yoga, Mapping):
+            continue
+        yoga_type = str(yoga.get("type") or "").strip().lower()
+        if yoga_type not in BENEFIC_YOGA_TYPES:
+            continue
+        participants = {str(p) for p in yoga.get("planets") or ()}
+        if participants & relevant:
+            names.append(str(yoga.get("name") or yoga_type))
+    return names
+
+
 def score_house(
     house: Mapping[str, Any],
     planets: Mapping[str, Mapping[str, Any]],
     active_dasha_lords: Iterable[str] = (),
+    yogas: Iterable[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Score one report-schema house and expose every contributing factor."""
     lord = str(house.get("lord") or "")
@@ -92,6 +158,8 @@ def score_house(
         and _planet_nature(planets, str(aspect.get("from"))) == "benefic"
     ]
     dasha_activated = bool(lord and lord in set(active_dasha_lords))
+    benefic_yoga_support = _benefic_yoga_support(house, yogas)
+    yoga_bonus = min(len(benefic_yoga_support), MAX_YOGA_BONUS)
 
     composite_index = (
         strength_points
@@ -99,6 +167,7 @@ def score_house(
         + len(benefic_aspects)
         - len(malefic_occupants)
         + int(dasha_activated)
+        + yoga_bonus
     )
     stars = _stars_for_index(composite_index)
     return {
@@ -115,6 +184,7 @@ def score_house(
             "benefic_aspects": benefic_aspects,
             "malefic_occupants": malefic_occupants,
             "dasha_activated": dasha_activated,
+            "benefic_yoga_support": benefic_yoga_support,
         },
     }
 
@@ -123,11 +193,12 @@ def score_houses(
     houses: Sequence[Mapping[str, Any]],
     planets: Mapping[str, Mapping[str, Any]],
     dasha: Mapping[str, Any] | str | None = None,
+    yogas: Iterable[Mapping[str, Any]] = (),
 ) -> dict[int, dict[str, Any]]:
     """Score every supplied house, keyed by its integer house number."""
     active_lords = _active_dasha_lords(dasha)
     return {
-        int(house["house"]): score_house(house, planets, active_lords)
+        int(house["house"]): score_house(house, planets, active_lords, yogas)
         for house in houses
     }
 
@@ -164,14 +235,23 @@ def score_life_areas(
 def score_report(
     report: Mapping[str, Any],
     dasha: Mapping[str, Any] | str | None = None,
+    yogas: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    """Score the existing ``build_basic_report`` schema without mutating it."""
+    """Score the existing ``build_basic_report`` schema without mutating it.
+
+    ``yogas`` defaults to ``birth_chart["yogas"]`` (the report schema's own
+    yoga list) so callers that already have that list on hand — e.g. the PDF
+    renderer, which also uses it to render the Yogas section — can pass it
+    through explicitly instead of it being re-derived.
+    """
     sections = report.get("sections") or {}
     birth_chart = sections.get("birth_chart") or {}
     current_dasha = dasha if dasha is not None else sections.get("current_dasha")
+    house_yogas = yogas if yogas is not None else (birth_chart.get("yogas") or ())
     houses = score_houses(
         birth_chart.get("houses") or (),
         birth_chart.get("planets") or {},
         current_dasha,
+        house_yogas,
     )
     return {"houses": houses, "areas": score_life_areas(houses)}

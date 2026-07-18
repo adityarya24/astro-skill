@@ -188,7 +188,7 @@ def test_premium_sections_with_synthesis_include_prose():
     assert "Current dasha narrative" in html
     assert "Remedies (Prioritised)" in html
     assert "Om Chandraya Namah" in html
-    assert "Minimum recitations" in html
+    assert "Daily minimum" in html
     assert "Best time" in html
     assert "Sphatik mala" in html
     assert "First house prose" in html
@@ -221,7 +221,7 @@ def test_fallback_remedy_detail_grid_is_bilingual() -> None:
     dasha = _dasha(chart)
     html = _render_premium_remedies(chart, dasha, chart["planets"], "hi", {})
 
-    assert "न्यूनतम जाप" in html
+    assert "दैनिक न्यूनतम" in html
     assert "श्रेष्ठ समय" in html
     assert "माला" in html
     assert "दिशा" in html
@@ -269,7 +269,7 @@ def test_dashboard_is_page_three_and_verdict_is_last_in_both_languages() -> None
         assert "MD:" in pages[2] and "AD:" in pages[2] and "PD:" in pages[2]
         assert dasha["current"]["antardasha_end"] in pages[2]
         assert pages[-1].count('class="assessment-row ') == 6
-        assert ("न्यूनतम जाप" if language == "hi" else "Minimum recitations") in html
+        assert ("दैनिक न्यूनतम" if language == "hi" else "Daily minimum") in html
 
 
 def test_integrated_color_bands_follow_computed_strength_house_and_yoga_data() -> None:

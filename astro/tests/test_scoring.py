@@ -64,6 +64,7 @@ def test_house_scores_use_only_documented_factors_and_fixed_bands():
         "benefic_aspects": ["Guru"],
         "malefic_occupants": [],
         "dasha_activated": True,
+        "benefic_yoga_support": [],
     }
 
     assert scores[7]["composite_index"] == 1
@@ -122,3 +123,66 @@ def test_score_report_accepts_existing_report_schema_without_mutating_it():
         }
     ]
     assert "scoring" not in report["sections"]
+
+
+def test_benefic_yoga_on_the_house_lord_raises_the_house_stars():
+    houses, planets = _fixture_chart()
+    dasha = {"period": "Shani/Shukra/Guru"}
+
+    baseline = score_houses(houses, planets, dasha)
+    assert baseline[7]["composite_index"] == 1
+    assert baseline[7]["stars"] == 2
+    assert baseline[7]["band"] == "Weak"
+    assert baseline[7]["factors"]["benefic_yoga_support"] == []
+
+    # House 7's lord is Shukra; a Dhana Yoga naming Shukra should be picked up
+    # as a benefic contribution to house 7 (lord participation).
+    yogas = [{"name": "Dhana Yoga", "type": "dhana", "planets": ["Shukra"]}]
+    boosted = score_houses(houses, planets, dasha, yogas)
+
+    assert boosted[7]["composite_index"] == 2
+    assert boosted[7]["stars"] == 3
+    assert boosted[7]["band"] == "Mixed"
+    assert boosted[7]["factors"]["benefic_yoga_support"] == ["Dhana Yoga"]
+
+    # Houses the yoga's planet is not connected to are untouched.
+    assert boosted[1]["composite_index"] == baseline[1]["composite_index"]
+
+
+def test_dosha_yoga_does_not_contribute_to_the_composite_index():
+    houses, planets = _fixture_chart()
+    dasha = {"period": "Shani/Shukra/Guru"}
+
+    baseline = score_houses(houses, planets, dasha)
+    # Kaal Sarp-style dosha naming the same lord (Shukra) as house 7 must not
+    # move the composite index or stars — only benefic yoga types count.
+    yogas = [{"name": "Kaal Sarp", "type": "dosha", "planets": ["Shukra"]}]
+    with_dosha = score_houses(houses, planets, dasha, yogas)
+
+    assert with_dosha[7]["composite_index"] == baseline[7]["composite_index"]
+    assert with_dosha[7]["stars"] == baseline[7]["stars"]
+    assert with_dosha[7]["band"] == baseline[7]["band"]
+    assert with_dosha[7]["factors"]["benefic_yoga_support"] == []
+
+
+def test_benefic_yoga_bonus_is_capped_at_plus_two_per_house():
+    houses, planets = _fixture_chart()
+    dasha = {"period": "Shani/Shukra/Guru"}
+
+    yogas = [
+        {"name": "Dhana Yoga", "type": "dhana", "planets": ["Shukra"]},
+        {"name": "Raja Yoga", "type": "raja", "planets": ["Shukra"]},
+        {"name": "Malavya (Mahapurusha)", "type": "mahapurusha", "planets": ["Shukra"]},
+    ]
+    scores = score_houses(houses, planets, dasha, yogas)
+
+    # Three qualifying yogas are all surfaced for transparency...
+    assert scores[7]["factors"]["benefic_yoga_support"] == [
+        "Dhana Yoga",
+        "Raja Yoga",
+        "Malavya (Mahapurusha)",
+    ]
+    # ...but the composite index only gains +2 (baseline 1, capped bonus 2).
+    assert scores[7]["composite_index"] == 3
+    assert scores[7]["stars"] == 4
+    assert scores[7]["band"] == "Strong"
