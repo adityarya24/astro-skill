@@ -25,7 +25,7 @@ from mcp.server.stdio import stdio_server
 from .tools import TOOLS
 
 SERVER_NAME = "astro-mcp"
-SERVER_VERSION = "1.0.0"
+SERVER_VERSION = "1.1.0"
 
 
 def list_tool_names() -> list[str]:
