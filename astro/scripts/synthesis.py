@@ -31,11 +31,32 @@ RULES = """RULES:
 - NEVER invent a placement, yoga, or date — only facts present in the supplied JSON. If a fact is not in the JSON, it does not exist.
 - Output plain paragraphs (no markdown headers inside sections)."""
 
+BULLET_RULES = """RULES:
+- Every bullet MUST cite at least one concrete chart factor (placement, house lord, yoga, dasha lord, or supplied date/window).
+- Every bullet must explicitly connect that factor to its interpretation; merely naming a dasha or date beside generic advice does not count as grounding.
+- Keep factor roles exact: a karaka is not an occupant, an empty house is not automatically strong, and one planet's strength/ownership must never be assigned to another planet. Use only explicit lord/occupant/aspect fields.
+- NEVER infer an outcome from an empty house or a karaka alone, and never describe a karaka as present/placed unless it is explicitly an occupant. If no placement, lord placement, or aspect supports a point, omit it instead of filling the bullet quota with generic advice.
+- A current dasha may time only a theme already linked to an explicit supplied house lord, placement, occupant, or aspect; the dasha name by itself is not evidence for an outcome.
+- Preserve supplied labels exactly: do not turn neutral dignity/nature into neutral strength, and do not paraphrase a Moderate/Weak/Strong verdict into a different strength level.
+- Treat supplied gochar dates as snapshots unless an explicit start/end window is supplied; never turn a snapshot into a continuous period.
+- Do not name symptoms, body parts, illnesses, immunity, recovery, sleep conditions, medical expenses, or other medical outcomes. Health-related factors may be framed only as general wellbeing, stress, energy, or routine-attention themes without guarantees.
+- ZERO generic filler ("aapka bhavishya ujjwal hai" type lines are forbidden).
+- Balanced: strengths AND cautions, no fear-mongering, no medical/legal/financial guarantees.
+- NEVER invent a placement, yoga, or date — only facts present in the supplied JSON. If a fact is not in the JSON, it does not exist.
+- Write content bullets as concise lines prefixed with "- "; do not write prose paragraphs or use markdown code fences. Explicitly requested section headings are the only non-bullet lines allowed."""
+
 
 def lang_instruction(lang: str) -> str:
     if lang == "hi":
         return "Language: Hindi (natural Devanagari jyotish register, not transliteration)."
     return "Language: English."
+
+
+def bullet_lang_instruction(lang: str) -> str:
+    instruction = lang_instruction(lang)
+    if lang == "hi":
+        return instruction + " In bullets, use Devanagari only; do not add Roman-English glosses."
+    return instruction
 
 
 class Provider:
@@ -216,9 +237,9 @@ def bhava_analysis(report: dict, lang: str) -> dict:
                 "functional_nature": p_info.get("functional_nature")
             })
 
-        prompt = f"""Write the house analysis for House {house_no} (2-4 sentences).
-{RULES}
-{lang_instruction(lang)}
+        prompt = f"""Write the house analysis for House {house_no} as 2-3 concise bullets.
+{BULLET_RULES}
+{bullet_lang_instruction(lang)}
 
 FACT SHEET (ONLY USE THESE FACTS):
 {json.dumps(h_facts, ensure_ascii=False, indent=2)}
@@ -258,9 +279,20 @@ def dasha_deep_dive(report: dict, lang: str, gochar_narrative: dict | None = Non
         "gochar_narrative": gochar_narrative.get("synthesis_facts") if gochar_narrative else None
     }
 
-    prompt = f"""Write a dasha deep dive focusing ONLY on the current antardasha window (opportunities, risks, month-wise guidance).
-{RULES}
-{lang_instruction(lang)}
+    headings = ("अवसर", "जोखिम", "समयरेखा") if lang == "hi" else (
+        "Opportunities",
+        "Risks",
+        "Timeline",
+    )
+    heading_template = "\n".join(f"{heading}:\n- ..." for heading in headings)
+    prompt = f"""Write a dasha deep dive focusing ONLY on the current antardasha window.
+Use exactly these three localized headings in this order, with no markdown heading symbols:
+{heading_template}
+Put 2-4 concise "- " bullets beneath each heading. Timeline bullets must cite only supplied dates or windows; do not invent month-by-month dates.
+The supplied antardasha_end belongs only to the first two lords in period. Use owns_houses exactly, and preserve supplied phase labels exactly.
+Gochar sample dates are snapshots, not transit start dates, unless the fact sheet explicitly supplies a start/end window.
+{BULLET_RULES}
+{bullet_lang_instruction(lang)}
 
 FACT SHEET:
 {json.dumps(fact_sheet, ensure_ascii=False, indent=2)}
@@ -287,6 +319,7 @@ def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) ->
         "Saturn": planets.get("Shani"),
         "Sun": planets.get("Surya"),
         "dasha": dasha.get("period") if dasha else None,
+        "antardasha_end": dasha.get("antardasha_end") if dasha else None,
         "gochar_narrative": gochar_synthesis
     }
     wealth_facts = {
@@ -294,6 +327,7 @@ def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) ->
         "house_11": get_house(11),
         "Jupiter": planets.get("Guru"),
         "dasha": dasha.get("period") if dasha else None,
+        "antardasha_end": dasha.get("antardasha_end") if dasha else None,
         "gochar_narrative": gochar_synthesis
     }
     marriage_facts = {
@@ -301,6 +335,7 @@ def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) ->
         "Venus": planets.get("Shukra"),
         "mangalik": birth.get("mangalik"),
         "dasha": dasha.get("period") if dasha else None,
+        "antardasha_end": dasha.get("antardasha_end") if dasha else None,
         "gochar_narrative": gochar_synthesis
     }
     lagna_lord = get_house(1).get("lord", "")
@@ -310,6 +345,7 @@ def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) ->
         "lagna_lord": lagna_lord,
         "lagna_lord_placement": planets.get(lagna_lord) if lagna_lord else None,
         "dasha": dasha.get("period") if dasha else None,
+        "antardasha_end": dasha.get("antardasha_end") if dasha else None,
         "gochar_narrative": gochar_synthesis
     }
 
@@ -322,9 +358,17 @@ def life_areas(report: dict, lang: str, gochar_narrative: dict | None = None) ->
 
     results = {}
     for area, facts in areas.items():
-        prompt = f"""Write the {area} life area analysis. Every claim must name its placement + a timing window from dasha/gochar data.
-{RULES}
-{lang_instruction(lang)}
+        health_rule = (
+            "For health, describe tendencies conservatively: an empty house alone is not evidence of disease resistance or protection, and do not make medical outcome claims."
+            if area == "health"
+            else ""
+        )
+        prompt = f"""Write the {area} life area analysis as 3-5 concise bullets. Every bullet must name a supplied placement or house factor and, when timing is stated, cite its supplied dasha/gochar window.
+The supplied antardasha_end date belongs to the first two lords in the dasha period; never describe it as the end of the three-lord MD/AD/PD combination.
+Never label that antardasha window as a combined gochar-and-dasha window.
+{health_rule}
+{BULLET_RULES}
+{bullet_lang_instruction(lang)}
 
 FACT SHEET:
 {json.dumps(facts, ensure_ascii=False, indent=2)}

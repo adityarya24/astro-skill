@@ -14,8 +14,13 @@ from dasha_calculator import calculate_dasha  # noqa: E402
 from gochar_calculator import calculate_gochar  # noqa: E402
 from html_pdf_report import (  # noqa: E402
     _area_reason,
+    _dasha_deep_pages,
     _first_sentence,
+    _life_areas_pages,
+    _render_bhava_analysis,
+    _render_dasha_deep,
     _render_gochar_highlights,
+    _render_life_areas,
     _render_premium_remedies,
     build_html,
     build_premium_sections_html,
@@ -361,6 +366,112 @@ def test_dashboard_sentence_is_bounded_for_frame_safety() -> None:
 
     assert len(clipped) <= 363
     assert clipped.endswith("...")
+
+
+def test_bullet_synthesis_renders_lists_for_dasha_life_and_bhava() -> None:
+    synth = {
+        "bhava_analysis": {
+            "1": "- Jupiter in H1 supports confidence.\n- Saturn aspects H1, adding discipline.",
+        },
+        "dasha_deep_dive": (
+            "Opportunities:\n- Mercury rules H10 in the supplied chart.\n"
+            "Risks:\n- Saturn aspects the dasha lord in H3.\n"
+            "Timeline:\n- Mercury/Venus runs until 2028-01-20."
+        ),
+        "life_areas": {
+            "career": [
+                "Mercury rules H10 in the supplied chart.",
+                "Mercury/Venus runs until 2028-01-20.",
+                "Saturn aspects H10 in the supplied chart.",
+            ],
+            "health": "- Mars occupies H6.\n- Jupiter aspects H6.\n- Mercury/Venus ends 2028-01-20.",
+        },
+    }
+    houses = [
+        {
+            "house": 1,
+            "sign": "Mesha",
+            "lord": "Mangal",
+            "planets": ["Guru"],
+            "aspects_received": [{"from": "Shani", "type": "7th"}],
+            "karakas": ["Surya"],
+        }
+    ]
+    dasha = {"current": {"mahadasha": "Budh", "antardasha": "Shukra"}}
+
+    rendered = "".join(
+        (
+            _render_bhava_analysis(houses, "en", synth),
+            _render_dasha_deep(dasha, "en", synth),
+            _render_life_areas(synth, "en"),
+        )
+    )
+
+    assert rendered.count('<ul class="synthesis-list">') >= 6
+    assert '<h4 class="synthesis-group-title">Opportunities</h4>' in rendered
+    assert "<li>Mercury rules H10 in the supplied chart.</li>" in rendered
+    assert "[&#x27;Mercury" not in rendered
+    assert "- Mercury rules" not in rendered
+
+
+def test_bullet_rendering_escapes_content_and_keeps_paragraph_fallback() -> None:
+    bullet_synth = {
+        "dasha_deep_dive": "<script>Group</script>:\n- H10 has <script>alert(1)</script>.",
+    }
+    prose_synth = {"dasha_deep_dive": {"text": "Legacy grounded paragraph."}}
+
+    bullet_html = _render_dasha_deep({}, "en", bullet_synth)
+    prose_html = _render_dasha_deep({}, "en", prose_synth)
+
+    assert "<script>" not in bullet_html
+    assert "&lt;script&gt;Group&lt;/script&gt;" in bullet_html
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in bullet_html
+    assert '<p class="prose">Legacy grounded paragraph.</p>' in prose_html
+
+
+def test_dasha_bullet_pages_split_only_between_complete_items() -> None:
+    bullets = "\n".join(
+        f"- Factor {index}: Mercury occupies H{index} " + ("grounded detail " * 35)
+        for index in range(1, 11)
+    )
+    synth = {"dasha_deep_dive": f"Opportunities:\n{bullets}"}
+    dasha = {
+        "current": {
+            "mahadasha": "Budh",
+            "antardasha": "Shukra",
+            "pratyantardasha": "Rahu",
+        }
+    }
+
+    pages = _dasha_deep_pages(dasha, "en", synth)
+
+    assert len(pages) > 1
+    assert "MD: Mercury" in pages[0]
+    assert all("MD: Mercury" not in page for page in pages[1:])
+    combined = "".join(pages)
+    for index in range(1, 11):
+        assert combined.count(f"Factor {index}:") == 1
+    assert all(page.count("<ul") == page.count("</ul>") for page in pages)
+
+
+def test_life_area_pages_accept_json_lists_and_dash_lines() -> None:
+    synth = {
+        "life_areas": {
+            "career": '["Mercury rules H10.", "Saturn aspects H10.", "Venus AD ends 2028-01-20."]',
+            "health": "- Mars occupies H6.\n- Jupiter aspects H6.\n- Venus AD ends 2028-01-20.",
+        }
+    }
+
+    pages = _life_areas_pages(synth, "en")
+
+    assert len(pages) == 2
+    assert all('<ul class="synthesis-list">' in page for page in pages)
+    assert "[&quot;Mercury" not in "".join(pages)
+    assert "<strong>Career</strong>" in pages[0]
+
+    hi_pages = _life_areas_pages(synth, "hi")
+    assert "<strong>करियर</strong>" in hi_pages[0]
+    assert "<strong>स्वास्थ्य</strong>" in hi_pages[1]
 
 
 def test_structured_remedy_cards_each_get_a_framed_page() -> None:

@@ -1104,6 +1104,11 @@ def _pandit_css() -> str:
     .dasha-cell { flex: 1 1 18%; color: #fff; padding: 7px; min-height: 58px; border-radius: 2px; font-size: 9pt; }
     .dasha-cell.active { outline: 2px solid #111; outline-offset: -2px; }
     .remedy-list li, .summary-list li { margin: 8px 0; }
+    .synthesis-list { margin: 4px 0 7px; padding-left: 20px; }
+    .synthesis-list li { margin: 4px 0; break-inside: avoid; page-break-inside: avoid; }
+    .synthesis-group-title { margin: 7px 0 2px; color: #7a1010; font-size: 10.5pt; text-align: left; break-after: avoid; page-break-after: avoid; }
+    .house-card .synthesis-list { margin: 3px 0; padding-left: 17px; font-size: 8.5pt; line-height: 1.4; }
+    .house-card .synthesis-list li { margin: 2px 0; }
     .badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
     .badge { border: 1px solid #d9a441; padding: 7px 10px; background: #fff6df; color: #7a3f00; }
     .premium-section { margin: 8px 0 12px; }
@@ -1673,12 +1678,151 @@ def _first_sentence(value: object, max_chars: int = 360) -> str:
     return f"{clipped or sentence[:max_chars]}..."
 
 
+def _synthesis_bullet_groups(value: object) -> list[tuple[str, list[str]]]:
+    """Normalize LLM bullet text, JSON lists, or grouped dictionaries."""
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return []
+        if (text.startswith("[") and text.endswith("]")) or (
+            text.startswith("{") and text.endswith("}")
+        ):
+            try:
+                parsed = json.loads(text)
+            except json.JSONDecodeError:
+                parsed = None
+            if isinstance(parsed, (list, dict)):
+                return _synthesis_bullet_groups(parsed)
+
+        groups: list[tuple[str, list[str]]] = []
+        heading = ""
+        items: list[str] = []
+        saw_bullet = False
+
+        def flush() -> None:
+            nonlocal items
+            if items:
+                groups.append((heading, items))
+                items = []
+
+        for raw_line in text.splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("```"):
+                continue
+            match = re.match(r"^(?:[-*•]|\d+[.)])\s+(.+)$", line)
+            if match:
+                saw_bullet = True
+                items.append(match.group(1).strip())
+                continue
+            clean_heading = line.strip("#*_ ")
+            if clean_heading.endswith(":") and len(clean_heading) <= 80:
+                flush()
+                heading = clean_heading[:-1].strip()
+            elif saw_bullet and items:
+                items[-1] = f"{items[-1]} {line}".strip()
+        flush()
+        return groups if saw_bullet else []
+
+    if isinstance(value, list):
+        items = [str(item).strip() for item in value if str(item).strip()]
+        return [("", items)] if items else []
+
+    if isinstance(value, dict):
+        if value.get("text") or value.get("body"):
+            return _synthesis_bullet_groups(value.get("text") or value.get("body"))
+        groups = []
+        for key, group_value in value.items():
+            nested = _synthesis_bullet_groups(group_value)
+            if nested:
+                for nested_heading, items in nested:
+                    groups.append((nested_heading or str(key), items))
+            elif group_value not in (None, ""):
+                groups.append((str(key), [str(group_value).strip()]))
+        return groups
+    return []
+
+
+def _render_synthesis_bullets(groups: list[tuple[str, list[str]]]) -> str:
+    rendered = []
+    for heading, items in groups:
+        heading_html = (
+            f'<h4 class="synthesis-group-title">{_h(heading)}</h4>' if heading else ""
+        )
+        item_html = "".join(f"<li>{_h(item)}</li>" for item in items if item)
+        if item_html:
+            rendered.append(f'{heading_html}<ul class="synthesis-list">{item_html}</ul>')
+    return "".join(rendered)
+
+
+def _render_synthesis_content(value: object) -> str:
+    groups = _synthesis_bullet_groups(value)
+    if groups:
+        return _render_synthesis_bullets(groups)
+    if isinstance(value, dict):
+        value = value.get("text") or value.get("body") or ""
+    text = str(value or "").strip()
+    return f'<p class="prose">{_h(text)}</p>' if text else ""
+
+
+def _chunk_synthesis_bullets(
+    groups: list[tuple[str, list[str]]], *, max_items: int, max_chars: int
+) -> list[list[tuple[str, list[str]]]]:
+    """Pack normalized bullets into page-safe chunks without splitting items."""
+    pages: list[list[tuple[str, list[str]]]] = []
+    page: list[tuple[str, list[str]]] = []
+    page_items = 0
+    page_chars = 0
+    for heading, items in groups:
+        current: list[str] = []
+        for item in items:
+            item_size = len(item) + (len(heading) if not current else 0)
+            if page_items and (page_items >= max_items or page_chars + item_size > max_chars):
+                if current:
+                    page.append((heading, current))
+                    current = []
+                pages.append(page)
+                page = []
+                page_items = 0
+                page_chars = 0
+            current.append(item)
+            page_items += 1
+            page_chars += item_size
+        if current:
+            page.append((heading, current))
+    if page:
+        pages.append(page)
+    return pages
+
+
+def _first_synthesis_bullet(value: object) -> str:
+    groups = _synthesis_bullet_groups(value)
+    return groups[0][1][0] if groups and groups[0][1] else ""
+
+
 _AREA_ALIASES = {
     "career": ("career", "करियर"),
     "marriage": ("marriage", "relationships", "relationship", "विवाह", "संबंध"),
     "finance": ("finance", "finances", "wealth", "वित्त", "धन"),
     "health": ("health", "स्वास्थ्य"),
 }
+
+_LIFE_AREA_LABEL_KEYS = {
+    "career": "career",
+    "wealth": "finance",
+    "finance": "finance",
+    "marriage": "marriage",
+    "relationships": "marriage",
+    "relationship": "marriage",
+    "health": "health",
+    "education": "education",
+    "spiritual": "spiritual",
+}
+
+
+def _life_area_label(value: object, language: str) -> str:
+    key = str(value).strip()
+    label_key = _LIFE_AREA_LABEL_KEYS.get(key.lower())
+    return pl(f"area_{label_key}", language) if label_key else key.title()
 
 
 def _life_area_sentence(synth: dict, area: str) -> str:
@@ -1689,7 +1833,7 @@ def _life_area_sentence(synth: dict, area: str) -> str:
     for alias in _AREA_ALIASES.get(area, (area,)):
         value = lowered.get(alias.lower())
         if value:
-            return _first_sentence(value)
+            return _first_sentence(_first_synthesis_bullet(value) or value)
     return ""
 
 
@@ -1839,7 +1983,8 @@ def _render_dashboard(
             period_bits.append(f"{prefix}: {display_planet(current[key], language)}")
     if current.get("antardasha_end"):
         period_bits.append(f"{pl('antar_end', language)}: {current['antardasha_end']}")
-    theme = _first_sentence(synth.get("dasha_deep_dive") or synth.get("dasha_deep"))
+    dasha_synth = synth.get("dasha_deep_dive") or synth.get("dasha_deep")
+    theme = _first_sentence(_first_synthesis_bullet(dasha_synth) or dasha_synth)
     if not theme and current.get("mahadasha") and current.get("antardasha"):
         theme = pl("dasha_lord_theme", language).format(
             display_planet(current["mahadasha"], language),
@@ -2021,7 +2166,7 @@ def _render_bhava_analysis(
             isinstance(house_prose, list) and isinstance(hno, int) and 1 <= hno <= len(house_prose)
         ):
             prose = house_prose[hno - 1]
-        prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
+        prose_html = _render_synthesis_content(prose)
         score = (house_scores or {}).get(int(hno)) if str(hno).isdigit() else None
         cards.append(
             f'<div class="house-card {_band_class((score or {}).get("band"))}"><h4>{_h(header)}</h4>'
@@ -2038,8 +2183,6 @@ def _render_dasha_deep(
 ) -> str:
     current = (dasha or {}).get("current") or {}
     prose = synth.get("dasha_deep_dive") or synth.get("dasha_deep") or ""
-    if isinstance(prose, dict):
-        prose = prose.get("text") or prose.get("body") or ""
     if not current and not prose and not dasha:
         return ""
     period_bits = []
@@ -2059,7 +2202,7 @@ def _render_dasha_deep(
             f" → {current.get('pratyantardasha_end') or '—'}"
         )
     facts = "<br/>".join(_h(b) for b in period_bits) if period_bits else _h("—")
-    prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
+    prose_html = _render_synthesis_content(prose)
     body = f"<p>{facts}</p>{prose_html}"
     return _section_wrap(pl("dasha_deep", language), body, show_title=show_title)
 
@@ -2074,8 +2217,6 @@ def _dasha_deep_pages(dasha: dict | None, language: str, synth: dict) -> list[st
     """
     current = (dasha or {}).get("current") or {}
     prose = synth.get("dasha_deep_dive") or synth.get("dasha_deep") or ""
-    if isinstance(prose, dict):
-        prose = prose.get("text") or prose.get("body") or ""
     if not current and not prose and not dasha:
         return []
     period_bits = []
@@ -2095,7 +2236,22 @@ def _dasha_deep_pages(dasha: dict | None, language: str, synth: dict) -> list[st
             f" → {current.get('pratyantardasha_end') or '—'}"
         )
     facts = "<br/>".join(_h(b) for b in period_bits) if period_bits else _h("—")
-    chunks = _chunk_prose(prose)
+    bullet_groups = _synthesis_bullet_groups(prose)
+    if bullet_groups:
+        bullet_pages = _chunk_synthesis_bullets(
+            bullet_groups,
+            max_items=4,
+            max_chars=1100,
+        )
+        return [
+            f'<div class="premium-section">'
+            f'{f"<p>{facts}</p>" if index == 0 else ""}'
+            f'{_render_synthesis_bullets(groups)}</div>'
+            for index, groups in enumerate(bullet_pages)
+        ]
+    if isinstance(prose, dict):
+        prose = prose.get("text") or prose.get("body") or ""
+    chunks = _chunk_prose(str(prose or ""))
     if not chunks:
         return [f'<div class="premium-section"><p>{facts}</p></div>']
     bodies = [
@@ -2243,17 +2399,19 @@ def _render_life_areas(synth: dict, language: str, *, show_title: bool = True) -
     if not life:
         return ""
     if isinstance(life, str):
-        body = f'<p class="prose">{_h(life)}</p>'
+        body = _render_synthesis_content(life)
     elif isinstance(life, dict):
-        items = "".join(f"<li><strong>{_h(k)}</strong>: {_h(v)}</li>" for k, v in life.items() if v)
-        if not items:
+        sections = "".join(
+            f'<h4 class="synthesis-group-title">{_h(_life_area_label(key, language))}</h4>'
+            f'{_render_synthesis_content(value)}'
+            for key, value in life.items()
+            if value
+        )
+        if not sections:
             return ""
-        body = f'<ul class="summary-list">{items}</ul>'
+        body = sections
     elif isinstance(life, list):
-        items = "".join(f"<li>{_h(x)}</li>" for x in life if x)
-        if not items:
-            return ""
-        body = f'<ul class="summary-list">{items}</ul>'
+        body = _render_synthesis_content(life)
     else:
         return ""
     return _section_wrap(pl("life_areas", language), body, show_title=show_title)
@@ -2274,11 +2432,26 @@ def _life_areas_pages(synth: dict, language: str) -> list[str]:
         for key, value in life.items():
             if not value:
                 continue
-            text = value if isinstance(value, str) else str(value)
+            bullet_groups = _synthesis_bullet_groups(value)
+            if bullet_groups:
+                bullet_pages = _chunk_synthesis_bullets(
+                    bullet_groups,
+                    max_items=5,
+                    max_chars=1800,
+                )
+                for groups in bullet_pages:
+                    bodies.append(
+                        f'<div class="premium-section"><p><strong>{_h(_life_area_label(key, language))}</strong></p>'
+                        f'{_render_synthesis_bullets(groups)}</div>'
+                    )
+                continue
+            text = str(value)
             chunks = _chunk_prose(text)
             for idx, chunk in enumerate(chunks):
                 label_html = (
-                    f"<p><strong>{_h(str(key).title())}</strong></p>" if idx == 0 else ""
+                    f"<p><strong>{_h(_life_area_label(key, language))}</strong></p>"
+                    if idx == 0
+                    else ""
                 )
                 bodies.append(
                     f'<div class="premium-section">{label_html}'
@@ -2290,10 +2463,11 @@ def _life_areas_pages(synth: dict, language: str) -> list[str]:
             for chunk in _chunk_prose(life)
         )
     elif isinstance(life, list):
-        # Short discrete items rarely overflow a page; keep them together.
-        items = "".join(f"<li>{_h(x)}</li>" for x in life if x)
-        if items:
-            bodies.append(f'<div class="premium-section"><ul class="summary-list">{items}</ul></div>')
+        groups = _synthesis_bullet_groups(life)
+        for chunk in _chunk_synthesis_bullets(groups, max_items=8, max_chars=2200):
+            bodies.append(
+                f'<div class="premium-section">{_render_synthesis_bullets(chunk)}</div>'
+            )
     return bodies
 
 
