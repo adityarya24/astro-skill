@@ -13,12 +13,16 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from dasha_calculator import calculate_dasha  # noqa: E402
 from gochar_calculator import calculate_gochar  # noqa: E402
 from html_pdf_report import (  # noqa: E402
+    _first_sentence,
     _render_gochar_highlights,
+    _render_premium_remedies,
     build_html,
     build_premium_sections_html,
     display_saturn_status,
 )
 from kundali_calculator import BirthInput, calculate_kundali  # noqa: E402
+from report_generator import build_basic_report  # noqa: E402
+from scoring import score_report  # noqa: E402
 
 # Privacy: neutral fixture only — no personal names.
 SAMPLE = BirthInput(
@@ -103,6 +107,10 @@ def _strength_row_count(html: str) -> int:
     return len(re.findall(r"<tr\b", match.group(1)))
 
 
+def _pandit_pages(html: str) -> list[str]:
+    return re.findall(r'<section class="pandit-page">(.*?)</section>', html, flags=re.S)
+
+
 EN_HEADINGS = [
     "Executive Summary",
     "Planetary Strength",
@@ -180,6 +188,9 @@ def test_premium_sections_with_synthesis_include_prose():
     assert "Current dasha narrative" in html
     assert "Remedies (Prioritised)" in html
     assert "Om Chandraya Namah" in html
+    assert "Minimum recitations" in html
+    assert "Best time" in html
+    assert "Sphatik mala" in html
     assert "First house prose" in html
     assert _strength_row_count(html) == 9
 
@@ -205,6 +216,140 @@ def test_premium_fragment_builder_hi_headings():
     assert _strength_row_count(frag) == 9
 
 
+def test_fallback_remedy_detail_grid_is_bilingual() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    html = _render_premium_remedies(chart, dasha, chart["planets"], "hi", {})
+
+    assert "न्यूनतम जाप" in html
+    assert "श्रेष्ठ समय" in html
+    assert "माला" in html
+    assert "दिशा" in html
+    assert "अवधि" in html
+
+
+def test_dashboard_is_page_three_and_verdict_is_last_in_both_languages() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    synth = _synth()
+    synth["en"]["life_areas"]["career"] = "Career first sentence. Hidden second sentence."
+    synth["hi"]["life_areas"]["करियर"] = "करियर का पहला वाक्य। छिपा दूसरा वाक्य।"
+
+    for language, dashboard_title, birth_title, verdict_title, first, hidden in (
+        (
+            "en",
+            "At-a-Glance Summary",
+            "Birth Details",
+            "Overall Assessment",
+            "Career first sentence.",
+            "Hidden second sentence.",
+        ),
+        (
+            "hi",
+            "एक-नज़र सार",
+            "जन्म विवरण",
+            "समग्र मूल्यांकन",
+            "करियर का पहला वाक्य।",
+            "छिपा दूसरा वाक्य।",
+        ),
+    ):
+        html = build_html(
+            chart,
+            dasha=dasha,
+            language=language,
+            template="pandit_v1",
+            synthesis=synth,
+        )
+        pages = _pandit_pages(html)
+        assert dashboard_title in pages[2]
+        assert birth_title in pages[3]
+        assert verdict_title in pages[-1]
+        assert first in pages[2]
+        assert hidden not in pages[2]
+        assert "MD:" in pages[2] and "AD:" in pages[2] and "PD:" in pages[2]
+        assert dasha["current"]["antardasha_end"] in pages[2]
+        assert pages[-1].count('class="assessment-row ') == 6
+        assert ("न्यूनतम जाप" if language == "hi" else "Minimum recitations") in html
+
+
+def test_integrated_color_bands_follow_computed_strength_house_and_yoga_data() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    html = build_html(chart, dasha=dasha, language="en", template="pandit_v1")
+
+    assert re.search(r'<tr class="band-strong">.*?Mars', html, flags=re.S)
+    assert re.search(r'<tr class="band-mixed">.*?Sun', html, flags=re.S)
+    assert re.search(r'<tr class="band-weak">.*?Moon', html, flags=re.S)
+
+    report = build_basic_report(chart, dasha=dasha, language="en")
+    house_10_band = score_report(report, dasha)["houses"][10]["band"].lower()
+    assert re.search(
+        rf'class="house-card band-{house_10_band}"[^>]*><h4>H10',
+        html,
+    )
+    assert re.search(r'class="yoga-card band-strong"[^>]*><strong>Gajakesari', html)
+    assert re.search(r'class="yoga-card band-weak"[^>]*><strong>Kaal Sarp', html)
+
+
+def test_dashboard_and_verdict_escape_synthesis_and_avoid_fake_precision() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    synth = _synth()
+    synth["en"]["life_areas"]["career"] = '<script>alert("x")</script>. Later sentence.'
+
+    html = build_html(
+        chart,
+        dasha=dasha,
+        language="en",
+        template="pandit_v1",
+        synthesis=synth,
+    )
+    pages = _pandit_pages(html)
+    assert "<script>" not in pages[2]
+    assert "&lt;script&gt;" in pages[2]
+    assert "Heuristic index from classical strength factors" in pages[-1]
+    assert "/100" not in pages[2] + pages[-1]
+    assert not re.search(r"\d+%", pages[2] + pages[-1])
+
+
+def test_dashboard_sentence_is_bounded_for_frame_safety() -> None:
+    long_sentence = "Career " + ("grounded-factor " * 100)
+    clipped = _first_sentence(long_sentence)
+
+    assert len(clipped) <= 363
+    assert clipped.endswith("...")
+
+
+def test_structured_remedy_cards_each_get_a_framed_page() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    synthesis = {
+        "en": {
+            "remedies": [
+                {"planet": "Chandra", "mantra": "Moon mantra"},
+                {"planet": "Mangal", "mantra": "Mars mantra"},
+                {"planet": "Guru", "mantra": "Jupiter mantra"},
+            ]
+        }
+    }
+
+    pages = _pandit_pages(
+        build_html(
+            chart,
+            dasha=dasha,
+            language="en",
+            template="pandit_v1",
+            synthesis=synthesis,
+        )
+    )
+    remedy_pages = [page for page in pages if "Remedies (Prioritised)" in page]
+
+    assert len(remedy_pages) == 3
+    assert sum("Moon mantra" in page for page in remedy_pages) == 1
+    assert sum("Mars mantra" in page for page in remedy_pages) == 1
+    assert sum("Jupiter mantra" in page for page in remedy_pages) == 1
+
+
 def test_standard_template_embeds_premium_sections():
     chart = _chart()
     dasha = _dasha(chart)
@@ -223,6 +368,34 @@ def test_standard_template_embeds_premium_sections():
     assert "Planetary Strength" in html
     assert "Ashtakavarga" in html
     assert _strength_row_count(html) == 9
+
+
+def test_pandit_brand_footer_and_colophon_are_bilingual_and_escaped() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+
+    en = build_html(
+        chart,
+        dasha=dasha,
+        language="en",
+        template="pandit_v1",
+        brand="Pandit & Sons <Udaipur>",
+    )
+    en_pages = en.count('class="pandit-page"')
+    assert en.count("Pandit &amp; Sons &lt;Udaipur&gt;") == en_pages
+    assert "Pandit & Sons <Udaipur>" not in en
+    en_last = en.rsplit('<section class="pandit-page">', 1)[1]
+    assert "Overall Assessment" in en_last
+    assert "Swiss Ephemeris (SWIEPH)" in en_last
+    assert "Lahiri ayanamsa" in en_last
+    assert date.today().isoformat() in en_last
+
+    hi = build_html(chart, dasha=dasha, language="hi", template="pandit_v1")
+    hi_last = hi.rsplit('<section class="pandit-page">', 1)[1]
+    assert "जन्म पत्रिका — गणना आधारित प्रारूप" in hi
+    assert "समग्र मूल्यांकन" in hi_last
+    assert "Lahiri अयनांश" in hi_last
+    assert "निर्मित" in hi_last
 
 
 def test_hand_built_minimal_report_shape():

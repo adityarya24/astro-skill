@@ -30,10 +30,12 @@ ROOT = Path(__file__).resolve().parent
 
 try:
     from .report_generator import build_basic_report
+    from .scoring import score_report
 except ImportError:  # pragma: no cover - direct script execution path.
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     from report_generator import build_basic_report  # noqa: E402
+    from scoring import score_report  # noqa: E402
 
 _FONT_FILE = ROOT / "fonts" / "NotoSansDevanagari.ttf"
 
@@ -431,6 +433,47 @@ PANDIT_LABELS = {
     "footer": ("जन्म पत्रिका — गणना आधारित प्रारूप", "Janma Patrika — calculation-based format"),
     # --- Premium analysis sections ---
     "premium_footer": ("प्रीमियम वैदिक विश्लेषण", "Premium Vedic Analysis"),
+    "at_glance": ("एक-नज़र सार", "At-a-Glance Summary"),
+    "top_strengths": ("प्रमुख शक्तियाँ", "Top Strengths"),
+    "major_challenges": ("प्रमुख चुनौतियाँ", "Major Challenges"),
+    "current_dasha_snapshot": ("वर्तमान महादशा सार", "Current Mahadasha Snapshot"),
+    "no_major_challenges": (
+        "कोई प्रमुख संरचनात्मक चुनौती चिह्नित नहीं हुई।",
+        "No major structural challenge was flagged.",
+    ),
+    "dasha_lord_theme": (
+        "वर्तमान अवधि {0} और {1} के प्रभाव को सक्रिय करती है।",
+        "The current period activates the themes of {0} and {1}.",
+    ),
+    "area_career": ("करियर", "Career"),
+    "area_marriage": ("विवाह", "Marriage"),
+    "area_finance": ("वित्त", "Finance"),
+    "area_health": ("स्वास्थ्य", "Health"),
+    "area_education": ("शिक्षा", "Education"),
+    "area_spiritual": ("आध्यात्मिकता", "Spiritual"),
+    "band_strong": ("प्रबल", "Strong"),
+    "band_mixed": ("मिश्रित", "Mixed"),
+    "band_weak": ("कमज़ोर", "Weak"),
+    "overall_assessment": ("समग्र मूल्यांकन", "Overall Assessment"),
+    "overall_band": ("समग्र संकेत", "Overall band"),
+    "overall_strong": ("समग्र रूप से प्रबल", "Strong overall"),
+    "overall_mixed": ("समग्र रूप से मिश्रित", "Mixed overall"),
+    "overall_weak": ("समग्र रूप से कमज़ोर", "Weak overall"),
+    "area_reason": (
+        "भाव {0} के स्वामी {1} का बल {2} है{3}।",
+        "H{0} lord {1} has {2} strength{3}.",
+    ),
+    "dasha_active_suffix": (" और वर्तमान दशा में सक्रिय है", " and is active in the current dasha"),
+    "dasha_inactive_suffix": (
+        " और वर्तमान दशा में सक्रिय नहीं है",
+        " and is not active in the current dasha",
+    ),
+    "heuristic_footnote": (
+        "यह शास्त्रीय बल-कारकों से बना संकेतात्मक सूचकांक है — सांख्यिकीय संभावना नहीं।",
+        "Heuristic index from classical strength factors — not a statistical probability.",
+    ),
+    "colophon_ayanamsa": ("अयनांश", "ayanamsa"),
+    "colophon_generated": ("निर्मित", "generated"),
     "exec_summary": ("कार्यकारी सार", "Executive Summary"),
     "planet_strength": ("ग्रह बल तालिका", "Planetary Strength"),
     "col_sign_house": ("राशि + भाव", "Sign + House"),
@@ -462,6 +505,10 @@ PANDIT_LABELS = {
     "bindus": ("बिंदु", "bindus"),
     "premium_remedies": ("उपाय (प्राथमिकता क्रम)", "Remedies (Prioritised)"),
     "mantra_count": ("जाप संख्या", "Count"),
+    "jaap_min": ("न्यूनतम जाप", "Minimum recitations"),
+    "best_time": ("श्रेष्ठ समय", "Best time"),
+    "mala": ("माला", "Mala"),
+    "direction": ("दिशा", "Direction"),
     "gemstone": ("रत्न", "Gemstone"),
     "fasting": ("उपवास दिन", "Fasting day"),
     "daan": ("दान", "Daan"),
@@ -1056,6 +1103,22 @@ def _pandit_css() -> str:
     .house-facts { color: #4b5563; font-size: 8pt; margin: 1px 0 3px; line-height: 1.35; }
     .house-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .yoga-card { border: 1px solid #efd4a7; background: rgba(255,255,255,.74); padding: 6px 8px; margin: 4px 0; page-break-inside: avoid; font-size: 9pt; }
+    .band-strong { border-left: 4px solid #287133 !important; background: rgba(40,113,51,.06) !important; }
+    .band-mixed { border-left: 4px solid #d9a441 !important; background: rgba(217,164,65,.08) !important; }
+    .band-weak { border-left: 4px solid #b10000 !important; background: rgba(177,0,0,.055) !important; }
+    tr.band-strong td, tr.band-mixed td, tr.band-weak td { padding-left: 7px; }
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .dashboard-panel { border: 1px solid #efd4a7; padding: 7px 9px; background: rgba(255,255,255,.74); }
+    .dashboard-panel h3 { text-align: left; font-size: 11pt; margin-bottom: 4px; }
+    .dashboard-list { list-style: none; margin: 0; padding: 0; }
+    .dashboard-item, .assessment-row { margin: 5px 0; padding: 5px 7px; font-size: 9pt; page-break-inside: avoid; }
+    .dashboard-areas { margin-top: 9px; }
+    .area-label { display: inline-block; min-width: 28mm; color: #7a3f00; font-weight: 700; }
+    .assessment-row { display: grid; grid-template-columns: 32mm 28mm 1fr; gap: 7px; align-items: start; }
+    .star-rating { color: #b57800; letter-spacing: 1px; font-weight: 700; white-space: nowrap; }
+    .overall-band { text-align: center; font-size: 14pt; font-weight: 700; margin: 8px 0 12px; }
+    .heuristic-note { margin-top: 12px; color: #287133; font-size: 8.5pt; text-align: center; }
+    .colophon { margin-top: 10px; border-top: 1px solid #efd4a7; padding-top: 6px; color: #6b7280; font-size: 7.5pt; text-align: center; }
     .mangalik-box { border: 2px solid #b10000; background: #fdecec; padding: 8px 10px; margin: 8px 0; }
     .mangalik-box.ok { border-color: #287133; background: #edf7ee; }
     .sarva-best { background: #e8f5e9 !important; font-weight: 700; }
@@ -1064,6 +1127,9 @@ def _pandit_css() -> str:
     .flag-no { color: #9ca3af; }
     .prose { text-align: justify; font-size: 10pt; }
     .compact-table td, .compact-table th { font-size: 8pt; padding: 3px 5px; }
+    .remedy-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; margin: 7px 0; }
+    .remedy-detail { border-left: 3px solid #d9a441; padding: 3px 6px; background: rgba(255,246,223,.55); font-size: 8.5pt; }
+    .remedy-detail strong { display: block; color: #7a3f00; font-size: 7.5pt; }
     """
     )
 
@@ -1123,7 +1189,9 @@ def _phalit_ext() -> dict:
         return {}
 
 
-def _current_period_page(dasha: dict | None, language: str, client: str) -> str | None:
+def _current_period_page(
+    dasha: dict | None, language: str, client: str, footer: str | None = None
+) -> str | None:
     """Narrative reading of the running Mahadasha-Antardasha: themes, mindset,
     and likely challenges, mapped deterministically from classical significations."""
     if not dasha:
@@ -1184,11 +1252,13 @@ def _current_period_page(dasha: dict | None, language: str, client: str) -> str 
     body += "".join(panels)
     body += f"<p class='green'>{_h(pl('current_note', language))}</p>"
     return _page(
-        pl("current_analysis", language), body, footer=pl("footer", language), client=client
+        pl("current_analysis", language), body, footer=footer or pl("footer", language), client=client
     )
 
 
-def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[str]:
+def _dasha_phala_pages(
+    dasha: dict | None, language: str, client: str, footer: str | None = None
+) -> list[str]:
     """Classical reading for each Mahadasha lord, paginated so no page overflows."""
     if not dasha:
         return []
@@ -1223,7 +1293,10 @@ def _dasha_phala_pages(dasha: dict | None, language: str, client: str) -> list[s
             body += f"<p class='green'>{_h(pl('dasha_phal_note', language))}</p>"
         pages.append(
             _page(
-                pl("dasha_phal_title", language), body, footer=pl("footer", language), client=client
+                pl("dasha_phal_title", language),
+                body,
+                footer=footer or pl("footer", language),
+                client=client,
             )
         )
     return pages
@@ -1237,7 +1310,9 @@ def _personality_ext() -> dict:
         return {}
 
 
-def _personality_pages(kundali: dict, language: str, client: str) -> list[str]:
+def _personality_pages(
+    kundali: dict, language: str, client: str, footer: str | None = None
+) -> list[str]:
     """Personality profile split into framed pages (element / modality+essence)."""
     planets = kundali.get("planets") or {}
     if not planets:
@@ -1318,8 +1393,18 @@ def _personality_pages(kundali: dict, language: str, client: str) -> list[str]:
     page2 += f"<p class='green'>{_h(pl('personality_note', language))}</p>"
 
     return [
-        _page(pl("personality", language), page1, footer=pl("footer", language), client=client),
-        _page(pl("personality", language), page2, footer=pl("footer", language), client=client),
+        _page(
+            pl("personality", language),
+            page1,
+            footer=footer or pl("footer", language),
+            client=client,
+        ),
+        _page(
+            pl("personality", language),
+            page2,
+            footer=footer or pl("footer", language),
+            client=client,
+        ),
     ]
 
 
@@ -1329,6 +1414,7 @@ def _pandit_interpretation_pages(
     gochar: dict | None,
     language: str,
     client: str,
+    footer: str | None = None,
 ) -> list[str]:
     birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
     doshas = birth.get("doshas") or []
@@ -1364,7 +1450,7 @@ def _pandit_interpretation_pages(
         _page(
             pl("lrn_phal", language),
             "".join(phalit_panels) + f"<p class='green'>{_h(pl('swabhav_note', language))}</p>",
-            footer=pl("footer", language),
+            footer=footer or pl("footer", language),
             client=client,
         ),
         _page(
@@ -1377,7 +1463,7 @@ def _pandit_interpretation_pages(
             )
             + f"<p class='green'>{_h(pl('yog_note', language))}</p>"
             + _remedies_html(kundali, dasha, language),
-            footer=pl("footer", language),
+            footer=footer or pl("footer", language),
             client=client,
         ),
     ]
@@ -1518,6 +1604,106 @@ def _flag_mark(value: object) -> str:
     return "✓" if bool(value) else "–"
 
 
+def _canonical_band(value: object) -> str:
+    normalized = str(value or "").strip().lower()
+    if normalized.startswith("strong"):
+        return "Strong"
+    if normalized.startswith(("moderate", "average", "mixed")):
+        return "Mixed"
+    if normalized.startswith("weak"):
+        return "Weak"
+    return "Mixed"
+
+
+def _band_class(value: object) -> str:
+    return f"band-{_canonical_band(value).lower()}"
+
+
+def _localized_band(value: object, language: str) -> str:
+    return pl(f"band_{_canonical_band(value).lower()}", language)
+
+
+_BENEFIC_YOGA_TYPES = {
+    "raja", "vipreet-raja", "raja-like", "intellect",
+    "wealth-effort", "mahapurusha", "maha",
+}
+_MALEFIC_YOGA_TYPES = {"dosha", "affliction", "dainya"}
+
+
+def _yoga_band(yoga: object) -> str:
+    if isinstance(yoga, dict):
+        yoga_type = str(yoga.get("type") or "").strip().lower()
+        if yoga_type in _BENEFIC_YOGA_TYPES:
+            return "Strong"
+        if yoga_type in _MALEFIC_YOGA_TYPES:
+            return "Weak"
+        name = str(yoga.get("name") or yoga.get("yoga") or "")
+    else:
+        name = str(yoga or "")
+    lowered = name.lower()
+    if any(token in lowered for token in ("kaal sarp", "kemadruma", "dosha")):
+        return "Weak"
+    if any(
+        token in lowered
+        for token in ("raja yoga", "budhaditya", "neechabhanga", "gajakesari", "mahapurusha")
+    ):
+        return "Strong"
+    return "Mixed"
+
+
+def _first_sentence(value: object, max_chars: int = 360) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    sentence = re.split(r"(?<=[.!?।])\s+", text, maxsplit=1)[0]
+    if len(sentence) <= max_chars:
+        return sentence
+    clipped = sentence[:max_chars].rsplit(" ", 1)[0].rstrip(" ,;:-")
+    return f"{clipped or sentence[:max_chars]}..."
+
+
+_AREA_ALIASES = {
+    "career": ("career", "करियर"),
+    "marriage": ("marriage", "relationships", "relationship", "विवाह", "संबंध"),
+    "finance": ("finance", "finances", "wealth", "वित्त", "धन"),
+    "health": ("health", "स्वास्थ्य"),
+}
+
+
+def _life_area_sentence(synth: dict, area: str) -> str:
+    life = synth.get("life_areas")
+    if not isinstance(life, dict):
+        return ""
+    lowered = {str(key).strip().lower(): value for key, value in life.items()}
+    for alias in _AREA_ALIASES.get(area, (area,)):
+        value = lowered.get(alias.lower())
+        if value:
+            return _first_sentence(value)
+    return ""
+
+
+def _area_reason(area_score: dict, language: str) -> str:
+    drivers = [item for item in area_score.get("drivers") or [] if isinstance(item, dict)]
+    if not drivers:
+        return "—"
+
+    def rank(driver: dict) -> tuple[int, int]:
+        strength_rank = {"Strong": 2, "Mixed": 1, "Weak": 0}[
+            _canonical_band(driver.get("lord_strength"))
+        ]
+        return (int(bool(driver.get("dasha_activated"))), strength_rank)
+
+    driver = max(drivers, key=rank)
+    suffix_key = "dasha_active_suffix" if driver.get("dasha_activated") else "dasha_inactive_suffix"
+    suffix = pl(suffix_key, language)
+    return pl("area_reason", language).format(
+        driver.get("house", "—"),
+        display_planet(str(driver.get("house_lord") or ""), language),
+        _localized_band(driver.get("lord_strength"), language),
+        suffix,
+    )
+
+
 def _remedies_data() -> dict:
     """Load ``astro/data/remedies.json`` when present (T5 data file)."""
     path = ROOT.parent / "data" / "remedies.json"
@@ -1532,6 +1718,147 @@ def _section_wrap(title: str, body: str, *, heading: str = "h3", show_title: boo
         return ""
     title_html = f"<{heading}>{_h(title)}</{heading}>" if show_title else ""
     return f'<div class="premium-section">{title_html}{body}</div>'
+
+
+def _render_dashboard(
+    birth: dict,
+    dasha: dict | None,
+    synth: dict,
+    scores: dict,
+    language: str,
+) -> str:
+    planets = birth.get("planets") or {}
+    yogas = birth.get("yogas") or []
+    band_rank = {"Strong": 2, "Mixed": 1, "Weak": 0}
+
+    ranked_planets = sorted(
+        (
+            (_canonical_band((planets.get(name) or {}).get("strength_verdict")), name)
+            for name in PLANET_ORDER
+            if planets.get(name)
+        ),
+        key=lambda item: band_rank[item[0]],
+        reverse=True,
+    )
+    strength_items: list[tuple[str, str]] = []
+    for band, name in ranked_planets[:3]:
+        strength_items.append(
+            (band, f"{display_planet(name, language)} — {_localized_band(band, language)}")
+        )
+    for yoga in yogas:
+        if _yoga_band(yoga) != "Strong" or len(strength_items) >= 4:
+            continue
+        name = (yoga.get("name") or yoga.get("yoga")) if isinstance(yoga, dict) else yoga
+        if name:
+            strength_items.append(("Strong", str(name)))
+
+    challenge_items: list[tuple[str, str]] = []
+    for name in PLANET_ORDER:
+        info = planets.get(name) or {}
+        if _canonical_band(info.get("strength_verdict")) == "Weak":
+            challenge_items.append(
+                ("Weak", f"{display_planet(name, language)} — {_localized_band('Weak', language)}")
+            )
+    challenge_items.extend(("Weak", str(item)) for item in birth.get("doshas") or [])
+    mangalik = birth.get("mangalik")
+    if isinstance(mangalik, dict):
+        status = str(mangalik.get("status") or "").strip().lower()
+        if mangalik.get("is_mangalik") or status not in {"", "none", "absent", "false"}:
+            challenge_items.append(("Weak", pl("mangalik_box", language)))
+    for yoga in yogas:
+        if _yoga_band(yoga) != "Weak":
+            continue
+        name = (yoga.get("name") or yoga.get("yoga")) if isinstance(yoga, dict) else yoga
+        if name:
+            challenge_items.append(("Weak", str(name)))
+    challenge_items = list(dict.fromkeys(challenge_items))[:3]
+    if not challenge_items:
+        challenge_items = [("Mixed", pl("no_major_challenges", language))]
+
+    def items_html(items: list[tuple[str, str]]) -> str:
+        return "".join(
+            f'<li class="dashboard-item {_band_class(band)}">{_h(text)}</li>'
+            for band, text in items
+        )
+
+    area_rows = []
+    area_scores = scores.get("areas") or {}
+    for area in ("career", "marriage", "finance", "health"):
+        area_score = area_scores.get(area) or {}
+        sentence = _life_area_sentence(synth, area) or _area_reason(area_score, language)
+        area_rows.append(
+            f'<div class="dashboard-item {_band_class(area_score.get("band"))}">'
+            f'<span class="area-label">{_h(pl(f"area_{area}", language))}</span>'
+            f"{_h(sentence)}</div>"
+        )
+
+    current = (dasha or {}).get("current") or {}
+    period_bits = []
+    for prefix, key in (("MD", "mahadasha"), ("AD", "antardasha"), ("PD", "pratyantardasha")):
+        if current.get(key):
+            period_bits.append(f"{prefix}: {display_planet(current[key], language)}")
+    if current.get("antardasha_end"):
+        period_bits.append(f"{pl('antar_end', language)}: {current['antardasha_end']}")
+    theme = _first_sentence(synth.get("dasha_deep_dive") or synth.get("dasha_deep"))
+    if not theme and current.get("mahadasha") and current.get("antardasha"):
+        theme = pl("dasha_lord_theme", language).format(
+            display_planet(current["mahadasha"], language),
+            display_planet(current["antardasha"], language),
+        )
+
+    return (
+        '<div class="dashboard-grid">'
+        f'<div class="dashboard-panel"><h3>{_h(pl("top_strengths", language))}</h3>'
+        f'<ul class="dashboard-list">{items_html(strength_items)}</ul></div>'
+        f'<div class="dashboard-panel"><h3>{_h(pl("major_challenges", language))}</h3>'
+        f'<ul class="dashboard-list">{items_html(challenge_items)}</ul></div></div>'
+        f'<div class="dashboard-areas">{"".join(area_rows)}</div>'
+        f'<div class="dashboard-panel"><h3>{_h(pl("current_dasha_snapshot", language))}</h3>'
+        f'<p><strong>{_h(" · ".join(period_bits) or "—")}</strong></p>'
+        f'<p>{_h(theme or "—")}</p></div>'
+    )
+
+
+def _report_colophon(kundali: dict, language: str) -> str:
+    calculation = kundali.get("calculation") or {}
+    tier = str(calculation.get("ephemeris") or "—").upper()
+    ayanamsa = str(calculation.get("ayanamsa") or "—").replace("_", " ").title()
+    if ayanamsa == "Kp":
+        ayanamsa = "KP"
+    text = (
+        f"Swiss Ephemeris ({tier}) · {ayanamsa} {pl('colophon_ayanamsa', language)} · "
+        f"{pl('colophon_generated', language)} {datetime.now().date().isoformat()}"
+    )
+    return f'<p class="colophon">{_h(text)}</p>'
+
+
+def _render_overall_assessment(
+    scores: dict, language: str, *, colophon: str = ""
+) -> str:
+    areas = scores.get("areas") or {}
+    ordered = ("career", "marriage", "finance", "health", "education", "spiritual")
+    rows = []
+    stars = []
+    for area in ordered:
+        score = areas.get(area)
+        if not isinstance(score, dict):
+            continue
+        stars.append(int(score.get("stars") or 1))
+        rows.append(
+            f'<div class="assessment-row {_band_class(score.get("band"))}">'
+            f'<strong>{_h(pl(f"area_{area}", language))}</strong>'
+            f'<span class="star-rating">{_h(score.get("rating") or "★")}</span>'
+            f'<span>{_h(_area_reason(score, language))}</span></div>'
+        )
+    overall_stars = math.floor(sum(stars) / len(stars) + 0.5) if stars else 1
+    overall_band = "Strong" if overall_stars >= 4 else "Mixed" if overall_stars == 3 else "Weak"
+    return (
+        f'<div class="overall-band {_band_class(overall_band)}">'
+        f'{_h(pl("overall_band", language))}: {_h(pl(f"overall_{overall_band.lower()}", language))}</div>'
+        f'{"".join(rows)}'
+        f'<p class="heuristic-note">{_h(pl("heuristic_footnote", language))}</p>'
+        f"{colophon}"
+    )
 
 
 def _render_exec_summary(
@@ -1566,25 +1893,32 @@ def _render_planet_strength(planets: dict, language: str, *, show_title: bool = 
         pl("col_combust", language),
         pl("col_verdict", language),
     ]
-    rows: list[list[str]] = []
+    rows: list[tuple[str, list[str]]] = []
     for name in PLANET_ORDER:
         info = planets.get(name) or {}
         sign_house = f"{display_sign(info.get('sign', ''), language)} / H{info.get('house', '—')}"
         digbala = info.get("digbala")
         digbala_s = "—" if digbala in (None, "") else str(digbala)
+        verdict = str(info.get("strength_verdict") or "—")
         rows.append(
-            [
-                display_planet(name, language),
-                sign_house,
-                str(info.get("dignity") or "—"),
-                digbala_s,
-                _flag_mark(info.get("vargottama")),
-                _flag_mark(info.get("combust")),
-                str(info.get("strength_verdict") or "—"),
-            ]
+            (
+                _band_class(verdict),
+                [
+                    display_planet(name, language),
+                    sign_house,
+                    str(info.get("dignity") or "—"),
+                    digbala_s,
+                    _flag_mark(info.get("vargottama")),
+                    _flag_mark(info.get("combust")),
+                    verdict,
+                ],
+            )
         )
     head = "".join(f"<th>{_h(h)}</th>" for h in headers)
-    body = "".join("<tr>" + "".join(f"<td>{_h(c)}</td>" for c in row) + "</tr>" for row in rows)
+    body = "".join(
+        f'<tr class="{row_class}">' + "".join(f"<td>{_h(c)}</td>" for c in row) + "</tr>"
+        for row_class, row in rows
+    )
     table = (
         f'<table class="planet-strength-table"><thead><tr>{head}</tr></thead>'
         f"<tbody>{body}</tbody></table>"
@@ -1593,7 +1927,12 @@ def _render_planet_strength(planets: dict, language: str, *, show_title: bool = 
 
 
 def _render_bhava_analysis(
-    houses: list[dict], language: str, synth: dict, *, show_title: bool = True
+    houses: list[dict],
+    language: str,
+    synth: dict,
+    *,
+    house_scores: dict | None = None,
+    show_title: bool = True,
 ) -> str:
     if not houses:
         return ""
@@ -1643,8 +1982,9 @@ def _render_bhava_analysis(
         ):
             prose = house_prose[hno - 1]
         prose_html = f'<p class="prose">{_h(prose)}</p>' if prose else ""
+        score = (house_scores or {}).get(int(hno)) if str(hno).isdigit() else None
         cards.append(
-            f'<div class="house-card"><h4>{_h(header)}</h4>'
+            f'<div class="house-card {_band_class((score or {}).get("band"))}"><h4>{_h(header)}</h4>'
             f'<p class="house-facts">{facts}</p>{prose_html}</div>'
         )
     if not cards:
@@ -1923,7 +2263,9 @@ def _render_yogas_detail(yogas: list, language: str, *, show_title: bool = True)
     cards = []
     for y in yogas:
         if isinstance(y, str):
-            cards.append(f'<div class="yoga-card"><strong>{_h(y)}</strong></div>')
+            cards.append(
+                f'<div class="yoga-card {_band_class(_yoga_band(y))}"><strong>{_h(y)}</strong></div>'
+            )
             continue
         if not isinstance(y, dict):
             continue
@@ -1943,7 +2285,7 @@ def _render_yogas_detail(yogas: list, language: str, *, show_title: bool = True)
             meta += f" · {pl('yoga_strength', language)}: {_h(strength)}"
         desc_html = f'<p class="prose">{_h(desc)}</p>' if desc else ""
         cards.append(
-            f'<div class="yoga-card"><strong>{_h(name)}</strong>'
+            f'<div class="yoga-card {_band_class(_yoga_band(y))}"><strong>{_h(name)}</strong>'
             f'<p class="house-facts">{meta}</p>{desc_html}</div>'
         )
     if not cards:
@@ -2023,6 +2365,74 @@ def _priority_remedy_planets(kundali: dict, dasha: dict | None, planets: dict) -
     return ordered
 
 
+def _remedy_detail_grid(remedy: dict, language: str) -> str:
+    """Render bilingual practice details from remedies.json without inventing values."""
+    hi = _is_hi(language)
+
+    def localized(value: object) -> object:
+        if isinstance(value, dict):
+            return value.get("hi" if hi else "en") or ""
+        return value
+
+    fields = [
+        ("jaap_min", localized(remedy.get("jaap_min"))),
+        ("best_time", localized(remedy.get("best_time"))),
+        ("mala", localized(remedy.get("mala"))),
+        ("direction", localized(remedy.get("direction"))),
+        ("duration", localized(remedy.get("duration"))),
+    ]
+    cells = "".join(
+        f'<div class="remedy-detail"><strong>{_h(pl(key, language))}</strong>{_h(value)}</div>'
+        for key, value in fields
+        if value not in (None, "")
+    )
+    return f'<div class="remedy-detail-grid">{cells}</div>' if cells else ""
+
+
+def _fallback_remedy_cards(
+    kundali: dict, dasha: dict | None, planets: dict, language: str
+) -> list[str]:
+    """Build deterministic remedy cards from the bilingual remedies fact sheet."""
+    hi = _is_hi(language)
+    data = _remedies_data().get("planets") or {}
+    cards: list[str] = []
+    for planet in _priority_remedy_planets(kundali, dasha, planets):
+        r = data.get(planet)
+        if not isinstance(r, dict):
+            continue
+        mantra = r.get("mantra") or {}
+        gem = r.get("gemstone") or {}
+        fasting = r.get("fasting") or {}
+        ritual = r.get("ritual") or {}
+        daan_list = r.get("daan") or []
+        daan_s = ", ".join(
+            (d.get("hi") if hi else d.get("en")) or ""
+            for d in daan_list
+            if isinstance(d, dict)
+        )
+        gem_name = gem.get("name_hi") if hi else gem.get("name_en")
+        fast_day = fasting.get("day_hi") if hi else fasting.get("day_en")
+        ritual_s = ritual.get("hi") if hi else ritual.get("en")
+        bits = [
+            f"<h4>{_h(display_planet(planet, language))}</h4>",
+            f'<p class="mantra-line">{_h(mantra.get("hi") or "")}</p>',
+            f'<p class="mantra-iast">{_h(mantra.get("iast") or "")}</p>',
+            _remedy_detail_grid(r, language),
+        ]
+        if mantra.get("count") is not None:
+            bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(mantra['count'])}</p>")
+        if gem_name:
+            bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(gem_name)}</p>")
+        if fast_day:
+            bits.append(f"<p>{_h(pl('fasting', language))}: {_h(fast_day)}</p>")
+        if daan_s:
+            bits.append(f"<p>{_h(pl('daan', language))}: {_h(daan_s)}</p>")
+        if ritual_s:
+            bits.append(f"<p>{_h(pl('ritual', language))}: {_h(ritual_s)}</p>")
+        cards.append(f'<div class="panel">{"".join(bits)}</div>')
+    return cards
+
+
 def _render_premium_remedies(
     kundali: dict,
     dasha: dict | None,
@@ -2032,7 +2442,6 @@ def _render_premium_remedies(
     *,
     show_title: bool = True,
 ) -> str:
-    hi = _is_hi(language)
     cards: list[str] = []
 
     synth_rem = synth.get("remedies")
@@ -2043,6 +2452,7 @@ def _render_premium_remedies(
             show_title=show_title,
         )
     if isinstance(synth_rem, list):
+        remedy_data = _remedies_data().get("planets") or {}
         for item in synth_rem:
             if isinstance(item, str):
                 cards.append(f'<div class="panel"><p class="prose">{_h(item)}</p></div>')
@@ -2067,47 +2477,15 @@ def _render_premium_remedies(
                 bits.append(f"<p>{_h(pl('daan', language))}: {_h(item['daan'])}</p>")
             if item.get("ritual"):
                 bits.append(f"<p>{_h(pl('ritual', language))}: {_h(item['ritual'])}</p>")
+            if planet and isinstance(remedy_data.get(planet), dict):
+                bits.append(_remedy_detail_grid(remedy_data[planet], language))
             cards.append(f'<div class="panel">{"".join(bits)}</div>')
 
     if not cards:
-        data = _remedies_data().get("planets") or {}
-        if data:
-            for planet in _priority_remedy_planets(kundali, dasha, planets):
-                r = data.get(planet)
-                if not r:
-                    continue
-                mantra = r.get("mantra") or {}
-                gem = r.get("gemstone") or {}
-                fasting = r.get("fasting") or {}
-                ritual = r.get("ritual") or {}
-                daan_list = r.get("daan") or []
-                daan_s = ", ".join(
-                    (d.get("hi") if hi else d.get("en")) or ""
-                    for d in daan_list
-                    if isinstance(d, dict)
-                )
-                gem_name = gem.get("name_hi") if hi else gem.get("name_en")
-                fast_day = fasting.get("day_hi") if hi else fasting.get("day_en")
-                ritual_s = ritual.get("hi") if hi else ritual.get("en")
-                bits = [
-                    f"<h4>{_h(display_planet(planet, language))}</h4>",
-                    f'<p class="mantra-line">{_h(mantra.get("hi") or "")}</p>',
-                    f'<p class="mantra-iast">{_h(mantra.get("iast") or "")}</p>',
-                ]
-                if mantra.get("count") is not None:
-                    bits.append(f"<p>{_h(pl('mantra_count', language))}: {_h(mantra['count'])}</p>")
-                if gem_name:
-                    bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(gem_name)}</p>")
-                if fast_day:
-                    bits.append(f"<p>{_h(pl('fasting', language))}: {_h(fast_day)}</p>")
-                if daan_s:
-                    bits.append(f"<p>{_h(pl('daan', language))}: {_h(daan_s)}</p>")
-                if ritual_s:
-                    bits.append(f"<p>{_h(pl('ritual', language))}: {_h(ritual_s)}</p>")
-                cards.append(f'<div class="panel">{"".join(bits)}</div>')
-            if cards:
-                cards.append(f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>')
-                cards.append(f'<p class="green">{_h(pl("remedies_note", language))}</p>')
+        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
+        if cards:
+            cards.append(f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>')
+            cards.append(f'<p class="green">{_h(pl("remedies_note", language))}</p>')
 
     if not cards:
         return ""
@@ -2134,12 +2512,50 @@ def _premium_remedies_pages(
     """
     synth_rem = synth.get("remedies")
     if isinstance(synth_rem, str) and synth_rem.strip():
-        return [
+        pages = [
             f'<div class="premium-section"><p class="prose">{_h(chunk)}</p></div>'
             for chunk in _chunk_prose(synth_rem)
         ]
-    body = _render_premium_remedies(kundali, dasha, planets, language, synth, show_title=False)
-    return [body] if body else []
+        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
+        for index in range(len(cards)):
+            group = cards[index : index + 1]
+            notes = ""
+            if index + 1 >= len(cards):
+                notes = (
+                    f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
+                    f'<p class="green">{_h(pl("remedies_note", language))}</p>'
+                )
+            pages.append(f'<div class="premium-section">{"".join(group)}{notes}</div>')
+        return pages
+    if isinstance(synth_rem, list):
+        pages = []
+        for item in synth_rem:
+            body = _render_premium_remedies(
+                kundali,
+                dasha,
+                planets,
+                language,
+                {"remedies": [item]},
+                show_title=False,
+            )
+            if body:
+                pages.append(body)
+        return pages
+    if not isinstance(synth_rem, list):
+        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
+        if cards:
+            pages = []
+            for index in range(len(cards)):
+                group = cards[index : index + 1]
+                notes = ""
+                if index + 1 >= len(cards):
+                    notes = (
+                        f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
+                        f'<p class="green">{_h(pl("remedies_note", language))}</p>'
+                    )
+                pages.append(f'<div class="premium-section">{"".join(group)}{notes}</div>')
+            return pages
+    return []
 
 
 def _render_mangalik_box(mangalik: dict | None, language: str) -> str:
@@ -2175,7 +2591,9 @@ def build_premium_sections_html(
     Safe when ``synthesis`` is missing — falls back to computed digests.
     Section order matches the T4 spec.
     """
-    birth = build_basic_report(kundali, dasha=dasha, language=language)["sections"]["birth_chart"]
+    report = build_basic_report(kundali, dasha=dasha, language=language)
+    birth = report["sections"]["birth_chart"]
+    scores = score_report(report, dasha)
     raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
     synth = _synth_bundle(raw_synth, language)
     planets = birth.get("planets") or kundali.get("planets") or {}
@@ -2191,7 +2609,7 @@ def build_premium_sections_html(
     parts = [
         _render_exec_summary(planets, language, synth),
         _render_planet_strength(planets, language),
-        _render_bhava_analysis(houses, language, synth),
+        _render_bhava_analysis(houses, language, synth, house_scores=scores["houses"]),
         _render_dasha_deep(dasha, language, synth),
         _render_gochar_highlights(gochar_narrative, language),
         _render_life_areas(synth, language),
@@ -2199,6 +2617,10 @@ def build_premium_sections_html(
         _render_ashtakavarga(ashtak, language),
         _render_premium_remedies(kundali, dasha, planets, language, synth),
         _render_mangalik_box(mangalik, language),
+        _section_wrap(
+            pl("overall_assessment", language),
+            _render_overall_assessment(scores, language),
+        ),
     ]
     return "".join(p for p in parts if p)
 
@@ -2240,7 +2662,9 @@ def _premium_pandit_pages(
     gochar_narrative: dict | None,
     language: str,
     client: str,
+    footer: str,
     synthesis: dict | None,
+    scores: dict,
 ) -> list[str]:
     """Pack premium sections into print pages for the pandit template.
 
@@ -2267,8 +2691,6 @@ def _premium_pandit_pages(
         else kundali.get("ashtakavarga")
     )
     mangalik = birth.get("mangalik") if "mangalik" in birth else kundali.get("mangalik")
-    footer = pl("footer", language)
-
     pages: list[str] = []
 
     def add_page(title: str, body: str) -> None:
@@ -2292,7 +2714,11 @@ def _premium_pandit_pages(
             add_page(
                 pl("bhava_analysis", language),
                 _render_bhava_analysis(
-                    houses[i : i + chunk_size], language, synth, show_title=False
+                    houses[i : i + chunk_size],
+                    language,
+                    synth,
+                    house_scores=scores["houses"],
+                    show_title=False,
                 ),
             )
 
@@ -2318,6 +2744,15 @@ def _premium_pandit_pages(
     for body in _premium_remedies_pages(kundali, dasha, planets, language, synth):
         add_page(pl("premium_remedies", language), body)
 
+    add_page(
+        pl("overall_assessment", language),
+        _render_overall_assessment(
+            scores,
+            language,
+            colophon=_report_colophon(kundali, language),
+        ),
+    )
+
     return pages
 
 
@@ -2330,13 +2765,18 @@ def _pandit_report_html(
     gochar_narrative: dict | None = None,
     language: str,
     client_name: str | None,
+    brand: str = "",
     synthesis: dict | None = None,
 ) -> str:
     report = build_basic_report(kundali, dasha=dasha, panchang=panchang, language=language)
     birth = report["sections"]["birth_chart"]
+    scores = score_report(report, dasha)
+    raw_synth = synthesis if synthesis is not None else kundali.get("synthesis")
+    synth = _synth_bundle(raw_synth, language)
     current = report["sections"]["current_dasha"]
     inp = kundali.get("input", {})
     client = _cover_name(kundali, client_name)
+    footer = " ".join(str(brand or "").split()) or pl("footer", language)
 
     # A janma patrika prints the birth-day panchang, not today's.
     janma = _birth_panchang(kundali)
@@ -2363,7 +2803,7 @@ def _pandit_report_html(
         f'<div class="badge-row"><span class="badge">{_h(pl("badge", language))}</span></div>'
         f'<div class="name-plate"><strong>{_h(client)}</strong><br/>{_h(inp.get("dob", ""))} | {_h(inp.get("tob", ""))}<br/>{_h(inp.get("place", ""))}</div>'
         "</div>",
-        footer=pl("footer", language),
+        footer=footer,
         client=client,
         show_client=False,
     )
@@ -2371,7 +2811,13 @@ def _pandit_report_html(
         pl("notice_title", language),
         f"<p class='notice-text'>{_h(pl('notice_1', language))}</p>"
         f"<p class='notice-text'>{_h(pl('notice_2', language))}</p>",
-        footer=pl("footer", language),
+        footer=footer,
+        client=client,
+    )
+    dashboard = _page(
+        pl("at_glance", language),
+        _render_dashboard(birth, dasha, synth, scores, language),
+        footer=footer,
         client=client,
     )
     ava_rows = [
@@ -2414,7 +2860,7 @@ def _pandit_report_html(
         )
         + f"<h3>{_h(pl('avakahada', language))}</h3>"
         + _pandit_kv(ava_rows),
-        footer=pl("footer", language),
+        footer=footer,
         client=client,
     )
     panchang_page = _page(
@@ -2435,7 +2881,7 @@ def _pandit_report_html(
                 (pl("sunset", language), format_time(daily["sunset"]) if daily else "-"),
             ]
         ),
-        footer=pl("footer", language),
+        footer=footer,
         client=client,
     )
     charts = [
@@ -2461,7 +2907,7 @@ def _pandit_report_html(
             pl("kundali_charts", language),
             f'<div class="chart-grid">{chart_cards}</div>'
             f'<p class="green">{_h(pl("chandra_note", language))}</p>',
-            footer=pl("footer", language),
+            footer=footer,
             client=client,
         )
     ]
@@ -2480,7 +2926,7 @@ def _pandit_report_html(
                 ],
                 planet_rows,
             ),
-            footer=pl("footer", language),
+            footer=footer,
             client=client,
         ),
     ]
@@ -2525,22 +2971,22 @@ def _pandit_report_html(
                     ],
                     maha_rows,
                 ),
-                footer=pl("footer", language),
+                footer=footer,
                 client=client,
             ),
             _page(
                 pl("antar_table", language),
                 _antar_grid(timeline, language),
-                footer=pl("footer", language),
+                footer=footer,
                 client=client,
             ),
         ]
 
-    interpretation_pages = list(_personality_pages(kundali, language, client))
-    _cp = _current_period_page(dasha, language, client)
+    interpretation_pages = list(_personality_pages(kundali, language, client, footer))
+    _cp = _current_period_page(dasha, language, client, footer)
     if _cp:
         interpretation_pages.append(_cp)
-    interpretation_pages += _dasha_phala_pages(dasha, language, client)
+    interpretation_pages += _dasha_phala_pages(dasha, language, client, footer)
 
     premium_pages = _premium_pandit_pages(
         kundali,
@@ -2549,18 +2995,21 @@ def _pandit_report_html(
         gochar_narrative=gochar_narrative,
         language=language,
         client=client,
+        footer=footer,
         synthesis=synthesis,
+        scores=scores,
     )
     pages = [
         cover,
         notice,
+        dashboard,
         birth_page,
         panchang_page,
         *chart_pages,
         *planet_pages,
         *dasha_pages,
         *interpretation_pages,
-        *_pandit_interpretation_pages(kundali, dasha, gochar, language, client),
+        *_pandit_interpretation_pages(kundali, dasha, gochar, language, client, footer),
         *premium_pages,
     ]
     return (
@@ -2581,6 +3030,7 @@ def build_html(
     gochar_narrative: dict | None = None,
     language: str = "hin",
     client_name: str | None = None,
+    brand: str = "",
     template: str = "standard",
     synthesis: dict | None = None,
 ) -> str:
@@ -2594,6 +3044,7 @@ def build_html(
             gochar_narrative=gochar_narrative,
             language=language,
             client_name=client_name,
+            brand=brand,
             synthesis=synthesis,
         )
     if template != "standard":
@@ -2820,6 +3271,7 @@ def build_html_pdf_report(
     output_path: Path,
     language: str = "hin",
     client_name: str | None = None,
+    brand: str = "",
     template: str = "standard",
     synthesis: dict | None = None,
 ) -> Path:
@@ -2832,6 +3284,7 @@ def build_html_pdf_report(
         gochar_narrative=gochar_narrative,
         language=language,
         client_name=client_name,
+        brand=brand,
         template=template,
         synthesis=synthesis,
     )
@@ -2857,6 +3310,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", required=True, help="Output PDF path")
     parser.add_argument("--language", choices=["hin", "hi", "en"], default="hin")
     parser.add_argument("--client-name", help="Client/native name shown on the cover page")
+    parser.add_argument(
+        "--brand",
+        default="",
+        help="Optional white-label footer text; empty keeps the neutral footer",
+    )
     parser.add_argument("--template", choices=["standard", "pandit_v1"], default="standard")
     args = parser.parse_args(argv)
 
@@ -2870,6 +3328,7 @@ def main(argv: list[str] | None = None) -> int:
         output_path=Path(args.output),
         language=args.language,
         client_name=args.client_name,
+        brand=args.brand,
         template=args.template,
     )
     print(f"Wrote HTML/Chromium PDF report: {out}")

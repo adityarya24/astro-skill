@@ -8,7 +8,19 @@ sys.path.insert(0, str(SCRIPT_DIR))
 
 from remedies import PLANETS, get_planet_remedy, load_remedies  # noqa: E402
 
-REQUIRED_TOP = ("mantra", "gemstone", "fasting", "daan", "ritual", "_source")
+REQUIRED_TOP = (
+    "mantra",
+    "gemstone",
+    "fasting",
+    "daan",
+    "ritual",
+    "jaap_min",
+    "best_time",
+    "mala",
+    "direction",
+    "duration",
+    "_source",
+)
 MANTRA_KEYS = ("hi", "iast", "count")
 GEMSTONE_KEYS = (
     "name_hi",
@@ -62,6 +74,12 @@ def test_each_planet_has_required_schema_and_nonempty_languages():
         ritual = block["ritual"]
         for k in LANG_PAIR:
             assert k in ritual and ritual[k].strip(), f"{planet}.ritual.{k}"
+
+        assert isinstance(block["jaap_min"], int) and block["jaap_min"] > 0
+        for field in ("best_time", "mala", "direction", "duration"):
+            for k in LANG_PAIR:
+                value = block[field].get(k)
+                assert isinstance(value, str) and value.strip(), f"{planet}.{field}.{k}"
 
         assert block["_source"] == "standard jyotish convention, operator-reviewed"
 

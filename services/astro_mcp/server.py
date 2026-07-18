@@ -377,6 +377,14 @@ TOOL_DEFINITIONS: list[types.Tool] = [
                 "language": _LANGUAGE_PROPERTY,
                 "client_id": _CLIENT_ID_PROPERTY,
                 "client_name": _CLIENT_NAME_PROPERTY,
+                "brand": {
+                    "type": "string",
+                    "default": "",
+                    "description": (
+                        "Optional white-label footer text. Empty keeps the "
+                        "report's neutral footer."
+                    ),
+                },
                 "output_dir": _OUTPUT_DIR_PROPERTY,
                 "db_path": _REPORT_DB_PATH_PROPERTY,
                 "renderer": {

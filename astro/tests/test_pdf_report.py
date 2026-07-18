@@ -81,6 +81,10 @@ def test_reportlab_renderer_contains_planet_chart_and_dasha_timeline(tmp_path: P
     assert "नवांश कुंडली (D9)" in text
     assert "Makara" in text
     assert "शुक्र/सूर्य" in text
+    assert "Swiss Ephemeris (SWIEPH)" in text
+    assert "Lahiri" in text
+    assert date.today().isoformat() in text
+    assert "Astro Skill" not in text
 
 
 def test_reportlab_cli_writes_pdf(tmp_path: Path):
@@ -110,6 +114,8 @@ def test_reportlab_cli_writes_pdf(tmp_path: Path):
             str(output_path),
             "--language",
             "hi",
+            "--brand",
+            "Jyotish Paramarsh",
             "--renderer",
             "reportlab",
         ],
@@ -120,7 +126,9 @@ def test_reportlab_cli_writes_pdf(tmp_path: Path):
 
     assert str(output_path) in completed.stdout
     assert "reportlab" in completed.stdout
-    assert "लग्न कुंडली" in extract_text(output_path)
+    text = extract_text(output_path)
+    assert "लग्न कुंडली" in text
+    assert "Jyotish Paramarsh" in text
 
 
 def test_pdf_report_rejects_unknown_renderer(tmp_path: Path):
@@ -145,6 +153,7 @@ def test_html_renderer_path_does_not_require_reportlab(monkeypatch, tmp_path: Pa
             monkeypatch.delitem(sys.modules, module_name, raising=False)
 
     fake_html = types.ModuleType("html_pdf_report")
+    captured: dict[str, object] = {}
 
     def fake_build_html_pdf_report(
         kundali: dict,
@@ -156,9 +165,11 @@ def test_html_renderer_path_does_not_require_reportlab(monkeypatch, tmp_path: Pa
         output_path: Path,
         language: str = "hin",
         client_name: str | None = None,
+        brand: str = "",
         template: str = "standard",
         synthesis: dict | None = None,
     ) -> Path:
+        captured["brand"] = brand
         output_path.write_text("fake html pdf", encoding="utf-8")
         return output_path
 
@@ -174,9 +185,11 @@ def test_html_renderer_path_does_not_require_reportlab(monkeypatch, tmp_path: Pa
         output_path=tmp_path / "html.pdf",
         language="hi",
         renderer="html",
+        brand="Jyotish Paramarsh",
     )
 
     assert html_output.exists()
+    assert captured["brand"] == "Jyotish Paramarsh"
     with pytest.raises(RuntimeError, match="ReportLab renderer requires"):
         fresh_pdf_report.build_pdf_report(
             reference_chart(),
@@ -224,8 +237,8 @@ def test_pandit_v1_html_has_pitch_ready_sections():
     )
 
     # Client-facing janma patrika: interpretation-rich but paginated, no filler.
-    # Upper bound raised after T4 premium analysis pages (strength, bhavas, etc.).
-    assert 14 <= document.count('class="pandit-page"') <= 28
+    # Dashboard, remedy-detail cards, and final assessment remain page-bounded.
+    assert 14 <= document.count('class="pandit-page"') <= 38
     assert "जन्म पत्रिका" in document
     assert "Kiran Verma" in document
     assert "सूचना" in document
@@ -273,10 +286,13 @@ def test_reportlab_cover_uses_client_name(tmp_path: Path):
         language="en",
         renderer="reportlab",
         client_name="Kiran Verma",
+        brand="Jyotish Paramarsh",
     )
 
     text = extract_text(output_path)
     assert "Kiran Verma" in text
+    assert "Jyotish Paramarsh" in text
+    assert "Astro Skill" not in text
 
 
 def test_pandit_v1_requires_html_renderer(tmp_path: Path):
