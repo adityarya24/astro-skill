@@ -10,6 +10,20 @@ import urllib.request
 from pathlib import Path
 
 
+def _llm_timeout() -> int:
+    """Request timeout (seconds) for all LLM providers, env-configurable.
+
+    The dasha_deep_dive prompt reliably needs >20s and can exceed 60s for
+    long Hindi prose, so the default is generous. Override with
+    ASTRO_LLM_TIMEOUT.
+    """
+    raw = os.environ.get("ASTRO_LLM_TIMEOUT", "60")
+    try:
+        return int(raw)
+    except ValueError:
+        return 60
+
+
 RULES = """RULES:
 - Every sentence MUST cite at least one concrete chart factor (e.g., "Because Jupiter sits in the 5th...").
 - ZERO generic filler ("aapka bhavishya ujjwal hai" type lines are forbidden).
@@ -33,6 +47,7 @@ class GeminiProvider(Provider):
     def __init__(self) -> None:
         self.api_key = os.environ.get("ASTRO_LLM_API_KEY", "")
         self.model = os.environ.get("ASTRO_LLM_MODEL", "gemini-2.5-pro")
+        self.timeout = _llm_timeout()
 
     def generate(self, prompt: str) -> str:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
@@ -46,14 +61,14 @@ class GeminiProvider(Provider):
             headers={"Content-Type": "application/json"}
         )
         try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 return res["candidates"][0]["content"]["parts"][0]["text"]
         except Exception as e:
             import sys
             sys.stderr.write(f"GeminiProvider failed first attempt: {e}\n")
             try:
-                with urllib.request.urlopen(req, timeout=20) as resp:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
                     return res["candidates"][0]["content"]["parts"][0]["text"]
             except Exception as e:
@@ -67,6 +82,7 @@ class OpenAIProvider(Provider):
         self.api_key = os.environ.get("ASTRO_LLM_API_KEY", "")
         self.base_url = os.environ.get("ASTRO_LLM_BASE_URL", "https://api.openai.com/v1")
         self.model = os.environ.get("ASTRO_LLM_MODEL", "gpt-4o")
+        self.timeout = _llm_timeout()
 
     def generate(self, prompt: str) -> str:
         url = f"{self.base_url.rstrip('/')}/chat/completions"
@@ -84,14 +100,14 @@ class OpenAIProvider(Provider):
             }
         )
         try:
-            with urllib.request.urlopen(req, timeout=20) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 res = json.loads(resp.read().decode("utf-8"))
                 return res["choices"][0]["message"]["content"]
         except Exception as e:
             import sys
             sys.stderr.write(f"OpenAIProvider failed first attempt: {e}\n")
             try:
-                with urllib.request.urlopen(req, timeout=20) as resp:
+                with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
                     return res["choices"][0]["message"]["content"]
             except Exception as e:
@@ -104,18 +120,19 @@ class CLIProvider(Provider):
     def __init__(self) -> None:
         args_str = os.environ.get("ASTRO_LLM_CLI_ARGS", '["agy", "-p", "{prompt}"]')
         self.args = json.loads(args_str)
+        self.timeout = _llm_timeout()
 
     def generate(self, prompt: str) -> str:
         # replace {prompt} as a whole-token substitution only
         cmd = [prompt if arg == "{prompt}" else arg for arg in self.args]
         try:
-            res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=60)
+            res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=self.timeout)
             return res.stdout.strip()
         except Exception as e:
             import sys
             sys.stderr.write(f"CLIProvider failed first attempt: {e}\n")
             try:
-                res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=60)
+                res = subprocess.run(cmd, shell=False, capture_output=True, text=True, check=True, timeout=self.timeout)
                 return res.stdout.strip()
             except Exception as e:
                 import sys
@@ -338,10 +355,14 @@ def remedies_section(report: dict, remedies_data: dict, lang: str) -> str:
     sorted_planets = sorted(planets.items(), key=sort_key)
     target_planets = [name for name, _ in sorted_planets]
 
+    # remedies.json wraps per-planet entries under a top-level "planets" key
+    # (alongside "_comment"); remedies_ext.json (the fallback) is flat.
+    remedies_by_planet = remedies_data.get("planets", remedies_data)
+
     remedies_to_send = {}
     for p in target_planets:
-        if p in remedies_data:
-            remedies_to_send[p] = remedies_data[p]
+        if p in remedies_by_planet:
+            remedies_to_send[p] = remedies_by_planet[p]
 
     prompt = f"""Write a remedies section. Prioritize the weakest planets and current dasha lords.
 {RULES}
