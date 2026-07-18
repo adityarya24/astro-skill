@@ -197,3 +197,16 @@ def test_cli_json_output(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     payload = json.loads(out)
     assert payload["sample_count"] >= 1
     assert payload["samples"][0]["highlights"]
+
+
+def test_synthesis_facts_saturn_status_never_raw_token():
+    """The LLM fact-sheet must carry readable labels, never the raw enum
+    (a raw 'sade_sati' token was previously echoed verbatim into the prose)."""
+    chart = calculate_kundali(SAMPLE)
+    dasha = calculate_dasha(chart)
+    nar = build_antardasha_gochar_narrative(chart, dasha, language="en")
+    blob = json.dumps(nar["synthesis_facts"], ensure_ascii=False)
+    assert "sade_sati" not in blob
+    assert "dhaiya" not in blob
+    statuses = {p.get("saturn_status") for p in nar["synthesis_facts"]["points"]}
+    assert statuses <= {None, "Sade Sati", "Dhaiya"}
