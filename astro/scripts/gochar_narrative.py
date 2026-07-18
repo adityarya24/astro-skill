@@ -283,6 +283,18 @@ def build_antardasha_gochar_narrative(
         saturn_note=saturn_note,
     )
 
+    # Present Saturn status to the LLM as a readable label, never the raw enum
+    # token (otherwise "sade_sati" gets echoed verbatim into the prose).
+    labels = {"sade_sati": "Sade Sati", "dhaiya": "Dhaiya", "none": None}
+
+    def _saturn_status_label(analysis: dict | None) -> dict | None:
+        if not analysis:
+            return analysis
+        status = analysis.get("status")
+        if status not in labels:
+            return analysis
+        return {**analysis, "status": labels[status]}
+
     # Fact-sheet for optional LLM rewrite (T3 hook) — positions only, no prose.
     synthesis_facts = {
         "window": {
@@ -303,11 +315,13 @@ def build_antardasha_gochar_narrative(
                     }
                     for h in s["highlights"]
                 },
-                "saturn_status": (s.get("saturn_analysis") or {}).get("status"),
+                "saturn_status": (
+                    _saturn_status_label(s.get("saturn_analysis")) or {}
+                ).get("status"),
             }
             for s in samples
         ],
-        "mid_saturn": mid_gochar.get("saturn_analysis"),
+        "mid_saturn": _saturn_status_label(mid_gochar.get("saturn_analysis")),
     }
 
     return {
