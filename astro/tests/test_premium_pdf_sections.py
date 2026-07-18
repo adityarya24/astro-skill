@@ -157,8 +157,7 @@ def test_premium_sections_without_synthesis_do_not_crash():
 
     for heading in EN_HEADINGS:
         assert heading in html, f"missing heading: {heading}"
-    # Life-area + synthesis-only remedies omit gracefully when synthesis absent
-    # (remedies.json may still supply remedies — either way no crash).
+    # Life-area prose remains synthesis-only; remedies are deterministic data cards.
     assert "Life-Area Forecasts" not in html
     assert "Gajakesari" in html or "Budhaditya" in html
     assert _strength_row_count(html) == 9
@@ -193,10 +192,14 @@ def test_premium_sections_with_synthesis_include_prose():
     assert "Career growth window" in html
     assert "Current dasha narrative" in html
     assert "Remedies (Prioritised)" in html
-    assert "Om Chandraya Namah" in html
+    assert "Om Chandraya Namah" not in html
+    assert "Om Shraam Shreem Shraum Sah Chandraya Namah" in html
     assert "Daily minimum" in html
+    assert "Total japa" in html
+    assert "Gemstone caution" in html
     assert "Best time" in html
     assert "Sphatik mala" in html
+    assert "Suggested Remedies" not in html
     assert "First house prose" in html
     assert _strength_row_count(html) == 9
 
@@ -232,6 +235,37 @@ def test_fallback_remedy_detail_grid_is_bilingual() -> None:
     assert "माला" in html
     assert "दिशा" in html
     assert "अवधि" in html
+    assert "कुल जाप" in html
+    assert "रत्न सावधानी" in html
+
+
+def test_premium_remedies_ignore_synthesis_and_prioritise_chart_facts() -> None:
+    chart = _chart()
+    dasha = _dasha(chart)
+    html = _render_premium_remedies(
+        chart,
+        dasha,
+        chart["planets"],
+        "en",
+        {"remedies": "LLM remedy prose must never render."},
+    )
+
+    assert "LLM remedy prose must never render" not in html
+    assert 'class="prose"' not in html
+    assert html.index("Moon") < html.index("Mercury") < html.index("Jupiter")
+    assert html.index("Jupiter") < html.index("Venus") < html.index("Sun")
+    for label in (
+        "Mantra",
+        "Daily minimum",
+        "Total japa",
+        "Gemstone",
+        "Gemstone caution",
+        "Best time",
+        "Mala",
+        "Direction",
+        "Duration",
+    ):
+        assert label in html
 
 
 def test_dashboard_is_page_three_and_verdict_is_last_in_both_languages() -> None:
@@ -474,7 +508,7 @@ def test_life_area_pages_accept_json_lists_and_dash_lines() -> None:
     assert "<strong>स्वास्थ्य</strong>" in hi_pages[1]
 
 
-def test_structured_remedy_cards_each_get_a_framed_page() -> None:
+def test_deterministic_remedy_cards_each_get_a_framed_page() -> None:
     chart = _chart()
     dasha = _dasha(chart)
     synthesis = {
@@ -498,10 +532,13 @@ def test_structured_remedy_cards_each_get_a_framed_page() -> None:
     )
     remedy_pages = [page for page in pages if "Remedies (Prioritised)" in page]
 
-    assert len(remedy_pages) == 3
-    assert sum("Moon mantra" in page for page in remedy_pages) == 1
-    assert sum("Mars mantra" in page for page in remedy_pages) == 1
-    assert sum("Jupiter mantra" in page for page in remedy_pages) == 1
+    assert len(remedy_pages) == 5
+    assert "Moon mantra" not in "".join(remedy_pages)
+    assert "Mars mantra" not in "".join(remedy_pages)
+    assert "Jupiter mantra" not in "".join(remedy_pages)
+    assert all(page.count('class="panel"') == 1 for page in remedy_pages)
+    assert all('class="prose"' not in page for page in remedy_pages)
+    assert "Suggested Remedies" not in "".join(pages)
 
 
 def test_standard_template_embeds_premium_sections():
