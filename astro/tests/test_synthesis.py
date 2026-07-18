@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from astro.scripts.synthesis import (
+    BULLET_RULES,
     RULES,
     CLIProvider,
     GeminiProvider,
@@ -96,11 +97,14 @@ def test_fact_sheet_injection_house_4(mock_provider, synthetic_report):
     assert "Chandra" in house_4_prompt
     assert "Surya" in house_4_prompt
     assert "Mangal" in house_4_prompt
+    assert "2-3 concise bullets" in house_4_prompt
+    assert BULLET_RULES in house_4_prompt
 
 
 def test_rules_text_present(mock_provider, synthetic_report):
     executive_summary(synthetic_report, "en")
     assert RULES in mock_provider.prompts[0]
+    assert BULLET_RULES not in mock_provider.prompts[0]
 
 
 def test_lang_routing(mock_provider, synthetic_report):
@@ -126,6 +130,8 @@ def test_remedies_prioritization_order(mock_provider, synthetic_report):
     # but score for Weak is 0, Average is 1.
     # The target_planets list is sorted and injected into the prompt.
     assert "Weakest/Dasha planets prioritized: Surya, Mangal, Guru, Shani" in prompt
+    assert RULES in prompt
+    assert BULLET_RULES not in prompt
 
 
 def test_remedies_section_resolves_planets_wrapper(mock_provider, synthetic_report):
@@ -269,6 +275,18 @@ def test_dasha_deep_dive(mock_provider, synthetic_report):
     prompt = mock_provider.prompts[0]
     assert "Surya/Mangal" in prompt
     assert "2026-12-31" in prompt
+    assert "Opportunities:\n- ...\nRisks:\n- ...\nTimeline:\n- ..." in prompt
+    assert '2-4 concise "- " bullets' in prompt
+    assert "do not invent month-by-month dates" in prompt
+
+
+def test_dasha_deep_dive_uses_localized_hindi_group_headings(
+    mock_provider, synthetic_report
+):
+    dasha_deep_dive(synthetic_report, "hi")
+    prompt = mock_provider.prompts[0]
+    assert "अवसर:\n- ...\nजोखिम:\n- ...\nसमयरेखा:\n- ..." in prompt
+    assert BULLET_RULES in prompt
 
 
 def test_life_areas(mock_provider, synthetic_report):
@@ -277,7 +295,21 @@ def test_life_areas(mock_provider, synthetic_report):
     assert len(mock_provider.prompts) == 4
 
     # At least one must mention the gochar/dasha rules
-    assert "Every claim must name its placement" in mock_provider.prompts[0]
+    prompt = mock_provider.prompts[0]
+    assert "3-5 concise bullets" in prompt
+    assert "Every bullet must name a supplied placement or house factor" in prompt
+    assert "never describe it as the end of the three-lord MD/AD/PD combination" in prompt
+    assert '"antardasha_end": "2026-12-31"' in prompt
+    assert BULLET_RULES in prompt
+
+
+def test_health_prompt_forbids_empty_house_medical_overclaim(
+    mock_provider, synthetic_report
+):
+    life_areas(synthetic_report, "en")
+    health_prompt = mock_provider.prompts[-1]
+    assert "an empty house alone is not evidence of disease resistance" in health_prompt
+    assert "do not make medical outcome claims" in health_prompt
 
 
 def test_synthesize_all(mock_provider, synthetic_report):
