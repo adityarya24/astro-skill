@@ -253,7 +253,8 @@ def test_pandit_v1_html_has_pitch_ready_sections():
     assert "व्यक्तित्व विश्लेषण" in document  # personality profile section
     assert "वर्तमान दशा विश्लेषण" in document  # current period analysis
     assert "महादशा फल" in document  # per-dasha classical readings
-    assert "उपाय सुझाव" in document  # remedies (mantras)
+    assert "उपाय (प्राथमिकता क्रम)" in document  # structured remedy cards
+    assert "उपाय सुझाव" not in document  # legacy duplicate removed
     assert "वर्ष" in document  # mahadasha durations formatted, not raw floats
     assert "black-panel" not in document  # cover uses the gold name-plate now
 

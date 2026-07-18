@@ -17,7 +17,6 @@ from astro.scripts.synthesis import (
     executive_summary,
     get_provider,
     life_areas,
-    remedies_section,
     synthesize_all,
     synthesize_bilingual,
 )
@@ -112,83 +111,6 @@ def test_lang_routing(mock_provider, synthetic_report):
     prompt = mock_provider.prompts[0]
     assert "Language: Hindi" in prompt
     assert "natural Devanagari jyotish register" in prompt
-
-
-def test_remedies_prioritization_order(mock_provider, synthetic_report):
-    remedies_data = {
-        "Surya": {"remedy": "Aditya Hrudayam"},
-        "Mangal": {"remedy": "Hanuman Chalisa"},
-        "Guru": {"remedy": "Vishnu Sahasranama"},
-        "Shani": {"remedy": "Shani Mantra"},
-    }
-    remedies_section(synthetic_report, remedies_data, "en")
-    prompt = mock_provider.prompts[0]
-
-    # We should see the weakest planets first, followed by average, then strong.
-    # Surya (Weak), Mangal (Average, also AD lord), Guru (Strong), Shani (Strong).
-    # Since Surya and Mangal are also dasha lords, they are prioritized even more if tied,
-    # but score for Weak is 0, Average is 1.
-    # The target_planets list is sorted and injected into the prompt.
-    assert "Weakest/Dasha planets prioritized: Surya, Mangal, Guru, Shani" in prompt
-    assert RULES in prompt
-    assert BULLET_RULES not in prompt
-
-
-def test_remedies_section_resolves_planets_wrapper(mock_provider, synthetic_report):
-    """remedies.json wraps per-planet entries under a top-level "planets" key
-    (alongside "_comment"). Guards issue #10a: remedies_section must resolve
-    that wrapper, else the fact sheet sent to the LLM is always {} and the
-    LLM correctly (but unhelpfully) refuses to write anything.
-    """
-    remedies_data = {
-        "_comment": "Per-planet classical remedies.",
-        "planets": {
-            "Surya": {"remedy": "Aditya Hrudayam"},
-            "Mangal": {"remedy": "Hanuman Chalisa"},
-            "Guru": {"remedy": "Vishnu Sahasranama"},
-            "Shani": {"remedy": "Shani Mantra"},
-        },
-    }
-    remedies_section(synthetic_report, remedies_data, "en")
-    prompt = mock_provider.prompts[0]
-
-    fact_sheet_json = prompt.split("):\n", 1)[1]
-    fact_sheet = json.loads(fact_sheet_json)
-    assert fact_sheet, "remedies fact sheet must not be empty when remedies.json has a planets wrapper"
-    assert fact_sheet["Surya"] == {"remedy": "Aditya Hrudayam"}
-
-
-def test_synthesize_all_remedies_fact_sheet_nonempty(mock_provider, synthetic_report):
-    """End-to-end guard for issue #10a: synthesize_all loads the real
-    astro/data/remedies.json (which has the "planets" wrapper) and must pass
-    populated planet remedy data to the remedies prompt, not an empty {}.
-    """
-    synthesize_all(synthetic_report, "en")
-
-    # synthesize_all fires, in order: 1 executive_summary + 2 bhava_analysis
-    # (houses 4 and 10) + 1 dasha_deep_dive + 4 life_areas + 1 remedies_section.
-    remedies_prompt = mock_provider.prompts[-1]
-    assert "Weakest/Dasha planets prioritized" in remedies_prompt
-
-    fact_sheet_json = remedies_prompt.split("):\n", 1)[1]
-    fact_sheet = json.loads(fact_sheet_json)
-    assert fact_sheet, "remedies fact sheet must not be empty — check remedies.json 'planets' wrapper handling"
-    assert "Surya" in fact_sheet
-    assert "mantra" in fact_sheet["Surya"]
-
-
-def test_remedies_section_flat_shape_still_works(mock_provider, synthetic_report):
-    """remedies_ext.json (the fallback file) is flat, not wrapped under
-    "planets" — the wrapper resolution must not break that shape.
-    """
-    remedies_data = {
-        "Surya": {"remedy": "Aditya Hrudayam"},
-    }
-    remedies_section(synthetic_report, remedies_data, "en")
-    prompt = mock_provider.prompts[0]
-    fact_sheet_json = prompt.split("):\n", 1)[1]
-    fact_sheet = json.loads(fact_sheet_json)
-    assert fact_sheet.get("Surya") == {"remedy": "Aditya Hrudayam"}
 
 
 def test_llm_timeout_env_configurable(monkeypatch):
@@ -319,10 +241,15 @@ def test_synthesize_all(mock_provider, synthetic_report):
     assert result["bhava_analysis"]["4"] == "Canned text."
     assert result["dasha_deep_dive"] == "Canned text."
     assert result["life_areas"]["career"] == "Canned text."
-    assert result["remedies"] == "Canned text."
+    assert "remedies" not in result
+    assert len(mock_provider.prompts) == 8
+    assert all("Write a remedies section" not in prompt for prompt in mock_provider.prompts)
 
 
 def test_synthesize_bilingual(mock_provider, synthetic_report):
     result = synthesize_bilingual(synthetic_report)
     assert "hi" in result
     assert "en" in result
+    assert "remedies" not in result["hi"]
+    assert "remedies" not in result["en"]
+    assert len(mock_provider.prompts) == 16

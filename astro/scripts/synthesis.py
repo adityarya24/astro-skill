@@ -2,12 +2,10 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 import subprocess
 import urllib.error
 import urllib.request
-from pathlib import Path
 
 
 def _llm_timeout() -> int:
@@ -377,65 +375,12 @@ FACT SHEET:
     return results
 
 
-def remedies_section(report: dict, remedies_data: dict, lang: str) -> str:
-    birth = report.get("sections", {}).get("birth_chart", {})
-    planets = birth.get("planets", {})
-    dasha = report.get("sections", {}).get("current_dasha", {})
-
-    period = dasha.get("period", "") if dasha else ""
-    parts = period.split("/")
-    md = parts[0] if len(parts) >= 1 else ""
-    ad = parts[1] if len(parts) >= 2 else ""
-
-    strength_order = {"Weak": 0, "Average": 1, "Strong": 2}
-
-    def sort_key(planet_tuple: tuple[str, dict]) -> tuple:
-        name, info = planet_tuple
-        strength = info.get("strength_verdict", "Average")
-        score = strength_order.get(strength, 1)
-        is_dasha = 0 if name in [md, ad] else 1
-        return (score, is_dasha, name)
-
-    sorted_planets = sorted(planets.items(), key=sort_key)
-    target_planets = [name for name, _ in sorted_planets]
-
-    # remedies.json wraps per-planet entries under a top-level "planets" key
-    # (alongside "_comment"); remedies_ext.json (the fallback) is flat.
-    remedies_by_planet = remedies_data.get("planets", remedies_data)
-
-    remedies_to_send = {}
-    for p in target_planets:
-        if p in remedies_by_planet:
-            remedies_to_send[p] = remedies_by_planet[p]
-
-    prompt = f"""Write a remedies section. Prioritize the weakest planets and current dasha lords.
-{RULES}
-{lang_instruction(lang)}
-
-FACT SHEET (Weakest/Dasha planets prioritized: {', '.join(target_planets)}):
-{json.dumps(remedies_to_send, ensure_ascii=False, indent=2)}
-"""
-    return get_provider().generate(prompt)
-
-
 def synthesize_all(report: dict, lang: str, gochar_narrative: dict | None = None) -> dict:
-    data_dir = Path(__file__).parent.parent / "data"
-    remedies_path = data_dir / "remedies.json"
-    if not remedies_path.exists():
-        logging.info("remedies.json not found; falling back to remedies_ext.json")
-        remedies_path = data_dir / "remedies_ext.json"
-    
-    remedies_data = {}
-    if remedies_path.exists():
-        with remedies_path.open("r", encoding="utf-8") as f:
-            remedies_data = json.load(f)
-
     return {
         "executive_summary": executive_summary(report, lang),
         "bhava_analysis": bhava_analysis(report, lang),
         "dasha_deep_dive": dasha_deep_dive(report, lang, gochar_narrative),
         "life_areas": life_areas(report, lang, gochar_narrative),
-        "remedies": remedies_section(report, remedies_data, lang)
     }
 
 

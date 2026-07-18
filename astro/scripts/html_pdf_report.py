@@ -422,10 +422,6 @@ PANDIT_LABELS = {
         "बाहर से {0}; भीतर से {1}; और मूल में {2} प्रेरणा रहती है।",
         "Outwardly {0}; inwardly {1}; with a core drive that is {2}.",
     ),
-    "remedies": ("उपाय सुझाव", "Suggested Remedies"),
-    "lagnesh_label": ("लग्नेश", "Ascendant Lord"),
-    "dasha_lord_label": ("वर्तमान दशा-स्वामी", "Current Dasha Lord"),
-    "jaap_day": ("जाप का दिन", "Recite on"),
     "remedies_note": (
         "ये सामान्य शास्त्रीय उपाय हैं; व्यक्तिगत एवं विस्तृत उपाय पंडित जी सम्पूर्ण कुंडली देखकर दें।",
         "These are general classical suggestions; personalised and detailed remedies should be given by the pandit after studying the full chart.",
@@ -512,6 +508,7 @@ PANDIT_LABELS = {
     "worst_sign": ("न्यूनतम राशि", "Lowest sign"),
     "bindus": ("बिंदु", "bindus"),
     "premium_remedies": ("उपाय (प्राथमिकता क्रम)", "Remedies (Prioritised)"),
+    "mantra_label": ("मंत्र", "Mantra"),
     # "mantra_count" (the mantra's classical grand-total) and "jaap_min" (the
     # daily floor) are shown side by side on a remedy card — label them so
     # they read as two distinct figures, not a contradiction.
@@ -528,6 +525,7 @@ PANDIT_LABELS = {
         "रत्न संबंधी सलाह केवल पारंपरिक संदर्भ है; धारण से पहले योग्य ज्योतिषी/रत्न विशेषज्ञ से परामर्श लें।",
         "Gemstone guidance is traditional only; consult a qualified astrologer/gem expert before wearing.",
     ),
+    "gem_disclaimer_label": ("रत्न सावधानी", "Gemstone caution"),
     "mangalik_box": ("मांगलिक दोष", "Mangalik Dosha"),
     "mangalik_status": ("स्थिति", "Status"),
     "mangalik_reasons": ("कारण", "Reasons"),
@@ -1145,6 +1143,7 @@ def _pandit_css() -> str:
     .compact-table td, .compact-table th { font-size: 8pt; padding: 3px 5px; }
     .remedy-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; margin: 7px 0; }
     .remedy-detail { border-left: 3px solid #d9a441; padding: 3px 6px; background: rgba(255,246,223,.55); font-size: 8.5pt; }
+    .remedy-detail-wide { grid-column: 1 / -1; }
     .remedy-detail strong { display: block; color: #7a3f00; font-size: 7.5pt; }
     """
     )
@@ -1477,8 +1476,7 @@ def _pandit_interpretation_pages(
                     (pl("dosha_flag", language), _safe_join(doshas, pl("no_dosha", language))),
                 ]
             )
-            + f"<p class='green'>{_h(pl('yog_note', language))}</p>"
-            + _remedies_html(kundali, dasha, language),
+            + f"<p class='green'>{_h(pl('yog_note', language))}</p>",
             footer=footer or pl("footer", language),
             client=client,
         ),
@@ -1553,51 +1551,6 @@ def _antar_grid(timeline: list[dict], language: str) -> str:
             f"<tbody>{antars}</tbody></table></div>"
         )
     return f'<div class="antar-grid">{"".join(cards)}</div>'
-
-
-def _remedies_ext() -> dict:
-    path = ROOT.parent / "data" / "remedies_ext.json"
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        return {}
-
-
-def _remedies_html(kundali: dict, dasha: dict | None, language: str) -> str:
-    """Person-specific mantra suggestions for the Lagna lord and running Dasha lord."""
-    rem = _remedies_ext().get("planet_remedy", {})
-    if not rem:
-        return ""
-    hi = _is_hi(language)
-    day_k = "day_hi" if hi else "day_en"
-    ben_k = "benefit_hi" if hi else "benefit_en"
-    lagnesh = SIGN_LORD.get(kundali.get("lagna"))
-    dasha_lord = ((dasha or {}).get("current") or {}).get("mahadasha")
-    cards = []
-    seen = set()
-    for role_label, planet in (
-        (pl("lagnesh_label", language), lagnesh),
-        (pl("dasha_lord_label", language), dasha_lord),
-    ):
-        if not planet or planet in seen:
-            continue
-        r = rem.get(planet)
-        if not r:
-            continue
-        seen.add(planet)
-        cards.append(
-            f"<div class='panel'><h3>{_h(role_label)} — {_h(display_planet(planet, language))}</h3>"
-            f"<p class='mantra-line'>{_h(r.get('mantra_hi', ''))}</p>"
-            f"<p class='mantra-iast'>{_h(r.get('mantra_iast', ''))}</p>"
-            f"<p>{_h(pl('jaap_day', language))}: {_h(r.get(day_k, ''))} · {_h(r.get(ben_k, ''))}</p></div>"
-        )
-    if not cards:
-        return ""
-    return (
-        f"<h3>{_h(pl('remedies', language))}</h3>"
-        + "".join(cards)
-        + f"<p class='green'>{_h(pl('remedies_note', language))}</p>"
-    )
 
 
 # ---------------------------------------------------------------------------
@@ -2557,25 +2510,17 @@ def _render_ashtakavarga(
 
 
 def _priority_remedy_planets(kundali: dict, dasha: dict | None, planets: dict) -> list[str]:
-    """Lagna lord, dasha lords, then weak/combust planets — de-duplicated."""
+    """Weak/combust planets first, then current MD and AD lords."""
     ordered: list[str] = []
-    lagnesh = SIGN_LORD.get(kundali.get("lagna", ""))
-    current = (dasha or {}).get("current") or {}
-    for p in (
-        lagnesh,
-        current.get("mahadasha"),
-        current.get("antardasha"),
-        current.get("pratyantardasha"),
-    ):
-        if p and p not in ordered:
-            ordered.append(p)
     for name in PLANET_ORDER:
         info = planets.get(name) or {}
-        weak = info.get("combust") or str(info.get("strength_verdict", "")).lower().startswith(
-            "weak"
-        )
+        weak = info.get("combust") or _canonical_band(info.get("strength_verdict")) == "Weak"
         if weak and name not in ordered:
             ordered.append(name)
+    current = (dasha or {}).get("current") or {}
+    for planet in (current.get("mahadasha"), current.get("antardasha")):
+        if planet and planet not in ordered:
+            ordered.append(planet)
     return ordered
 
 
@@ -2592,7 +2537,7 @@ def _format_count(value: object) -> str:
 
 
 def _remedy_detail_grid(remedy: dict, language: str) -> str:
-    """Render bilingual practice details from remedies.json without inventing values."""
+    """Render the complete bilingual practice grid from remedies.json."""
     hi = _is_hi(language)
 
     def localized(value: object) -> object:
@@ -2600,63 +2545,58 @@ def _remedy_detail_grid(remedy: dict, language: str) -> str:
             return value.get("hi" if hi else "en") or ""
         return value
 
+    mantra = remedy.get("mantra") or {}
+    gemstone = remedy.get("gemstone") or {}
+    mantra_text = mantra.get("hi") if hi else mantra.get("iast")
+    if hi and mantra_text and mantra.get("iast"):
+        mantra_text = f"{mantra_text} · {mantra['iast']}"
+    gem_name = gemstone.get("name_hi") if hi else gemstone.get("name_en")
+    gem_disclaimer = gemstone.get("disclaimer_hi") if hi else gemstone.get("disclaimer_en")
     fields = [
-        ("jaap_min", localized(remedy.get("jaap_min"))),
-        ("best_time", localized(remedy.get("best_time"))),
-        ("mala", localized(remedy.get("mala"))),
-        ("direction", localized(remedy.get("direction"))),
-        ("duration", localized(remedy.get("duration"))),
+        ("mantra_label", mantra_text, True),
+        (
+            "jaap_min",
+            _format_count(remedy["jaap_min"]) if remedy.get("jaap_min") is not None else "",
+            False,
+        ),
+        (
+            "mantra_count",
+            _format_count(mantra["count"]) if mantra.get("count") is not None else "",
+            False,
+        ),
+        ("gemstone", gem_name, False),
+        ("gem_disclaimer_label", gem_disclaimer, True),
+        ("best_time", localized(remedy.get("best_time")), False),
+        ("mala", localized(remedy.get("mala")), False),
+        ("direction", localized(remedy.get("direction")), False),
+        ("duration", localized(remedy.get("duration")), False),
     ]
-    cells = "".join(
-        f'<div class="remedy-detail"><strong>{_h(pl(key, language))}</strong>{_h(value)}</div>'
-        for key, value in fields
-        if value not in (None, "")
-    )
-    return f'<div class="remedy-detail-grid">{cells}</div>' if cells else ""
+    cells = []
+    for key, value, wide in fields:
+        if value in (None, ""):
+            continue
+        class_name = "remedy-detail remedy-detail-wide" if wide else "remedy-detail"
+        cells.append(
+            f'<div class="{class_name}"><strong>{_h(pl(key, language))}</strong>'
+            f"{_h(value)}</div>"
+        )
+    return f'<div class="remedy-detail-grid">{"".join(cells)}</div>' if cells else ""
 
 
 def _fallback_remedy_cards(
     kundali: dict, dasha: dict | None, planets: dict, language: str
 ) -> list[str]:
     """Build deterministic remedy cards from the bilingual remedies fact sheet."""
-    hi = _is_hi(language)
     data = _remedies_data().get("planets") or {}
     cards: list[str] = []
     for planet in _priority_remedy_planets(kundali, dasha, planets):
         r = data.get(planet)
         if not isinstance(r, dict):
             continue
-        mantra = r.get("mantra") or {}
-        gem = r.get("gemstone") or {}
-        fasting = r.get("fasting") or {}
-        ritual = r.get("ritual") or {}
-        daan_list = r.get("daan") or []
-        daan_s = ", ".join(
-            (d.get("hi") if hi else d.get("en")) or ""
-            for d in daan_list
-            if isinstance(d, dict)
-        )
-        gem_name = gem.get("name_hi") if hi else gem.get("name_en")
-        fast_day = fasting.get("day_hi") if hi else fasting.get("day_en")
-        ritual_s = ritual.get("hi") if hi else ritual.get("en")
         bits = [
             f"<h4>{_h(display_planet(planet, language))}</h4>",
-            f'<p class="mantra-line">{_h(mantra.get("hi") or "")}</p>',
-            f'<p class="mantra-iast">{_h(mantra.get("iast") or "")}</p>',
             _remedy_detail_grid(r, language),
         ]
-        if mantra.get("count") is not None:
-            bits.append(
-                f"<p>{_h(pl('mantra_count', language))}: {_h(_format_count(mantra['count']))}</p>"
-            )
-        if gem_name:
-            bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(gem_name)}</p>")
-        if fast_day:
-            bits.append(f"<p>{_h(pl('fasting', language))}: {_h(fast_day)}</p>")
-        if daan_s:
-            bits.append(f"<p>{_h(pl('daan', language))}: {_h(daan_s)}</p>")
-        if ritual_s:
-            bits.append(f"<p>{_h(pl('ritual', language))}: {_h(ritual_s)}</p>")
         cards.append(f'<div class="panel">{"".join(bits)}</div>')
     return cards
 
@@ -2670,53 +2610,12 @@ def _render_premium_remedies(
     *,
     show_title: bool = True,
 ) -> str:
-    cards: list[str] = []
-
-    synth_rem = synth.get("remedies")
-    if isinstance(synth_rem, str) and synth_rem.strip():
-        return _section_wrap(
-            pl("premium_remedies", language),
-            f'<p class="prose">{_h(synth_rem)}</p>',
-            show_title=show_title,
-        )
-    if isinstance(synth_rem, list):
-        remedy_data = _remedies_data().get("planets") or {}
-        for item in synth_rem:
-            if isinstance(item, str):
-                cards.append(f'<div class="panel"><p class="prose">{_h(item)}</p></div>')
-                continue
-            if not isinstance(item, dict):
-                continue
-            planet = item.get("planet") or item.get("name") or ""
-            title = display_planet(planet, language) if planet else (item.get("title") or "—")
-            bits = [f"<h4>{_h(title)}</h4>"]
-            if item.get("mantra"):
-                bits.append(f'<p class="mantra-line">{_h(item["mantra"])}</p>')
-            if item.get("count") is not None:
-                bits.append(
-                    f"<p>{_h(pl('mantra_count', language))}: "
-                    f"{_h(_format_count(item['count']))}</p>"
-                )
-            if item.get("gemstone"):
-                bits.append(f"<p>{_h(pl('gemstone', language))}: {_h(item['gemstone'])}</p>")
-            if item.get("fasting") or item.get("fasting_day"):
-                bits.append(
-                    f"<p>{_h(pl('fasting', language))}: "
-                    f"{_h(item.get('fasting') or item.get('fasting_day'))}</p>"
-                )
-            if item.get("daan"):
-                bits.append(f"<p>{_h(pl('daan', language))}: {_h(item['daan'])}</p>")
-            if item.get("ritual"):
-                bits.append(f"<p>{_h(pl('ritual', language))}: {_h(item['ritual'])}</p>")
-            if planet and isinstance(remedy_data.get(planet), dict):
-                bits.append(_remedy_detail_grid(remedy_data[planet], language))
-            cards.append(f'<div class="panel">{"".join(bits)}</div>')
-
-    if not cards:
-        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
-        if cards:
-            cards.append(f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>')
-            cards.append(f'<p class="green">{_h(pl("remedies_note", language))}</p>')
+    # Remedies are deterministic report data.  LLM synthesis is deliberately
+    # ignored so prose or an invented remedy cannot replace the fact sheet.
+    cards = _fallback_remedy_cards(kundali, dasha, planets, language)
+    if cards:
+        cards.append(f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>')
+        cards.append(f'<p class="green">{_h(pl("remedies_note", language))}</p>')
 
     if not cards:
         return ""
@@ -2732,61 +2631,18 @@ def _premium_remedies_pages(
     language: str,
     synth: dict,
 ) -> list[str]:
-    """Premium remedies as page-sized HTML body chunks.
-
-    ``synth["remedies"]`` from the LLM synthesis is most often one long
-    prose blob (several thousand characters) -- split that across pages the
-    same way as dasha/life-area prose. The structured card-list/fallback
-    forms already paginate gracefully (each remedy is its own
-    break-avoid ``.panel``), so they keep using the single combined body
-    from ``_render_premium_remedies``.
-    """
-    synth_rem = synth.get("remedies")
-    if isinstance(synth_rem, str) and synth_rem.strip():
-        pages = [
-            f'<div class="premium-section"><p class="prose">{_h(chunk)}</p></div>'
-            for chunk in _chunk_prose(synth_rem)
-        ]
-        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
-        for index in range(len(cards)):
-            group = cards[index : index + 1]
-            notes = ""
-            if index + 1 >= len(cards):
-                notes = (
-                    f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
-                    f'<p class="green">{_h(pl("remedies_note", language))}</p>'
-                )
-            pages.append(f'<div class="premium-section">{"".join(group)}{notes}</div>')
-        return pages
-    if isinstance(synth_rem, list):
-        pages = []
-        for item in synth_rem:
-            body = _render_premium_remedies(
-                kundali,
-                dasha,
-                planets,
-                language,
-                {"remedies": [item]},
-                show_title=False,
+    """Return one deterministic, break-safe remedy card per report page."""
+    cards = _fallback_remedy_cards(kundali, dasha, planets, language)
+    pages = []
+    for index, card in enumerate(cards):
+        notes = ""
+        if index + 1 == len(cards):
+            notes = (
+                f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
+                f'<p class="green">{_h(pl("remedies_note", language))}</p>'
             )
-            if body:
-                pages.append(body)
-        return pages
-    if not isinstance(synth_rem, list):
-        cards = _fallback_remedy_cards(kundali, dasha, planets, language)
-        if cards:
-            pages = []
-            for index in range(len(cards)):
-                group = cards[index : index + 1]
-                notes = ""
-                if index + 1 >= len(cards):
-                    notes = (
-                        f'<p class="green">{_h(pl("gem_disclaimer", language))}</p>'
-                        f'<p class="green">{_h(pl("remedies_note", language))}</p>'
-                    )
-                pages.append(f'<div class="premium-section">{"".join(group)}{notes}</div>')
-            return pages
-    return []
+        pages.append(f'<div class="premium-section">{card}{notes}</div>')
+    return pages
 
 
 def _render_mangalik_box(mangalik: dict | None, language: str) -> str:
