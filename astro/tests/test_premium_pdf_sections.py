@@ -13,8 +13,10 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from dasha_calculator import calculate_dasha  # noqa: E402
 from gochar_calculator import calculate_gochar  # noqa: E402
 from html_pdf_report import (  # noqa: E402
+    _render_gochar_highlights,
     build_html,
     build_premium_sections_html,
+    display_saturn_status,
 )
 from kundali_calculator import BirthInput, calculate_kundali  # noqa: E402
 
@@ -340,3 +342,46 @@ def test_hand_built_minimal_report_shape():
     assert "Life-Area Forecasts" in frag_synth
     assert "Remedies (Prioritised)" in frag_synth
     assert _strength_row_count(frag_synth) == 9
+
+
+def test_display_saturn_status_labels() -> None:
+    """sade_sati/dhaiya must render as human labels, not the raw enum token."""
+    assert display_saturn_status("sade_sati", "en") == "Sade Sati"
+    assert display_saturn_status("sade_sati", "hi") == "साढ़े साती"
+    assert display_saturn_status("dhaiya", "en") == "Dhaiya"
+    assert display_saturn_status("dhaiya", "hi") == "ढैया"
+    # "none"/empty must not surface as the literal string "none".
+    assert display_saturn_status("none", "en") == "—"
+    assert display_saturn_status(None, "en") == "—"
+    assert display_saturn_status("", "hi") == "—"
+
+
+def test_gochar_highlights_render_sade_sati_label() -> None:
+    """End-to-end guard: the gochar highlights section must show 'Sade Sati',
+    not the raw 'sade_sati' enum token (issue #10, fix 3)."""
+    narrative = {
+        "summary": "Gochar narrative summary.",
+        "samples": [
+            {
+                "date": "2026-05-20",
+                "highlights": [
+                    {
+                        "planet": "Shani",
+                        "sign": "Kumbha",
+                        "house_from_moon": 1,
+                        "house_from_lagna": 1,
+                    }
+                ],
+                "saturn_analysis": {
+                    "status": "sade_sati",
+                    "phase": "peak",
+                    "sign": "Kumbha",
+                    "house_from_moon": 1,
+                },
+            }
+        ],
+    }
+    html = _render_gochar_highlights(narrative, "en")
+    assert "Sade Sati" in html
+    # The raw enum token must not leak into the rendered text on its own.
+    assert ": sade_sati" not in html

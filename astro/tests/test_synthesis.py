@@ -128,6 +128,79 @@ def test_remedies_prioritization_order(mock_provider, synthetic_report):
     assert "Weakest/Dasha planets prioritized: Surya, Mangal, Guru, Shani" in prompt
 
 
+def test_remedies_section_resolves_planets_wrapper(mock_provider, synthetic_report):
+    """remedies.json wraps per-planet entries under a top-level "planets" key
+    (alongside "_comment"). Guards issue #10a: remedies_section must resolve
+    that wrapper, else the fact sheet sent to the LLM is always {} and the
+    LLM correctly (but unhelpfully) refuses to write anything.
+    """
+    remedies_data = {
+        "_comment": "Per-planet classical remedies.",
+        "planets": {
+            "Surya": {"remedy": "Aditya Hrudayam"},
+            "Mangal": {"remedy": "Hanuman Chalisa"},
+            "Guru": {"remedy": "Vishnu Sahasranama"},
+            "Shani": {"remedy": "Shani Mantra"},
+        },
+    }
+    remedies_section(synthetic_report, remedies_data, "en")
+    prompt = mock_provider.prompts[0]
+
+    fact_sheet_json = prompt.split("):\n", 1)[1]
+    fact_sheet = json.loads(fact_sheet_json)
+    assert fact_sheet, "remedies fact sheet must not be empty when remedies.json has a planets wrapper"
+    assert fact_sheet["Surya"] == {"remedy": "Aditya Hrudayam"}
+
+
+def test_synthesize_all_remedies_fact_sheet_nonempty(mock_provider, synthetic_report):
+    """End-to-end guard for issue #10a: synthesize_all loads the real
+    astro/data/remedies.json (which has the "planets" wrapper) and must pass
+    populated planet remedy data to the remedies prompt, not an empty {}.
+    """
+    synthesize_all(synthetic_report, "en")
+
+    # synthesize_all fires, in order: 1 executive_summary + 2 bhava_analysis
+    # (houses 4 and 10) + 1 dasha_deep_dive + 4 life_areas + 1 remedies_section.
+    remedies_prompt = mock_provider.prompts[-1]
+    assert "Weakest/Dasha planets prioritized" in remedies_prompt
+
+    fact_sheet_json = remedies_prompt.split("):\n", 1)[1]
+    fact_sheet = json.loads(fact_sheet_json)
+    assert fact_sheet, "remedies fact sheet must not be empty — check remedies.json 'planets' wrapper handling"
+    assert "Surya" in fact_sheet
+    assert "mantra" in fact_sheet["Surya"]
+
+
+def test_remedies_section_flat_shape_still_works(mock_provider, synthetic_report):
+    """remedies_ext.json (the fallback file) is flat, not wrapped under
+    "planets" — the wrapper resolution must not break that shape.
+    """
+    remedies_data = {
+        "Surya": {"remedy": "Aditya Hrudayam"},
+    }
+    remedies_section(synthetic_report, remedies_data, "en")
+    prompt = mock_provider.prompts[0]
+    fact_sheet_json = prompt.split("):\n", 1)[1]
+    fact_sheet = json.loads(fact_sheet_json)
+    assert fact_sheet.get("Surya") == {"remedy": "Aditya Hrudayam"}
+
+
+def test_llm_timeout_env_configurable(monkeypatch):
+    """ASTRO_LLM_TIMEOUT must be read once and applied to every provider
+    (issue #10b): the dasha_deep_dive prompt can exceed the old hardcoded
+    20s/60s timeouts for long Hindi prose.
+    """
+    monkeypatch.setenv("ASTRO_LLM_TIMEOUT", "120")
+    assert GeminiProvider().timeout == 120
+    assert OpenAIProvider().timeout == 120
+    assert CLIProvider().timeout == 120
+
+    monkeypatch.delenv("ASTRO_LLM_TIMEOUT", raising=False)
+    assert GeminiProvider().timeout == 60
+    assert OpenAIProvider().timeout == 60
+    assert CLIProvider().timeout == 60
+
+
 def test_cli_provider_args_and_shell():
     os.environ["ASTRO_LLM_CLI_ARGS"] = '["agy", "-p", "{prompt}"]'
     provider = CLIProvider()

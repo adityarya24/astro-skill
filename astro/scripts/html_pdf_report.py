@@ -116,6 +116,12 @@ ELEMENT_DISP = {
     "Jal": ("जल", "Water"),
 }
 
+SATURN_STATUS_DISP = {
+    "sade_sati": ("साढ़े साती", "Sade Sati"),
+    "dhaiya": ("ढैया", "Dhaiya"),
+    "none": ("—", "—"),
+}
+
 MODALITY_DISP = {
     "Chara": ("चर", "Cardinal"),
     "Sthira": ("स्थिर", "Fixed"),
@@ -507,6 +513,18 @@ def display_sign(name: str, language: str) -> str:
     if not _is_hi(language):
         return name
     return f"{HI_SIGNS.get(name, name)} ({name})"
+
+
+def display_saturn_status(status: str | None, language: str) -> str:
+    """Map the sade_sati/dhaiya/none enum token to a display label.
+
+    Display layer only — the raw enum keeps flowing through
+    saturn_analysis["status"] for any logic that branches on it.
+    """
+    if not status:
+        return "—"
+    hi, en = SATURN_STATUS_DISP.get(status, (status, status))
+    return hi if _is_hi(language) else en
 
 
 def display_nakshatra(value: str, language: str) -> str:
@@ -1755,7 +1773,7 @@ def _render_gochar_highlights(
         sat = s.get("saturn_analysis") or {}
         sat_bits = []
         if sat:
-            sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
+            sat_bits.append(f"{pl('sade_sati', language)}: {display_saturn_status(sat.get('status'), language)}")
             if sat.get("type"):
                 sat_bits.append(str(sat["type"]))
             if sat.get("sign"):
@@ -1811,7 +1829,7 @@ def _gochar_highlights_pages(gochar_narrative: dict | None, language: str) -> li
         sat = s.get("saturn_analysis") or {}
         sat_bits = []
         if sat:
-            sat_bits.append(f"{pl('sade_sati', language)}: {sat.get('status') or '—'}")
+            sat_bits.append(f"{pl('sade_sati', language)}: {display_saturn_status(sat.get('status'), language)}")
             if sat.get("type"):
                 sat_bits.append(str(sat["type"]))
             if sat.get("sign"):
