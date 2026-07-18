@@ -532,11 +532,13 @@ def test_deterministic_remedy_cards_each_get_a_framed_page() -> None:
     )
     remedy_pages = [page for page in pages if "Remedies (Prioritised)" in page]
 
-    assert len(remedy_pages) == 5
+    # 5 deterministic remedy cards packed two per page: [2, 2, 1].
+    assert len(remedy_pages) == 3
     assert "Moon mantra" not in "".join(remedy_pages)
     assert "Mars mantra" not in "".join(remedy_pages)
     assert "Jupiter mantra" not in "".join(remedy_pages)
-    assert all(page.count('class="panel"') == 1 for page in remedy_pages)
+    panel_counts = [page.count('class="panel"') for page in remedy_pages]
+    assert panel_counts == [2, 2, 1]
     assert all('class="prose"' not in page for page in remedy_pages)
     assert "Suggested Remedies" not in "".join(pages)
 
