@@ -225,6 +225,7 @@ def score_life_areas(
                     "house_lord": item["factors"]["house_lord"],
                     "lord_strength": item["factors"]["lord_strength"],
                     "dasha_activated": item["factors"]["dasha_activated"],
+                    "benefic_yoga_support": item["factors"]["benefic_yoga_support"],
                 }
                 for item in selected
             ],

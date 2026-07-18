@@ -120,6 +120,7 @@ def test_score_report_accepts_existing_report_schema_without_mutating_it():
             "house_lord": "Shani",
             "lord_strength": "Strong — own sign",
             "dasha_activated": True,
+            "benefic_yoga_support": [],
         }
     ]
     assert "scoring" not in report["sections"]
@@ -144,6 +145,9 @@ def test_benefic_yoga_on_the_house_lord_raises_the_house_stars():
     assert boosted[7]["stars"] == 3
     assert boosted[7]["band"] == "Mixed"
     assert boosted[7]["factors"]["benefic_yoga_support"] == ["Dhana Yoga"]
+    assert score_life_areas(boosted)["marriage"]["drivers"][0][
+        "benefic_yoga_support"
+    ] == ["Dhana Yoga"]
 
     # Houses the yoga's planet is not connected to are untouched.
     assert boosted[1]["composite_index"] == baseline[1]["composite_index"]

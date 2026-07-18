@@ -461,9 +461,16 @@ PANDIT_LABELS = {
     "overall_assessment": ("समग्र मूल्यांकन", "Overall Assessment"),
     "overall_band": ("समग्र दृष्टिकोण", "Overall Outlook"),
     "area_reason": (
-        "भाव {0} के स्वामी {1} का बल {2} है{3}।",
-        "H{0} lord {1} has {2} strength{3}.",
+        "भाव {0} ({1}) के स्वामी {2} का मूल बल {3} है{4}।",
+        "H{0} ({1}) lord {2} has a {3} underlying strength profile{4}.",
     ),
+    "area_reason_yoga": (
+        "भाव {0} ({1}) को {2} का समर्थन है; इसके स्वामी {3} का मूल बल {4} है{5}।",
+        "H{0} ({1}) gains support from {2}; its lord {3} has a {4} underlying strength profile{5}.",
+    ),
+    "reason_strength_strong": ("प्रबल", "strong"),
+    "reason_strength_mixed": ("मध्यम", "mixed"),
+    "reason_strength_weak": ("कमज़ोर", "weak"),
     "dasha_active_suffix": (" और वर्तमान दशा में सक्रिय है", " and is active in the current dasha"),
     "dasha_inactive_suffix": (
         " और वर्तमान दशा में सक्रिय नहीं है",
@@ -1691,19 +1698,48 @@ def _area_reason(area_score: dict, language: str) -> str:
     if not drivers:
         return "—"
 
-    def rank(driver: dict) -> tuple[int, int]:
+    def rank(driver: dict) -> tuple[int, int, int]:
         strength_rank = {"Strong": 2, "Mixed": 1, "Weak": 0}[
             _canonical_band(driver.get("lord_strength"))
         ]
-        return (int(bool(driver.get("dasha_activated"))), strength_rank)
+        return (
+            int(bool(driver.get("benefic_yoga_support"))),
+            int(bool(driver.get("dasha_activated"))),
+            strength_rank,
+        )
 
     driver = max(drivers, key=rank)
     suffix_key = "dasha_active_suffix" if driver.get("dasha_activated") else "dasha_inactive_suffix"
     suffix = pl(suffix_key, language)
+    area = str(area_score.get("area") or "")
+    area_label = pl(f"area_{area}", language) if area else "—"
+    strength = _canonical_band(driver.get("lord_strength"))
+    strength_label = pl(f"reason_strength_{strength.lower()}", language)
+    yogas = list(
+        dict.fromkeys(
+            str(yoga) for yoga in driver.get("benefic_yoga_support") or [] if yoga
+        )
+    )
+    if yogas:
+        if _is_hi(language):
+            yoga_text = " और ".join(yogas)
+        elif len(yogas) == 1:
+            yoga_text = yogas[0]
+        else:
+            yoga_text = ", ".join(yogas[:-1]) + f" and {yogas[-1]}"
+        return pl("area_reason_yoga", language).format(
+            driver.get("house", "—"),
+            area_label,
+            yoga_text,
+            display_planet(str(driver.get("house_lord") or ""), language),
+            strength_label,
+            suffix,
+        )
     return pl("area_reason", language).format(
         driver.get("house", "—"),
+        area_label,
         display_planet(str(driver.get("house_lord") or ""), language),
-        _localized_band(driver.get("lord_strength"), language),
+        strength_label,
         suffix,
     )
 

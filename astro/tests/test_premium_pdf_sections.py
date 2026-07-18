@@ -13,6 +13,7 @@ sys.path.insert(0, str(SCRIPT_DIR))
 from dasha_calculator import calculate_dasha  # noqa: E402
 from gochar_calculator import calculate_gochar  # noqa: E402
 from html_pdf_report import (  # noqa: E402
+    _area_reason,
     _first_sentence,
     _render_gochar_highlights,
     _render_premium_remedies,
@@ -270,6 +271,14 @@ def test_dashboard_is_page_three_and_verdict_is_last_in_both_languages() -> None
         assert dasha["current"]["antardasha_end"] in pages[2]
         assert pages[-1].count('class="assessment-row ') == 6
         assert ("दैनिक न्यूनतम" if language == "hi" else "Daily minimum") in html
+        combined = pages[2] + pages[-1]
+        assert not re.search(
+            r"has (?:Growth Area|Balanced|Favourable) strength",
+            combined,
+        )
+        yoga_reason = "का समर्थन है" if language == "hi" else "gains support from"
+        assert yoga_reason in pages[2]
+        assert yoga_reason in pages[-1]
 
 
 def test_integrated_color_bands_follow_computed_strength_house_and_yoga_data() -> None:
@@ -310,6 +319,40 @@ def test_dashboard_and_verdict_escape_synthesis_and_avoid_fake_precision() -> No
     assert "Heuristic index from classical strength factors" in pages[-1]
     assert "/100" not in pages[2] + pages[-1]
     assert not re.search(r"\d+%", pages[2] + pages[-1])
+
+
+def test_area_reasons_use_raw_strength_and_explain_yoga_lift_bilingually() -> None:
+    area_score = {
+        "area": "career",
+        "stars": 5,
+        "rating": "★★★★★",
+        "band": "Strong",
+        "drivers": [
+            {
+                "house": 10,
+                "house_lord": "Budh",
+                "lord_strength": "Weak — debilitated",
+                "dasha_activated": True,
+                "benefic_yoga_support": [
+                    "Raja Yoga",
+                    "Neechabhanga Raja Yoga",
+                    "Budhaditya",
+                ],
+            }
+        ],
+    }
+
+    en = _area_reason(area_score, "en")
+    hi = _area_reason(area_score, "hi")
+
+    assert "H10 (Career)" in en
+    assert "Raja Yoga" in en and "Neechabhanga Raja Yoga" in en and "Budhaditya" in en
+    assert "weak underlying strength profile" in en
+    assert "active in the current dasha" in en
+    assert "भाव 10 (करियर)" in hi
+    assert "कमज़ोर" in hi and "वर्तमान दशा में सक्रिय" in hi
+    for softened in ("Growth Area", "Balanced", "Favourable"):
+        assert f"has {softened} strength" not in en
 
 
 def test_dashboard_sentence_is_bounded_for_frame_safety() -> None:
