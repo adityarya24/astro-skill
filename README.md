@@ -1,6 +1,8 @@
 # Astro Skill
 
 [![CI](https://github.com/adityarya24/astro-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/adityarya24/astro-skill/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/astro-skill.svg)](https://pypi.org/project/astro-skill/)
+[![Python versions](https://img.shields.io/pypi/pyversions/astro-skill.svg)](https://pypi.org/project/astro-skill/)
 [![Astro Skill MCP server score](https://glama.ai/mcp/servers/adityarya24/astro-skill/badges/score.svg)](https://glama.ai/mcp/servers/adityarya24/astro-skill)
 
 Portable Vedic astrology engine, agent skill, and MCP server. Deterministic
@@ -65,7 +67,22 @@ The repo is split so each layer can be reused on its own:
 - **MCP server** — 11 tools over stdio, with SQLite-backed client/report storage,
   input validation, and traversal-safe report filenames.
 
-## Quick start
+## Install (PyPI)
+
+```bash
+pip install astro-skill
+
+# Optional: Chromium for the preferred HTML PDF renderer
+python -m playwright install chromium
+
+# Run the stdio MCP server
+astro-mcp
+# or: python -m services.astro_mcp
+```
+
+Requires Python 3.11+. For development from source, use the editable install below.
+
+## Quick start (from source)
 
 ```bash
 git clone https://github.com/adityarya24/astro-skill.git

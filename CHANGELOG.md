@@ -6,6 +6,16 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-07-21
+
+### Added
+- PyPI packaging metadata (`readme`, license, authors, classifiers, project URLs)
+  and a GitHub Actions release workflow that builds the sdist/wheel, attaches
+  artifacts to the GitHub Release, and publishes to PyPI via Trusted Publishing.
+
+### Changed
+- Package and MCP server version set to **1.1.1** for the first PyPI release.
+
 ## [1.1.0] - 2026-07-18
 
 Premium report tier: a pandit-grade Janma Patrika with an at-a-glance
