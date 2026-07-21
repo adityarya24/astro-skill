@@ -15,6 +15,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 - Package and MCP server version set to **1.1.1** for the first PyPI release.
+- Release workflow keeps wheel/sdist separate from `checksums.txt` so the PyPI
+  upload job only sees real distributions.
 
 ## [1.1.0] - 2026-07-18
 
