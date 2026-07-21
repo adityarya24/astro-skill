@@ -4,9 +4,34 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "astro-skill"
-version = "1.1.0"
+version = "1.1.1"
 description = "Portable Vedic astrology engine, agent skill, and stdio MCP server (kundali, dasha, panchang, PDF reports)"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Aditya Arya", email = "adityarya24@users.noreply.github.com" }]
+keywords = [
+    "vedic",
+    "astrology",
+    "kundali",
+    "dasha",
+    "panchang",
+    "mcp",
+    "jyotish",
+    "swiss-ephemeris",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Religion",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "mcp>=1.27.0",
     "playwright>=1.40",
@@ -16,8 +41,25 @@ dependencies = [
     "tzdata>=2025.2",
 ]
 
+[project.urls]
+Homepage = "https://github.com/adityarya24/astro-skill"
+Documentation = "https://github.com/adityarya24/astro-skill#readme"
+Repository = "https://github.com/adityarya24/astro-skill"
+Issues = "https://github.com/adityarya24/astro-skill/issues"
+Changelog = "https://github.com/adityarya24/astro-skill/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
-dev = ["pypdf>=6.12.2", "pytest>=8.0", "pytest-asyncio>=0.23", "pyyaml>=6.0", "ruff>=0.4.0", "setuptools>=77.0.0", "wheel"]
+dev = [
+    "build",
+    "pypdf>=6.12.2",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pyyaml>=6.0",
+    "ruff>=0.4.0",
+    "setuptools>=77.0.0",
+    "twine",
+    "wheel",
+]
 
 [project.scripts]
 astro-mcp = "services.astro_mcp.server:main"
